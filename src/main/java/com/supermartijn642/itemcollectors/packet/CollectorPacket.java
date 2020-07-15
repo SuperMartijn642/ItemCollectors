@@ -37,7 +37,7 @@ public abstract class CollectorPacket {
         contextSupplier.get().setPacketHandled(true);
 
         PlayerEntity player = contextSupplier.get().getSender();
-        if(player == null || player.getPosition().distanceSq(this.pos) > 32 * 32)
+        if(player == null || player.getPositionVec().squareDistanceTo(this.pos.getX(), this.pos.getY(), this.pos.getZ()) > 32 * 32)
             return;
         World world = player.world;
         if(world == null)

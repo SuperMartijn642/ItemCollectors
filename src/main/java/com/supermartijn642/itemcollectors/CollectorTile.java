@@ -1,5 +1,6 @@
 package com.supermartijn642.itemcollectors;
 
+import net.minecraft.block.BlockState;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.item.ItemEntity;
 import net.minecraft.item.ItemStack;
@@ -100,21 +101,21 @@ public class CollectorTile extends TileEntity implements ITickableTileEntity {
 
     public void setRangeX(int range){
         int old = this.rangeX;
-        this.rangeX = Math.min(Math.max(range,MIN_RANGE),this.maxRange);
+        this.rangeX = Math.min(Math.max(range, MIN_RANGE), this.maxRange);
         if(this.rangeX != old)
             this.dataChanged();
     }
 
     public void setRangeY(int range){
         int old = this.rangeY;
-        this.rangeY = Math.min(Math.max(range,MIN_RANGE),this.maxRange);
+        this.rangeY = Math.min(Math.max(range, MIN_RANGE), this.maxRange);
         if(this.rangeY != old)
             this.dataChanged();
     }
 
     public void setRangeZ(int range){
         int old = this.rangeZ;
-        this.rangeZ = Math.min(Math.max(range,MIN_RANGE),this.maxRange);
+        this.rangeZ = Math.min(Math.max(range, MIN_RANGE), this.maxRange);
         if(this.rangeZ != old)
             this.dataChanged();
     }
@@ -167,8 +168,8 @@ public class CollectorTile extends TileEntity implements ITickableTileEntity {
     }
 
     @Override
-    public void read(CompoundNBT compound){
-        super.read(compound);
+    public void func_230337_a_(BlockState state, CompoundNBT compound){
+        super.func_230337_a_(state, compound);
         if(compound.contains("data"))
             this.handleData(compound.getCompound("data"));
     }
