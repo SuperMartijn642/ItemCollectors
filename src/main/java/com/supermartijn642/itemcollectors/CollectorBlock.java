@@ -59,7 +59,7 @@ public class CollectorBlock extends Block {
     }
 
     @Override
-    public ActionResultType onBlockActivated(BlockState state, World worldIn, BlockPos pos, PlayerEntity player, Hand handIn, BlockRayTraceResult p_225533_6_){
+    public boolean onBlockActivated(BlockState state, World worldIn, BlockPos pos, PlayerEntity player, Hand handIn, BlockRayTraceResult p_225533_6_){
         if(!worldIn.isRemote)
             NetworkHooks.openGui((ServerPlayerEntity)player, new INamedContainerProvider() {
                 @Override
@@ -73,7 +73,7 @@ public class CollectorBlock extends Block {
                     return CollectorBlock.this.containerProvider.createContainer(id, player, pos);
                 }
             }, pos);
-        return ActionResultType.SUCCESS;
+        return true;
     }
 
     @Override

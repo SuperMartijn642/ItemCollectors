@@ -1,6 +1,6 @@
 package com.supermartijn642.itemcollectors.screen;
 
-import com.mojang.blaze3d.systems.RenderSystem;
+import com.mojang.blaze3d.platform.GlStateManager;
 import com.supermartijn642.itemcollectors.CollectorTile;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screen.inventory.ContainerScreen;
@@ -59,7 +59,7 @@ public abstract class CollectorScreen<T extends CollectorContainer> extends Cont
 
     @Override
     protected void drawGuiContainerBackgroundLayer(float partialTicks, int mouseX, int mouseY){
-        RenderSystem.color4f(1.0F, 1.0F, 1.0F, 1.0F);
+        GlStateManager.color4f(1.0F, 1.0F, 1.0F, 1.0F);
         Minecraft.getInstance().getTextureManager().bindTexture(new ResourceLocation("itemcollectors", "textures/" + this.getBackground()));
         this.blit(this.guiLeft, this.guiTop, 0, 0, this.xSize, this.ySize);
 

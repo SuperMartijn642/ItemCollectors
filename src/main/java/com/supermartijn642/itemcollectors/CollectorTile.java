@@ -1,5 +1,6 @@
 package com.supermartijn642.itemcollectors;
 
+import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.item.ItemEntity;
 import net.minecraft.item.ItemStack;
@@ -61,10 +62,12 @@ public class CollectorTile extends TileEntity implements ITickableTileEntity {
 
             AxisAlignedBB area = new AxisAlignedBB(this.pos.add(-this.rangeX, -this.rangeY, -this.rangeZ), this.pos.add(this.rangeX + 1, this.rangeY + 1, this.rangeZ + 1));
 
-            List<ItemEntity> items = this.world.getEntitiesWithinAABB(EntityType.ITEM, area, item -> {
+            List<Entity> items = this.world.getEntitiesWithinAABB(EntityType.ITEM, area, item -> {
+                if(!(item instanceof ItemEntity))
+                    return false;
                 if(!this.hasFilter)
                     return true;
-                ItemStack stack = item.getItem();
+                ItemStack stack = ((ItemEntity)item).getItem();
                 if(stack.isEmpty())
                     return false;
                 for(int i = 0; i < 9; i++){
@@ -76,17 +79,17 @@ public class CollectorTile extends TileEntity implements ITickableTileEntity {
             });
 
             loop:
-            for(ItemEntity entity : items){
-                ItemStack stack = entity.getItem();
+            for(Entity entity : items){
+                ItemStack stack = ((ItemEntity)entity).getItem();
                 for(int slot = 0; slot < itemHandler.getSlots(); slot++)
                     if(itemHandler.isItemValid(slot, stack)){
                         stack = itemHandler.insertItem(slot, stack, false);
                         if(stack.isEmpty()){
-                            entity.setItem(ItemStack.EMPTY);
+                            ((ItemEntity)entity).setItem(ItemStack.EMPTY);
                             continue loop;
                         }
                     }
-                entity.setItem(stack);
+                ((ItemEntity)entity).setItem(stack);
             }
         });
     }
