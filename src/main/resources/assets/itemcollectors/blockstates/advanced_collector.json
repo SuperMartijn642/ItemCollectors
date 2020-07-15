@@ -1,0 +1,5 @@
+{
+  "variants": {
+    "": { "model": "itemcollectors:block/advanced_collector" }
+  }
+}

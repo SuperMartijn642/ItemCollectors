@@ -1,0 +1,25 @@
+{
+  "parent": "minecraft:recipes/root",
+  "rewards": {
+    "recipes": [
+      "itemcollectors:advanced_collector"
+    ]
+  },
+  "criteria": {
+    "ender_eye": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [
+          {
+            "item": "minecraft:ender_eye"
+          }
+        ]
+      }
+    }
+  },
+  "requirements": [
+    [
+      "ender_eye"
+    ]
+  ]
+}
