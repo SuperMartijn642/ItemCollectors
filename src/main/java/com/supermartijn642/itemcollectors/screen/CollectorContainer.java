@@ -1,10 +1,9 @@
 package com.supermartijn642.itemcollectors.screen;
 
 import com.supermartijn642.itemcollectors.CollectorTile;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.inventory.container.Container;
-import net.minecraft.inventory.container.ContainerType;
-import net.minecraft.inventory.container.Slot;
+import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.inventory.Container;
+import net.minecraft.inventory.Slot;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
@@ -14,13 +13,12 @@ import net.minecraft.world.World;
  */
 public abstract class CollectorContainer extends Container {
 
-    public final PlayerEntity player;
+    public final EntityPlayer player;
     public final World world;
     public final BlockPos pos;
     public final int width, height;
 
-    public CollectorContainer(ContainerType<?> type, int id, PlayerEntity player, BlockPos pos, int width, int height, boolean hasSlots){
-        super(type, id);
+    public CollectorContainer(EntityPlayer player, BlockPos pos, int width, int height, boolean hasSlots){
         this.player = player;
         this.world = player.world;
         this.pos = pos;
@@ -42,17 +40,17 @@ public abstract class CollectorContainer extends Container {
         // player
         for(int row = 0; row < 3; row++){
             for(int column = 0; column < 9; column++){
-                this.addSlot(new Slot(this.player.inventory, row * 9 + column + 9, 21 + 18 * column, this.height - 82 + 18 * row));
+                this.addSlotToContainer(new Slot(this.player.inventory, row * 9 + column + 9, 21 + 18 * column, this.height - 82 + 18 * row));
             }
         }
 
         // hot bar
         for(int column = 0; column < 9; column++)
-            this.addSlot(new Slot(this.player.inventory, column, 21 + 18 * column, this.height - 24));
+            this.addSlotToContainer(new Slot(this.player.inventory, column, 21 + 18 * column, this.height - 24));
     }
 
     @Override
-    public boolean canInteractWith(PlayerEntity playerIn){
+    public boolean canInteractWith(EntityPlayer playerIn){
         return true;
     }
 

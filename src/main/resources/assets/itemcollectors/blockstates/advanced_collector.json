@@ -1,5 +1,5 @@
 {
   "variants": {
-    "": { "model": "itemcollectors:block/advanced_collector" }
+    "normal": { "model": "itemcollectors:advanced_collector" }
   }
 }

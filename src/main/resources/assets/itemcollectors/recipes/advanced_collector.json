@@ -13,7 +13,7 @@
       "item": "itemcollectors:basic_collector"
     },
     "O": {
-      "tag": "forge:obsidian"
+      "item": "minecraft:obsidian"
     }
   },
   "result": {

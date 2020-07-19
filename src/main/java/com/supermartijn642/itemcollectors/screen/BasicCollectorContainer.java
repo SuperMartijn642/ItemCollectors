@@ -1,8 +1,7 @@
 package com.supermartijn642.itemcollectors.screen;
 
 import com.supermartijn642.itemcollectors.CollectorTile;
-import com.supermartijn642.itemcollectors.ItemCollectors;
-import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.util.math.BlockPos;
 
 /**
@@ -10,8 +9,8 @@ import net.minecraft.util.math.BlockPos;
  */
 public class BasicCollectorContainer extends CollectorContainer {
 
-    public BasicCollectorContainer(int id, PlayerEntity player, BlockPos pos){
-        super(ItemCollectors.basic_collector_container, id, player, pos, 202, 82, false);
+    public BasicCollectorContainer(EntityPlayer player, BlockPos pos){
+        super(player, pos, 202, 82, false);
     }
 
     @Override

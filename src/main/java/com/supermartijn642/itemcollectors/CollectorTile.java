@@ -1,39 +1,50 @@
 package com.supermartijn642.itemcollectors;
 
-import net.minecraft.entity.EntityType;
-import net.minecraft.entity.item.ItemEntity;
+import net.minecraft.block.state.IBlockState;
+import net.minecraft.entity.item.EntityItem;
 import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.CompoundNBT;
+import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.network.NetworkManager;
-import net.minecraft.network.play.server.SUpdateTileEntityPacket;
-import net.minecraft.tileentity.ITickableTileEntity;
+import net.minecraft.network.play.server.SPacketUpdateTileEntity;
 import net.minecraft.tileentity.TileEntity;
-import net.minecraft.tileentity.TileEntityType;
-import net.minecraft.util.Direction;
+import net.minecraft.util.EnumFacing;
+import net.minecraft.util.ITickable;
 import net.minecraft.util.math.AxisAlignedBB;
-import net.minecraftforge.common.util.LazyOptional;
 import net.minecraftforge.items.CapabilityItemHandler;
 import net.minecraftforge.items.IItemHandler;
 
 import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 /**
  * Created 7/15/2020 by SuperMartijn642
  */
-public class CollectorTile extends TileEntity implements ITickableTileEntity {
+public class CollectorTile extends TileEntity implements ITickable {
 
     private static final int MIN_RANGE = 1;
     private static final int BASIC_MAX_RANGE = 5, BASIC_DEFAULT_RANGE = 3;
     private static final int ADVANCED_MAX_RANGE = 7, ADVANCED_DEFAULT_RANGE = 5;
 
+    public static class BasicCollectorTile extends CollectorTile {
+        public BasicCollectorTile(){
+            super(BASIC_MAX_RANGE, BASIC_DEFAULT_RANGE, false);
+        }
+    }
+
+    public static class AdvancedCollectorTile extends CollectorTile {
+        public AdvancedCollectorTile(){
+            super(ADVANCED_MAX_RANGE, ADVANCED_DEFAULT_RANGE, true);
+        }
+    }
+
     public static CollectorTile basicTile(){
-        return new CollectorTile(ItemCollectors.basic_collector_tile, BASIC_MAX_RANGE, BASIC_DEFAULT_RANGE, false);
+        return new BasicCollectorTile();
     }
 
     public static CollectorTile advancedTile(){
-        return new CollectorTile(ItemCollectors.advanced_collector_tile, ADVANCED_MAX_RANGE, ADVANCED_DEFAULT_RANGE, true);
+        return new AdvancedCollectorTile();
     }
 
     private final int maxRange;
@@ -44,8 +55,8 @@ public class CollectorTile extends TileEntity implements ITickableTileEntity {
     public boolean filterWhitelist;
     private boolean dataChanged;
 
-    public CollectorTile(TileEntityType<CollectorTile> tileEntityType, int maxRange, int range, boolean hasFilter){
-        super(tileEntityType);
+    public CollectorTile(int maxRange, int range, boolean hasFilter){
+        super();
         this.maxRange = maxRange;
         this.rangeX = this.rangeY = this.rangeZ = range;
         this.hasFilter = hasFilter;
@@ -54,14 +65,14 @@ public class CollectorTile extends TileEntity implements ITickableTileEntity {
     }
 
     @Override
-    public void tick(){
+    public void update(){
         this.getOutputItemHandler().ifPresent(itemHandler -> {
             if(itemHandler.getSlots() <= 0)
                 return;
 
             AxisAlignedBB area = new AxisAlignedBB(this.pos.add(-this.rangeX, -this.rangeY, -this.rangeZ), this.pos.add(this.rangeX + 1, this.rangeY + 1, this.rangeZ + 1));
 
-            List<ItemEntity> items = this.world.getEntitiesWithinAABB(EntityType.ITEM, area, item -> {
+            List<EntityItem> items = this.world.getEntitiesWithinAABB(EntityItem.class, area, item -> {
                 if(!this.hasFilter)
                     return true;
                 ItemStack stack = item.getItem();
@@ -76,7 +87,7 @@ public class CollectorTile extends TileEntity implements ITickableTileEntity {
             });
 
             loop:
-            for(ItemEntity entity : items){
+            for(EntityItem entity : items){
                 ItemStack stack = entity.getItem();
                 for(int slot = 0; slot < itemHandler.getSlots(); slot++)
                     if(itemHandler.isItemValid(slot, stack)){
@@ -91,30 +102,30 @@ public class CollectorTile extends TileEntity implements ITickableTileEntity {
         });
     }
 
-    private LazyOptional<IItemHandler> getOutputItemHandler(){
+    private Optional<IItemHandler> getOutputItemHandler(){
         TileEntity tile = this.world.getTileEntity(this.pos.down());
-        if(tile == null)
-            return LazyOptional.empty();
-        return tile.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, Direction.UP);
+        if(tile == null || !tile.hasCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, EnumFacing.UP))
+            return Optional.empty();
+        return Optional.ofNullable(tile.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, EnumFacing.UP));
     }
 
     public void setRangeX(int range){
         int old = this.rangeX;
-        this.rangeX = Math.min(Math.max(range,MIN_RANGE),this.maxRange);
+        this.rangeX = Math.min(Math.max(range, MIN_RANGE), this.maxRange);
         if(this.rangeX != old)
             this.dataChanged();
     }
 
     public void setRangeY(int range){
         int old = this.rangeY;
-        this.rangeY = Math.min(Math.max(range,MIN_RANGE),this.maxRange);
+        this.rangeY = Math.min(Math.max(range, MIN_RANGE), this.maxRange);
         if(this.rangeY != old)
             this.dataChanged();
     }
 
     public void setRangeZ(int range){
         int old = this.rangeZ;
-        this.rangeZ = Math.min(Math.max(range,MIN_RANGE),this.maxRange);
+        this.rangeZ = Math.min(Math.max(range, MIN_RANGE), this.maxRange);
         if(this.rangeZ != old)
             this.dataChanged();
     }
@@ -122,73 +133,74 @@ public class CollectorTile extends TileEntity implements ITickableTileEntity {
     public void dataChanged(){
         if(!this.world.isRemote){
             this.dataChanged = true;
-            this.world.notifyBlockUpdate(this.pos, this.getBlockState(), this.getBlockState(), 2);
+            IBlockState state = this.world.getBlockState(this.pos);
+            this.world.notifyBlockUpdate(this.pos, state, state, 2);
         }
     }
 
-    private CompoundNBT getChangedData(){
+    private NBTTagCompound getChangedData(){
         return this.dataChanged ? this.getData() : null;
     }
 
-    private CompoundNBT getData(){
-        CompoundNBT tag = new CompoundNBT();
-        tag.putInt("rangeX", this.rangeX);
-        tag.putInt("rangeY", this.rangeY);
-        tag.putInt("rangeZ", this.rangeZ);
+    private NBTTagCompound getData(){
+        NBTTagCompound tag = new NBTTagCompound();
+        tag.setInteger("rangeX", this.rangeX);
+        tag.setInteger("rangeY", this.rangeY);
+        tag.setInteger("rangeZ", this.rangeZ);
         if(this.hasFilter){
             for(int i = 0; i < 9; i++){
                 if(!this.filter.get(i).isEmpty())
-                    tag.put("filter" + i, this.filter.get(i).write(new CompoundNBT()));
+                    tag.setTag("filter" + i, this.filter.get(i).writeToNBT(new NBTTagCompound()));
             }
-            tag.putBoolean("filterWhitelist", this.filterWhitelist);
+            tag.setBoolean("filterWhitelist", this.filterWhitelist);
         }
         return tag;
     }
 
-    private void handleData(CompoundNBT tag){
-        if(tag.contains("rangeX"))
-            this.rangeX = tag.getInt("rangeX");
-        if(tag.contains("rangeY"))
-            this.rangeY = tag.getInt("rangeY");
-        if(tag.contains("rangeZ"))
-            this.rangeZ = tag.getInt("rangeZ");
+    private void handleData(NBTTagCompound tag){
+        if(tag.hasKey("rangeX"))
+            this.rangeX = tag.getInteger("rangeX");
+        if(tag.hasKey("rangeY"))
+            this.rangeY = tag.getInteger("rangeY");
+        if(tag.hasKey("rangeZ"))
+            this.rangeZ = tag.getInteger("rangeZ");
         if(this.hasFilter){
             for(int i = 0; i < 9; i++)
-                this.filter.set(i, tag.contains("filter" + i) ? ItemStack.read(tag.getCompound("filter" + i)) : ItemStack.EMPTY);
-            this.filterWhitelist = tag.contains("filterWhitelist") && tag.getBoolean("filterWhitelist");
+                this.filter.set(i, tag.hasKey("filter" + i) ? new ItemStack(tag.getCompoundTag("filter" + i)) : ItemStack.EMPTY);
+            this.filterWhitelist = tag.hasKey("filterWhitelist") && tag.getBoolean("filterWhitelist");
         }
     }
 
     @Override
-    public CompoundNBT write(CompoundNBT compound){
-        super.write(compound);
-        compound.put("data", this.getData());
+    public NBTTagCompound writeToNBT(NBTTagCompound compound){
+        super.writeToNBT(compound);
+        compound.setTag("data", this.getData());
         return compound;
     }
 
     @Override
-    public void read(CompoundNBT compound){
-        super.read(compound);
-        if(compound.contains("data"))
-            this.handleData(compound.getCompound("data"));
+    public void readFromNBT(NBTTagCompound compound){
+        super.readFromNBT(compound);
+        if(compound.hasKey("data"))
+            this.handleData(compound.getCompoundTag("data"));
     }
 
     @Nullable
     @Override
-    public SUpdateTileEntityPacket getUpdatePacket(){
-        CompoundNBT tag = this.getChangedData();
-        return tag == null || tag.isEmpty() ? null : new SUpdateTileEntityPacket(this.pos, 0, tag);
+    public SPacketUpdateTileEntity getUpdatePacket(){
+        NBTTagCompound tag = this.getChangedData();
+        return tag == null || tag.hasNoTags() ? null : new SPacketUpdateTileEntity(this.pos, 0, tag);
     }
 
     @Override
-    public void onDataPacket(NetworkManager net, SUpdateTileEntityPacket pkt){
+    public void onDataPacket(NetworkManager net, SPacketUpdateTileEntity pkt){
         this.handleData(pkt.getNbtCompound());
     }
 
     @Override
-    public CompoundNBT getUpdateTag(){
-        CompoundNBT tag = super.getUpdateTag();
-        tag.put("data", this.getData());
+    public NBTTagCompound getUpdateTag(){
+        NBTTagCompound tag = super.getUpdateTag();
+        tag.setTag("data", this.getData());
         return tag;
     }
 }

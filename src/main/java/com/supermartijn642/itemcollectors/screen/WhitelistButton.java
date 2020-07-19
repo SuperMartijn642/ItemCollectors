@@ -1,27 +1,25 @@
 package com.supermartijn642.itemcollectors.screen;
 
-import com.mojang.blaze3d.platform.GlStateManager;
-import com.mojang.blaze3d.systems.RenderSystem;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.widget.button.AbstractButton;
+import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.renderer.BufferBuilder;
+import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.Tessellator;
-import net.minecraft.client.renderer.WorldVertexBufferUploader;
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
 import net.minecraft.util.ResourceLocation;
 
 /**
  * Created 7/8/2020 by SuperMartijn642
  */
-public class WhitelistButton extends AbstractButton {
+public class WhitelistButton extends GuiButton implements Pressable {
 
     private final ResourceLocation BUTTONS = new ResourceLocation("itemcollectors", "textures/blacklist_button.png");
 
     public boolean white = true;
     private final Runnable onPress;
 
-    public WhitelistButton(int x, int y, Runnable onPress){
-        super(x, y, 20, 20, "");
+    public WhitelistButton(int buttonId, int x, int y, Runnable onPress){
+        super(buttonId, x, y, 20, 20, "");
         this.onPress = onPress;
     }
 
@@ -35,26 +33,24 @@ public class WhitelistButton extends AbstractButton {
     }
 
     @Override
-    public void renderButton(int mouseX, int mouseY, float partialTicks){
-        Minecraft minecraft = Minecraft.getInstance();
-        minecraft.getTextureManager().bindTexture(BUTTONS);
-        RenderSystem.color4f(1.0F, 1.0F, 1.0F, this.alpha);
-        RenderSystem.enableBlend();
-        RenderSystem.defaultBlendFunc();
-        RenderSystem.blendFunc(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA);
-        drawTexture(this.x, this.y, this.white ? 0 : 20, (this.active ? this.isHovered ? 1 : 0 : 2) * 20);
-        this.renderBg(minecraft, mouseX, mouseY);
+    public void drawButton(Minecraft mc, int mouseX, int mouseY, float partialTicks){
+        this.hovered = mouseX >= this.x && mouseY >= this.y && mouseX < this.x + this.width && mouseY < this.y + this.height;
+        Minecraft.getMinecraft().getTextureManager().bindTexture(BUTTONS);
+        GlStateManager.color(1.0F, 1.0F, 1.0F);
+        GlStateManager.enableBlend();
+        GlStateManager.tryBlendFuncSeparate(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA, GlStateManager.SourceFactor.ONE, GlStateManager.DestFactor.ZERO);
+        GlStateManager.blendFunc(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA);
+        drawTexture(this.x, this.y, this.white ? 0 : 20, (this.enabled ? this.hovered ? 1 : 0 : 2) * 20);
     }
 
     private static void drawTexture(int x, int y, int textureX, int textureY){
-        BufferBuilder bufferbuilder = Tessellator.getInstance().getBuffer();
+        Tessellator tessellator = Tessellator.getInstance();
+        BufferBuilder bufferbuilder = tessellator.getBuffer();
         bufferbuilder.begin(7, DefaultVertexFormats.POSITION_TEX);
         bufferbuilder.pos(x, y + 20, 0).tex(textureX / 40f, (textureY + 20) / 60f).endVertex();
         bufferbuilder.pos(x + 20, y + 20, 0).tex((textureX + 20) / 40f, (textureY + 20) / 60f).endVertex();
         bufferbuilder.pos(x + 20, y, 0).tex((textureX + 20) / 40f, textureY / 60f).endVertex();
         bufferbuilder.pos(x, y, 0).tex(textureX / 40f, textureY / 60f).endVertex();
-        bufferbuilder.finishDrawing();
-        RenderSystem.enableAlphaTest();
-        WorldVertexBufferUploader.draw(bufferbuilder);
+        tessellator.draw();
     }
 }

@@ -1,19 +1,23 @@
 package com.supermartijn642.itemcollectors;
 
-import com.supermartijn642.itemcollectors.screen.AdvancedCollectorContainer;
-import com.supermartijn642.itemcollectors.screen.AdvancedCollectorScreen;
-import com.supermartijn642.itemcollectors.screen.BasicCollectorContainer;
-import com.supermartijn642.itemcollectors.screen.BasicCollectorScreen;
-import net.minecraft.client.gui.ScreenManager;
+import net.minecraft.client.renderer.block.model.ModelResourceLocation;
+import net.minecraft.item.Item;
+import net.minecraftforge.client.event.ModelRegistryEvent;
+import net.minecraftforge.client.model.ModelLoader;
+import net.minecraftforge.fml.common.Mod;
+import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
+import net.minecraftforge.fml.relauncher.Side;
 
 /**
  * Created 7/15/2020 by SuperMartijn642
  */
+@Mod.EventBusSubscriber(Side.CLIENT)
 public class ClientProxy {
 
-    public static void registerScreen(){
-        ScreenManager.registerFactory(ItemCollectors.basic_collector_container, (ScreenManager.IScreenFactory<BasicCollectorContainer,BasicCollectorScreen>)(container, inventory, title) -> new BasicCollectorScreen(container));
-        ScreenManager.registerFactory(ItemCollectors.advanced_collector_container, (ScreenManager.IScreenFactory<AdvancedCollectorContainer,AdvancedCollectorScreen>)(container, inventory, title) -> new AdvancedCollectorScreen(container));
+    @SubscribeEvent
+    public static void registerModels(ModelRegistryEvent e){
+        ModelLoader.setCustomModelResourceLocation(Item.getItemFromBlock(ItemCollectors.basic_collector), 0, new ModelResourceLocation(ItemCollectors.basic_collector.getRegistryName(), "inventory"));
+        ModelLoader.setCustomModelResourceLocation(Item.getItemFromBlock(ItemCollectors.advanced_collector), 0, new ModelResourceLocation(ItemCollectors.advanced_collector.getRegistryName(), "inventory"));
     }
 
 }

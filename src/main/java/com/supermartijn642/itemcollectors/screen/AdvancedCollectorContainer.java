@@ -1,9 +1,8 @@
 package com.supermartijn642.itemcollectors.screen;
 
 import com.supermartijn642.itemcollectors.CollectorTile;
-import com.supermartijn642.itemcollectors.ItemCollectors;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.inventory.container.ClickType;
+import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.inventory.ClickType;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.math.BlockPos;
 import net.minecraftforge.items.ItemStackHandler;
@@ -16,23 +15,23 @@ import javax.annotation.Nonnull;
  */
 public class AdvancedCollectorContainer extends CollectorContainer {
 
-    public AdvancedCollectorContainer(int id, PlayerEntity player, BlockPos pos){
-        super(ItemCollectors.advanced_collector_container, id, player, pos, 202, 206, true);
+    public AdvancedCollectorContainer(EntityPlayer player, BlockPos pos){
+        super(player, pos, 202, 206, true);
     }
 
     @Override
     protected void addSlots(CollectorTile tile){
         for(int i = 0; i < 9; i++)
-            this.addSlot(new SlotItemHandler(this.itemHandler(), i, 8 + i * 18, 90) {
+            this.addSlotToContainer(new SlotItemHandler(this.itemHandler(), i, 8 + i * 18, 90) {
                 @Override
-                public boolean canTakeStack(PlayerEntity playerIn){
+                public boolean canTakeStack(EntityPlayer playerIn){
                     return false;
                 }
             });
     }
 
     @Override
-    public ItemStack slotClick(int slotId, int dragType, ClickType clickTypeIn, PlayerEntity player){
+    public ItemStack slotClick(int slotId, int dragType, ClickType clickTypeIn, EntityPlayer player){
         if(slotId >= 0 && slotId < 9){
             CollectorTile tile = this.getTileOrClose();
             if(tile != null){
@@ -50,7 +49,7 @@ public class AdvancedCollectorContainer extends CollectorContainer {
     }
 
     @Override
-    public ItemStack transferStackInSlot(PlayerEntity playerIn, int index){
+    public ItemStack transferStackInSlot(EntityPlayer playerIn, int index){
         if(index >= 0 && index < 9){
             CollectorTile tile = this.getTileOrClose();
             if(tile != null){

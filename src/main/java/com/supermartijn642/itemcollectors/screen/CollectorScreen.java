@@ -1,27 +1,35 @@
 package com.supermartijn642.itemcollectors.screen;
 
-import com.mojang.blaze3d.systems.RenderSystem;
 import com.supermartijn642.itemcollectors.CollectorTile;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.screen.inventory.ContainerScreen;
+import net.minecraft.client.gui.GuiButton;
+import net.minecraft.client.gui.inventory.GuiContainer;
+import net.minecraft.client.renderer.GlStateManager;
+import net.minecraft.client.resources.I18n;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.text.ITextComponent;
-import net.minecraft.util.text.TranslationTextComponent;
+import net.minecraft.util.text.TextComponentTranslation;
 
 /**
  * Created 7/15/2020 by SuperMartijn642
  */
-public abstract class CollectorScreen<T extends CollectorContainer> extends ContainerScreen<T> {
+public abstract class CollectorScreen<T extends CollectorContainer> extends GuiContainer {
+
+    protected final T container;
+    protected final String title;
 
     public CollectorScreen(T container, String title){
-        super(container, container.player.inventory, new TranslationTextComponent(title));
+        super(container);
+        this.container = container;
+        this.title = I18n.format(title + ".name");
+
         this.xSize = container.width;
         this.ySize = container.height;
     }
 
     @Override
-    protected void init(){
-        super.init();
+    public void initGui(){
+        super.initGui();
 
         CollectorTile tile = this.container.getTileOrClose();
         if(tile != null)
@@ -31,9 +39,9 @@ public abstract class CollectorScreen<T extends CollectorContainer> extends Cont
     protected abstract void addButtons(CollectorTile tile);
 
     @Override
-    public void render(int mouseX, int mouseY, float partialTicks){
-        this.renderBackground();
-        super.render(mouseX, mouseY, partialTicks);
+    public void drawScreen(int mouseX, int mouseY, float partialTicks){
+        this.drawDefaultBackground();
+        super.drawScreen(mouseX, mouseY, partialTicks);
         this.renderHoveredToolTip(mouseX, mouseY);
 
         CollectorTile tile = this.container.getTileOrClose();
@@ -44,12 +52,12 @@ public abstract class CollectorScreen<T extends CollectorContainer> extends Cont
     protected abstract void drawToolTips(CollectorTile tile, int mouseX, int mouseY);
 
     @Override
-    public void tick(){
+    public void updateScreen(){
         CollectorTile tile = this.container.getTileOrClose();
         if(tile == null)
             return;
 
-        super.tick();
+        super.updateScreen();
         this.tick(tile);
     }
 
@@ -59,9 +67,9 @@ public abstract class CollectorScreen<T extends CollectorContainer> extends Cont
 
     @Override
     protected void drawGuiContainerBackgroundLayer(float partialTicks, int mouseX, int mouseY){
-        RenderSystem.color4f(1.0F, 1.0F, 1.0F, 1.0F);
-        Minecraft.getInstance().getTextureManager().bindTexture(new ResourceLocation("itemcollectors", "textures/" + this.getBackground()));
-        this.blit(this.guiLeft, this.guiTop, 0, 0, this.xSize, this.ySize);
+        GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
+        Minecraft.getMinecraft().getTextureManager().bindTexture(new ResourceLocation("itemcollectors", "textures/" + this.getBackground()));
+        this.drawTexturedModalRect(this.guiLeft, this.guiTop, 0, 0, this.xSize, this.ySize);
 
         CollectorTile tile = this.container.getTileOrClose();
         if(tile != null)
@@ -70,23 +78,27 @@ public abstract class CollectorScreen<T extends CollectorContainer> extends Cont
 
     protected abstract void drawText(CollectorTile tile);
 
-    protected void drawCenteredString(ITextComponent text, float x, float y){
-        this.drawCenteredString(text.getFormattedText(), x, y);
+    public void drawCenteredString(String s, int x, int y){
+        this.fontRenderer.drawString(s, this.guiLeft + x - this.fontRenderer.getStringWidth(s) / 2, this.guiTop + y, 4210752);
     }
 
-    protected void drawCenteredString(String s, float x, float y){
-        this.font.drawString(s, this.guiLeft + x - this.font.getStringWidth(s) / 2f, this.guiTop + y, 4210752);
+    public void drawCenteredString(ITextComponent text, int x, int y){
+        String s = text.getFormattedText();
+        this.fontRenderer.drawString(s, this.guiLeft + x - this.fontRenderer.getStringWidth(s) / 2, this.guiTop + y, 4210752);
     }
 
-    protected void drawString(ITextComponent text, float x, float y){
-        this.drawString(text.getFormattedText(), x, y);
-    }
-
-    protected void drawString(String s, float x, float y){
-        this.font.drawString(s, this.guiLeft + x, this.guiTop + y, 4210752);
+    public void drawString(ITextComponent text, int x, int y){
+        String s = text.getFormattedText();
+        this.fontRenderer.drawString(s, this.guiLeft + x, this.guiTop + y, 4210752);
     }
 
     public void renderToolTip(boolean translate, String string, int x, int y){
-        super.renderTooltip(translate ? new TranslationTextComponent(string).getFormattedText() : string, x, y);
+        super.drawHoveringText(translate ? new TextComponentTranslation(string).getFormattedText() : string, x, y);
+    }
+
+    @Override
+    protected void actionPerformed(GuiButton button){
+        if(button instanceof Pressable)
+            ((Pressable)button).onPress();
     }
 }
