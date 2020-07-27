@@ -13,7 +13,8 @@
       "item": "itemcollectors:basic_collector"
     },
     "O": {
-      "item": "minecraft:obsidian"
+      "type": "forge:ore_dict",
+      "ore": "obsidian"
     }
   },
   "result": {
