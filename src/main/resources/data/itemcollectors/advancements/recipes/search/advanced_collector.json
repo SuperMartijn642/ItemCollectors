@@ -6,12 +6,12 @@
     ]
   },
   "criteria": {
-    "ender_eye": {
+    "basic_collector": {
       "trigger": "minecraft:inventory_changed",
       "conditions": {
         "items": [
           {
-            "item": "minecraft:ender_eye"
+            "item": "itemcollectors:basic_collector"
           }
         ]
       }
@@ -19,7 +19,7 @@
   },
   "requirements": [
     [
-      "ender_eye"
+      "basic_collector"
     ]
   ]
 }
