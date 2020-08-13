@@ -1,6 +1,6 @@
 {
-  "block.itemcollectors.basic_collector": "Coletor de Item Básico",
-  "block.itemcollectors.advanced_collector": "Coletor de Item Avançado",
+  "block.itemcollectors.basic_collector": "Coletor de Itens Básico",
+  "block.itemcollectors.advanced_collector": "Coletor de Itens Avançado",
   "gui.itemcollectors.basic_collector.range": "Alcance ($numberx$x$numbery$x$numberz$)",
   "gui.itemcollectors.basic_collector.range.increase": "Aumentar Alcance",
   "gui.itemcollectors.basic_collector.range.decrease": "Diminuir Alcance",
