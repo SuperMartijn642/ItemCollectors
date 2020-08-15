@@ -22,19 +22,19 @@ public class BasicCollectorScreen extends CollectorScreen<BasicCollectorContaine
 
     @Override
     protected void addButtons(CollectorTile tile){
-        this.upXButton = this.func_230480_a_(new ArrowButton(this.guiLeft + 40, this.guiTop + 37, false, () -> ItemCollectors.CHANNEL.sendToServer(new PacketIncreaseXRange(this.container.pos))));
-        this.downXButton = this.func_230480_a_(new ArrowButton(this.guiLeft + 40, this.guiTop + 63, true, () -> ItemCollectors.CHANNEL.sendToServer(new PacketDecreaseXRange(this.container.pos))));
-        this.upYButton = this.func_230480_a_(new ArrowButton(this.guiLeft + 93, this.guiTop + 37, false, () -> ItemCollectors.CHANNEL.sendToServer(new PacketIncreaseYRange(this.container.pos))));
-        this.downYButton = this.func_230480_a_(new ArrowButton(this.guiLeft + 93, this.guiTop + 63, true, () -> ItemCollectors.CHANNEL.sendToServer(new PacketDecreaseYRange(this.container.pos))));
-        this.upZButton = this.func_230480_a_(new ArrowButton(this.guiLeft + 146, this.guiTop + 37, false, () -> ItemCollectors.CHANNEL.sendToServer(new PacketIncreaseZRange(this.container.pos))));
-        this.downZButton = this.func_230480_a_(new ArrowButton(this.guiLeft + 146, this.guiTop + 63, true, () -> ItemCollectors.CHANNEL.sendToServer(new PacketDecreaseZRange(this.container.pos))));
+        this.upXButton = this.addButton(new ArrowButton(this.guiLeft + 40, this.guiTop + 37, false, () -> ItemCollectors.CHANNEL.sendToServer(new PacketIncreaseXRange(this.container.pos))));
+        this.downXButton = this.addButton(new ArrowButton(this.guiLeft + 40, this.guiTop + 63, true, () -> ItemCollectors.CHANNEL.sendToServer(new PacketDecreaseXRange(this.container.pos))));
+        this.upYButton = this.addButton(new ArrowButton(this.guiLeft + 93, this.guiTop + 37, false, () -> ItemCollectors.CHANNEL.sendToServer(new PacketIncreaseYRange(this.container.pos))));
+        this.downYButton = this.addButton(new ArrowButton(this.guiLeft + 93, this.guiTop + 63, true, () -> ItemCollectors.CHANNEL.sendToServer(new PacketDecreaseYRange(this.container.pos))));
+        this.upZButton = this.addButton(new ArrowButton(this.guiLeft + 146, this.guiTop + 37, false, () -> ItemCollectors.CHANNEL.sendToServer(new PacketIncreaseZRange(this.container.pos))));
+        this.downZButton = this.addButton(new ArrowButton(this.guiLeft + 146, this.guiTop + 63, true, () -> ItemCollectors.CHANNEL.sendToServer(new PacketDecreaseZRange(this.container.pos))));
     }
 
     @Override
     protected void drawToolTips(MatrixStack matrixStack, CollectorTile tile, int mouseX, int mouseY){
-        if(this.upXButton.func_230449_g_() || this.upYButton.func_230449_g_() || this.upZButton.func_230449_g_())
+        if(this.upXButton.isHovered() || this.upYButton.isHovered() || this.upZButton.isHovered())
             this.renderToolTip(matrixStack, true, "gui.itemcollectors.basic_collector.range.increase", mouseX, mouseY);
-        if(this.downXButton.func_230449_g_() || this.downYButton.func_230449_g_() || this.downZButton.func_230449_g_())
+        if(this.downXButton.isHovered() || this.downYButton.isHovered() || this.downZButton.isHovered())
             this.renderToolTip(matrixStack, true, "gui.itemcollectors.basic_collector.range.decrease", mouseX, mouseY);
     }
 
@@ -49,7 +49,7 @@ public class BasicCollectorScreen extends CollectorScreen<BasicCollectorContaine
 
     @Override
     protected void drawText(MatrixStack matrixStack, CollectorTile tile){
-        this.drawCenteredString(matrixStack, this.field_230704_d_, this.xSize / 2f, 6);
+        this.drawCenteredString(matrixStack, this.title, this.xSize / 2f, 6);
         String range = I18n.format("gui.itemcollectors.basic_collector.range")
             .replace("$numberx$", "" + (tile.rangeX * 2 + 1))
             .replace("$numbery$", "" + (tile.rangeY * 2 + 1))

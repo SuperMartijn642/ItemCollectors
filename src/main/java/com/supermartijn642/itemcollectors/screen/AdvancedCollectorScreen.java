@@ -24,23 +24,23 @@ public class AdvancedCollectorScreen extends CollectorScreen<AdvancedCollectorCo
 
     @Override
     protected void addButtons(CollectorTile tile){
-        this.upXButton = this.func_230480_a_(new ArrowButton(this.guiLeft + 40, this.guiTop + 37, false, () -> ItemCollectors.CHANNEL.sendToServer(new PacketIncreaseXRange(this.container.pos))));
-        this.downXButton = this.func_230480_a_(new ArrowButton(this.guiLeft + 40, this.guiTop + 63, true, () -> ItemCollectors.CHANNEL.sendToServer(new PacketDecreaseXRange(this.container.pos))));
-        this.upYButton = this.func_230480_a_(new ArrowButton(this.guiLeft + 93, this.guiTop + 37, false, () -> ItemCollectors.CHANNEL.sendToServer(new PacketIncreaseYRange(this.container.pos))));
-        this.downYButton = this.func_230480_a_(new ArrowButton(this.guiLeft + 93, this.guiTop + 63, true, () -> ItemCollectors.CHANNEL.sendToServer(new PacketDecreaseYRange(this.container.pos))));
-        this.upZButton = this.func_230480_a_(new ArrowButton(this.guiLeft + 146, this.guiTop + 37, false, () -> ItemCollectors.CHANNEL.sendToServer(new PacketIncreaseZRange(this.container.pos))));
-        this.downZButton = this.func_230480_a_(new ArrowButton(this.guiLeft + 146, this.guiTop + 63, true, () -> ItemCollectors.CHANNEL.sendToServer(new PacketDecreaseZRange(this.container.pos))));
-        this.whitelistButton = this.func_230480_a_(new WhitelistButton(this.guiLeft + 175, this.guiTop + 88, () -> ItemCollectors.CHANNEL.sendToServer(new PacketToggleWhitelist(this.container.pos))));
+        this.upXButton = this.addButton(new ArrowButton(this.guiLeft + 40, this.guiTop + 37, false, () -> ItemCollectors.CHANNEL.sendToServer(new PacketIncreaseXRange(this.container.pos))));
+        this.downXButton = this.addButton(new ArrowButton(this.guiLeft + 40, this.guiTop + 63, true, () -> ItemCollectors.CHANNEL.sendToServer(new PacketDecreaseXRange(this.container.pos))));
+        this.upYButton = this.addButton(new ArrowButton(this.guiLeft + 93, this.guiTop + 37, false, () -> ItemCollectors.CHANNEL.sendToServer(new PacketIncreaseYRange(this.container.pos))));
+        this.downYButton = this.addButton(new ArrowButton(this.guiLeft + 93, this.guiTop + 63, true, () -> ItemCollectors.CHANNEL.sendToServer(new PacketDecreaseYRange(this.container.pos))));
+        this.upZButton = this.addButton(new ArrowButton(this.guiLeft + 146, this.guiTop + 37, false, () -> ItemCollectors.CHANNEL.sendToServer(new PacketIncreaseZRange(this.container.pos))));
+        this.downZButton = this.addButton(new ArrowButton(this.guiLeft + 146, this.guiTop + 63, true, () -> ItemCollectors.CHANNEL.sendToServer(new PacketDecreaseZRange(this.container.pos))));
+        this.whitelistButton = this.addButton(new WhitelistButton(this.guiLeft + 175, this.guiTop + 88, () -> ItemCollectors.CHANNEL.sendToServer(new PacketToggleWhitelist(this.container.pos))));
         this.whitelistButton.update(tile.filterWhitelist);
     }
 
     @Override
     protected void drawToolTips(MatrixStack matrixStack, CollectorTile tile, int mouseX, int mouseY){
-        if(this.upXButton.func_230449_g_() || this.upYButton.func_230449_g_() || this.upZButton.func_230449_g_())
+        if(this.upXButton.isHovered() || this.upYButton.isHovered() || this.upZButton.isHovered())
             this.renderToolTip(matrixStack, true, "gui.itemcollectors.basic_collector.range.increase", mouseX, mouseY);
-        if(this.downXButton.func_230449_g_() || this.downYButton.func_230449_g_() || this.downZButton.func_230449_g_())
+        if(this.downXButton.isHovered() || this.downYButton.isHovered() || this.downZButton.isHovered())
             this.renderToolTip(matrixStack, true, "gui.itemcollectors.basic_collector.range.decrease", mouseX, mouseY);
-        if(this.whitelistButton.func_230449_g_())
+        if(this.whitelistButton.isHovered())
             this.renderToolTip(matrixStack, true, "gui.itemcollectors.advanced_collector.whitelist.on", mouseX, mouseY);
     }
 
@@ -56,7 +56,7 @@ public class AdvancedCollectorScreen extends CollectorScreen<AdvancedCollectorCo
 
     @Override
     protected void drawText(MatrixStack matrixStack, CollectorTile tile){
-        this.drawCenteredString(matrixStack, this.field_230704_d_, this.xSize / 2f, 6);
+        this.drawCenteredString(matrixStack, this.title, this.xSize / 2f, 6);
         this.drawString(matrixStack, this.playerInventory.getDisplayName(), 21, 112);
 
         String range = I18n.format("gui.itemcollectors.basic_collector.range")
