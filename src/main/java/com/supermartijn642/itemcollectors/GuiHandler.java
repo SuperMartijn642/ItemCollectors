@@ -31,7 +31,7 @@ public class GuiHandler implements IGuiHandler {
     public Object getClientGuiElement(int ID, EntityPlayer player, World world, int x, int y, int z){
         BlockPos pos = new BlockPos(x, y, z);
         if(ID == 0)
-            return new BasicCollectorScreen(new BasicCollectorContainer(player,pos));
+            return new BasicCollectorScreen(new BasicCollectorContainer(player, pos));
         if(ID == 1)
             return new AdvancedCollectorScreen(new AdvancedCollectorContainer(player, pos));
         return null;
