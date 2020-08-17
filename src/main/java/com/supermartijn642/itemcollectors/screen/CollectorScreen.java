@@ -73,11 +73,11 @@ public abstract class CollectorScreen<T extends CollectorContainer> extends Cont
     protected abstract void drawText(MatrixStack matrixStack, CollectorTile tile);
 
     public void drawCenteredString(MatrixStack matrixStack, ITextComponent text, float x, float y){
-        this.font.func_243248_b(matrixStack, text, this.guiLeft + x - this.font.func_238414_a_(text) / 2f, this.guiTop + y, 4210752);
+        this.font.func_238422_b_(matrixStack, text, this.guiLeft + x - this.font.func_238414_a_(text) / 2f, this.guiTop + y, 4210752);
     }
 
     public void drawString(MatrixStack matrixStack, ITextComponent text, float x, float y){
-        this.font.func_243248_b(matrixStack, text, this.guiLeft + x, this.guiTop + y, 4210752);
+        this.font.func_238422_b_(matrixStack, text, this.guiLeft + x, this.guiTop + y, 4210752);
     }
 
     public void renderToolTip(MatrixStack matrixStack, boolean translate, String string, int x, int y){
