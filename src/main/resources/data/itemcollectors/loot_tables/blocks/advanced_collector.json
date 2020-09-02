@@ -6,7 +6,7 @@
       "entries": [
         {
           "type": "minecraft:item",
-          "name": "itemcollectors:basic_collector"
+          "name": "itemcollectors:advanced_collector"
         }
       ]
     }
