@@ -61,7 +61,7 @@ public class CollectorBlock extends Block {
     public CollectorBlock(String registryName, Supplier<CollectorTile> tileSupplier, int guiId){
         super(Material.ROCK, MapColor.BLACK);
         this.setRegistryName(registryName);
-        this.setUnlocalizedName(ItemCollectors.MODID + ":" + registryName);
+        this.setUnlocalizedName(ItemCollectors.MODID + "." + registryName);
         this.tileSupplier = tileSupplier;
         this.guiId = guiId;
 
