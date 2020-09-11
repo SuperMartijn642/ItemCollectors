@@ -73,6 +73,8 @@ public class CollectorTile extends TileEntity implements ITickable {
             AxisAlignedBB area = new AxisAlignedBB(this.pos.add(-this.rangeX, -this.rangeY, -this.rangeZ), this.pos.add(this.rangeX + 1, this.rangeY + 1, this.rangeZ + 1));
 
             List<EntityItem> items = this.world.getEntitiesWithinAABB(EntityItem.class, area, item -> {
+                if(item.getEntityData().hasKey("PreventRemoteMovement") && !item.getEntityData().hasKey("AllowMachineRemoteMovement"))
+                    return false;
                 if(!this.hasFilter)
                     return true;
                 ItemStack stack = item.getItem();
