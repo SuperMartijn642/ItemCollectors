@@ -1,0 +1,10 @@
+{
+  "block.itemcollectors.basic_collector": "Базовый предметный колектор",
+  "block.itemcollectors.advanced_collector": "Улучшеный предметный колектор",
+  "gui.itemcollectors.basic_collector.range": "Ассортимент ($numberx$x$numbery$x$numberz$)",
+  "gui.itemcollectors.basic_collector.range.increase": "Увеличение ассортимента",
+  "gui.itemcollectors.basic_collector.range.decrease": "Уменшить ассортимент",
+  "gui.itemcollectors.advanced_collector.whitelist.on": "Белый лист",
+  "gui.itemcollectors.advanced_collector.whitelist.off": "Черный лист",
+  "gui.itemcollectors.advanced_collector.filter": "Фильтр"
+}
