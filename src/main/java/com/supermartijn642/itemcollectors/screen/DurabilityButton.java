@@ -13,7 +13,7 @@ import net.minecraft.util.ResourceLocation;
  */
 public class DurabilityButton extends GuiButton implements Pressable {
 
-    private final ResourceLocation BUTTONS = new ResourceLocation("itemcollectors", "textures/durability_buttonpng");
+    private final ResourceLocation BUTTONS = new ResourceLocation("itemcollectors", "textures/durability_button.png");
 
     public boolean on = true;
     private final Runnable onPress;
