@@ -1,6 +1,8 @@
 {
   "block.itemcollectors.basic_collector": "Basic Item Collector",
   "block.itemcollectors.advanced_collector": "Advanced Item Collector",
+  "itemcollectors.basic_collector.info": "Can pick up items up to %d blocks away",
+  "itemcollectors.advanced_collector.info": "Can pick up items up to %d blocks away, items can be filtered",
   "gui.itemcollectors.basic_collector.range": "Range ($numberx$x$numbery$x$numberz$)",
   "gui.itemcollectors.basic_collector.range.increase": "Increase Range",
   "gui.itemcollectors.basic_collector.range.decrease": "Decrease Range",
