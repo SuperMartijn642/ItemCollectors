@@ -66,8 +66,8 @@ public class ItemCollectors {
     public static class RegistryEvents {
         @SubscribeEvent
         public static void onBlockRegistry(final RegistryEvent.Register<Block> e){
-            e.getRegistry().register(new CollectorBlock("basic_collector", CollectorTile::basicTile, BasicCollectorContainer::new));
-            e.getRegistry().register(new CollectorBlock("advanced_collector", CollectorTile::advancedTile, AdvancedCollectorContainer::new));
+            e.getRegistry().register(new CollectorBlock("basic_collector", CollectorTile::basicTile, CollectorTile.BASIC_MAX_RANGE, BasicCollectorContainer::new));
+            e.getRegistry().register(new CollectorBlock("advanced_collector", CollectorTile::advancedTile, CollectorTile.ADVANCED_MAX_RANGE, AdvancedCollectorContainer::new));
         }
 
         @SubscribeEvent
