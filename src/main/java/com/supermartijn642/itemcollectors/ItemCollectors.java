@@ -58,8 +58,8 @@ public class ItemCollectors {
     public static class RegistryEvents {
         @SubscribeEvent
         public static void onBlockRegistry(final RegistryEvent.Register<Block> e){
-            e.getRegistry().register(new CollectorBlock("basic_collector", CollectorTile::basicTile, 0));
-            e.getRegistry().register(new CollectorBlock("advanced_collector", CollectorTile::advancedTile, 1));
+            e.getRegistry().register(new CollectorBlock("basic_collector", CollectorTile::basicTile, CollectorTile.BASIC_MAX_RANGE, 0));
+            e.getRegistry().register(new CollectorBlock("advanced_collector", CollectorTile::advancedTile, CollectorTile.ADVANCED_MAX_RANGE, 1));
             GameRegistry.registerTileEntity(CollectorTile.BasicCollectorTile.class, new ResourceLocation(MODID, "basic_collector_tile"));
             GameRegistry.registerTileEntity(CollectorTile.AdvancedCollectorTile.class, new ResourceLocation(MODID, "advanced_collector_tile"));
         }

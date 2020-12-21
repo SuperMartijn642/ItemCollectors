@@ -7,15 +7,20 @@ import net.minecraft.block.material.MapColor;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.state.BlockFaceShape;
 import net.minecraft.block.state.IBlockState;
+import net.minecraft.client.util.ITooltipFlag;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.BlockRenderLayer;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.EnumHand;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.text.Style;
+import net.minecraft.util.text.TextComponentTranslation;
+import net.minecraft.util.text.TextFormatting;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
 import net.minecraftforge.fml.relauncher.Side;
@@ -56,13 +61,15 @@ public class CollectorBlock extends Block {
     }
 
     private final Supplier<CollectorTile> tileSupplier;
+    private final int maxRange;
     private final int guiId;
 
-    public CollectorBlock(String registryName, Supplier<CollectorTile> tileSupplier, int guiId){
+    public CollectorBlock(String registryName, Supplier<CollectorTile> tileSupplier, int maxRange, int guiId){
         super(Material.ROCK, MapColor.BLACK);
         this.setRegistryName(registryName);
         this.setUnlocalizedName(ItemCollectors.MODID + "." + registryName);
         this.tileSupplier = tileSupplier;
+        this.maxRange = maxRange;
         this.guiId = guiId;
 
         this.setCreativeTab(CreativeTabs.SEARCH);
@@ -84,10 +91,7 @@ public class CollectorBlock extends Block {
     @Nonnull
     @SideOnly(Side.CLIENT)
     public AxisAlignedBB getBoundingBox(IBlockState state, IBlockAccess source, BlockPos pos){
-        AxisAlignedBB shape = SHAPES.get(0);
-        for(int i = 1; i < SHAPES.size(); i++)
-            shape = shape.union(SHAPES.get(i));
-        return shape;
+        return SHAPE;
     }
 
     @Override
@@ -126,5 +130,11 @@ public class CollectorBlock extends Block {
     @Override
     public boolean isOpaqueCube(IBlockState state){
         return false;
+    }
+
+    @Override
+    public void addInformation(ItemStack stack, World player, List<String> tooltip, ITooltipFlag advanced){
+        tooltip.add(new TextComponentTranslation("itemcollectors." + this.getRegistryName().getResourcePath() + ".info", this.maxRange).setStyle(new Style().setColor(TextFormatting.AQUA)).getFormattedText());
+        super.addInformation(stack, player, tooltip, advanced);
     }
 }
