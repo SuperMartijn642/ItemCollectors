@@ -6,5 +6,7 @@
   "gui.itemcollectors.basic_collector.range.decrease": "Decrease Range",
   "gui.itemcollectors.advanced_collector.whitelist.on": "Whitelist",
   "gui.itemcollectors.advanced_collector.whitelist.off": "Blacklist",
+  "gui.itemcollectors.advanced_collector.durability.on": "Match NBT",
+  "gui.itemcollectors.advanced_collector.durability.off": "Ignore NBT",
   "gui.itemcollectors.advanced_collector.filter": "Filter"
 }

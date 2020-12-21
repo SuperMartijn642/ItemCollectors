@@ -43,6 +43,7 @@ public class CollectorTile extends TileEntity implements ITickableTileEntity {
     public int rangeX, rangeY, rangeZ;
     public final List<ItemStack> filter = new ArrayList<>(9);
     public boolean filterWhitelist;
+    public boolean filterDurability = true;
     private boolean dataChanged;
 
     public CollectorTile(TileEntityType<CollectorTile> tileEntityType, int maxRange, int range, boolean hasFilter){
@@ -73,7 +74,8 @@ public class CollectorTile extends TileEntity implements ITickableTileEntity {
                     return false;
                 for(int i = 0; i < 9; i++){
                     ItemStack filter = this.filter.get(i);
-                    if(ItemStack.areItemsEqual(filter, stack) && ItemStack.areItemStackTagsEqual(filter, stack))
+                    if(ItemStack.areItemsEqual(filter, stack) &&
+                        (!this.filterDurability || ItemStack.areItemStackTagsEqual(filter, stack)))
                         return this.filterWhitelist;
                 }
                 return !this.filterWhitelist;
@@ -104,21 +106,21 @@ public class CollectorTile extends TileEntity implements ITickableTileEntity {
 
     public void setRangeX(int range){
         int old = this.rangeX;
-        this.rangeX = Math.min(Math.max(range,MIN_RANGE),this.maxRange);
+        this.rangeX = Math.min(Math.max(range, MIN_RANGE), this.maxRange);
         if(this.rangeX != old)
             this.dataChanged();
     }
 
     public void setRangeY(int range){
         int old = this.rangeY;
-        this.rangeY = Math.min(Math.max(range,MIN_RANGE),this.maxRange);
+        this.rangeY = Math.min(Math.max(range, MIN_RANGE), this.maxRange);
         if(this.rangeY != old)
             this.dataChanged();
     }
 
     public void setRangeZ(int range){
         int old = this.rangeZ;
-        this.rangeZ = Math.min(Math.max(range,MIN_RANGE),this.maxRange);
+        this.rangeZ = Math.min(Math.max(range, MIN_RANGE), this.maxRange);
         if(this.rangeZ != old)
             this.dataChanged();
     }
@@ -145,6 +147,7 @@ public class CollectorTile extends TileEntity implements ITickableTileEntity {
                     tag.put("filter" + i, this.filter.get(i).write(new CompoundNBT()));
             }
             tag.putBoolean("filterWhitelist", this.filterWhitelist);
+            tag.putBoolean("filterDurability", this.filterDurability);
         }
         return tag;
     }
@@ -160,6 +163,7 @@ public class CollectorTile extends TileEntity implements ITickableTileEntity {
             for(int i = 0; i < 9; i++)
                 this.filter.set(i, tag.contains("filter" + i) ? ItemStack.read(tag.getCompound("filter" + i)) : ItemStack.EMPTY);
             this.filterWhitelist = tag.contains("filterWhitelist") && tag.getBoolean("filterWhitelist");
+            this.filterDurability = tag.contains("filterDurability") && tag.getBoolean("filterDurability");
         }
     }
 
