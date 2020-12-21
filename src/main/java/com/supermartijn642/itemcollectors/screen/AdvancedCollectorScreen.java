@@ -63,7 +63,7 @@ public class AdvancedCollectorScreen extends CollectorScreen<AdvancedCollectorCo
     @Override
     protected void drawText(MatrixStack matrixStack, CollectorTile tile){
         this.drawCenteredString(matrixStack, this.title, this.xSize / 2f, 6);
-        this.drawString(matrixStack, this.playerInventory.getDisplayName(), 21, 112);
+        this.drawString(matrixStack, this.playerInventory.getDisplayName(), 32, 112);
 
         String range = I18n.format("gui.itemcollectors.basic_collector.range")
             .replace("$numberx$", "" + (tile.rangeX * 2 + 1))
