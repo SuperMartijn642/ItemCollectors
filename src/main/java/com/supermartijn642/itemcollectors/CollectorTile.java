@@ -25,8 +25,8 @@ import java.util.List;
 public class CollectorTile extends TileEntity implements ITickableTileEntity {
 
     private static final int MIN_RANGE = 1;
-    private static final int BASIC_MAX_RANGE = 5, BASIC_DEFAULT_RANGE = 3;
-    private static final int ADVANCED_MAX_RANGE = 7, ADVANCED_DEFAULT_RANGE = 5;
+    public static final int BASIC_MAX_RANGE = 5, BASIC_DEFAULT_RANGE = 3;
+    public static final int ADVANCED_MAX_RANGE = 7, ADVANCED_DEFAULT_RANGE = 5;
 
     public static CollectorTile basicTile(){
         return new CollectorTile(ItemCollectors.basic_collector_tile, BASIC_MAX_RANGE, BASIC_DEFAULT_RANGE, false);
