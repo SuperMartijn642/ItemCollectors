@@ -55,6 +55,7 @@ public class ItemCollectors {
         CHANNEL.registerMessage(4, PacketIncreaseZRange.class, PacketIncreaseZRange::encode, PacketIncreaseZRange::decode, PacketIncreaseZRange::handle);
         CHANNEL.registerMessage(5, PacketDecreaseZRange.class, PacketDecreaseZRange::encode, PacketDecreaseZRange::decode, PacketDecreaseZRange::handle);
         CHANNEL.registerMessage(6, PacketToggleWhitelist.class, PacketToggleWhitelist::encode, PacketToggleWhitelist::decode, PacketToggleWhitelist::handle);
+        CHANNEL.registerMessage(7, PacketToggleDurability.class, PacketToggleDurability::encode, PacketToggleDurability::decode, PacketToggleDurability::handle);
     }
 
     public void init(FMLCommonSetupEvent e){
