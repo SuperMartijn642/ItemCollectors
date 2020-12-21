@@ -45,8 +45,8 @@ public class ItemCollectors {
         channel.registerMessage(PacketDecreaseYRange.class, PacketDecreaseYRange.class, 3, Side.SERVER);
         channel.registerMessage(PacketIncreaseZRange.class, PacketIncreaseZRange.class, 4, Side.SERVER);
         channel.registerMessage(PacketDecreaseZRange.class, PacketDecreaseZRange.class, 5, Side.SERVER);
-
         channel.registerMessage(PacketToggleWhitelist.class, PacketToggleWhitelist.class, 6, Side.SERVER);
+        channel.registerMessage(PacketToggleDurability.class, PacketToggleDurability.class, 7, Side.SERVER);
     }
 
     @Mod.EventHandler

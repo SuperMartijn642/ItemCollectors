@@ -53,6 +53,7 @@ public class CollectorTile extends TileEntity implements ITickable {
     public int rangeX, rangeY, rangeZ;
     public final List<ItemStack> filter = new ArrayList<>(9);
     public boolean filterWhitelist;
+    public boolean filterDurability = true;
     private boolean dataChanged;
 
     public CollectorTile(int maxRange, int range, boolean hasFilter){
@@ -82,7 +83,8 @@ public class CollectorTile extends TileEntity implements ITickable {
                     return false;
                 for(int i = 0; i < 9; i++){
                     ItemStack filter = this.filter.get(i);
-                    if(ItemStack.areItemsEqual(filter, stack) && ItemStack.areItemStackTagsEqual(filter, stack))
+                    if((this.filterDurability ? ItemStack.areItemsEqual(filter, stack) : ItemStack.areItemsEqualIgnoreDurability(filter, stack)) &&
+                        ItemStack.areItemStackTagsEqual(filter, stack))
                         return this.filterWhitelist;
                 }
                 return !this.filterWhitelist;
@@ -155,6 +157,7 @@ public class CollectorTile extends TileEntity implements ITickable {
                     tag.setTag("filter" + i, this.filter.get(i).writeToNBT(new NBTTagCompound()));
             }
             tag.setBoolean("filterWhitelist", this.filterWhitelist);
+            tag.setBoolean("filterDurability", this.filterDurability);
         }
         return tag;
     }
@@ -170,6 +173,7 @@ public class CollectorTile extends TileEntity implements ITickable {
             for(int i = 0; i < 9; i++)
                 this.filter.set(i, tag.hasKey("filter" + i) ? new ItemStack(tag.getCompoundTag("filter" + i)) : ItemStack.EMPTY);
             this.filterWhitelist = tag.hasKey("filterWhitelist") && tag.getBoolean("filterWhitelist");
+            this.filterDurability = tag.hasKey("filterDurability") && tag.getBoolean("filterDurability");
         }
     }
 

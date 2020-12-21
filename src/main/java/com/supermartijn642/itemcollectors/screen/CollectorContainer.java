@@ -40,13 +40,13 @@ public abstract class CollectorContainer extends Container {
         // player
         for(int row = 0; row < 3; row++){
             for(int column = 0; column < 9; column++){
-                this.addSlotToContainer(new Slot(this.player.inventory, row * 9 + column + 9, 21 + 18 * column, this.height - 82 + 18 * row));
+                this.addSlotToContainer(new Slot(this.player.inventory, row * 9 + column + 9, 32 + 18 * column, this.height - 82 + 18 * row));
             }
         }
 
         // hot bar
         for(int column = 0; column < 9; column++)
-            this.addSlotToContainer(new Slot(this.player.inventory, column, 21 + 18 * column, this.height - 24));
+            this.addSlotToContainer(new Slot(this.player.inventory, column, 32 + 18 * column, this.height - 24));
     }
 
     @Override

@@ -16,7 +16,7 @@ import javax.annotation.Nonnull;
 public class AdvancedCollectorContainer extends CollectorContainer {
 
     public AdvancedCollectorContainer(EntityPlayer player, BlockPos pos){
-        super(player, pos, 202, 206, true);
+        super(player, pos, 224, 206, true);
     }
 
     @Override

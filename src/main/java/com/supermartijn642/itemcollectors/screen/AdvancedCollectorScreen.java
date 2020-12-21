@@ -16,6 +16,7 @@ public class AdvancedCollectorScreen extends CollectorScreen<AdvancedCollectorCo
     private ArrowButton upYButton, downYButton;
     private ArrowButton upZButton, downZButton;
     private WhitelistButton whitelistButton;
+    private DurabilityButton durabilityButton;
 
     public AdvancedCollectorScreen(AdvancedCollectorContainer container){
         super(container, ItemCollectors.advanced_collector.getUnlocalizedName());
@@ -31,6 +32,8 @@ public class AdvancedCollectorScreen extends CollectorScreen<AdvancedCollectorCo
         this.downZButton = this.addButton(new ArrowButton(5, this.guiLeft + 146, this.guiTop + 63, true, () -> ItemCollectors.channel.sendToServer(new PacketDecreaseZRange(this.container.pos))));
         this.whitelistButton = this.addButton(new WhitelistButton(6, this.guiLeft + 175, this.guiTop + 88, () -> ItemCollectors.channel.sendToServer(new PacketToggleWhitelist(this.container.pos))));
         this.whitelistButton.update(tile.filterWhitelist);
+        this.durabilityButton = this.addButton(new DurabilityButton(7, this.guiLeft + 197, this.guiTop + 88, () -> ItemCollectors.channel.sendToServer(new PacketToggleDurability(this.container.pos))));
+        this.durabilityButton.update(tile.filterDurability);
     }
 
     @Override
@@ -40,12 +43,15 @@ public class AdvancedCollectorScreen extends CollectorScreen<AdvancedCollectorCo
         if(this.downXButton.isMouseOver() || this.downYButton.isMouseOver() || this.downZButton.isMouseOver())
             this.renderToolTip(true, "gui.itemcollectors.basic_collector.range.decrease", mouseX, mouseY);
         if(this.whitelistButton.isMouseOver())
-            this.renderToolTip(true, "gui.itemcollectors.advanced_collector.whitelist.on", mouseX, mouseY);
+            this.renderToolTip(true, "gui.itemcollectors.advanced_collector.whitelist." + (tile.filterWhitelist ? "on" : "off"), mouseX, mouseY);
+        if(this.durabilityButton.isMouseOver())
+            this.renderToolTip(true, "gui.itemcollectors.advanced_collector.durability." + (tile.filterDurability ? "on" : "off"), mouseX, mouseY);
     }
 
     @Override
     protected void tick(CollectorTile tile){
         this.whitelistButton.update(tile.filterWhitelist);
+        this.durabilityButton.update(tile.filterDurability);
     }
 
     @Override
@@ -56,7 +62,7 @@ public class AdvancedCollectorScreen extends CollectorScreen<AdvancedCollectorCo
     @Override
     protected void drawText(CollectorTile tile){
         this.drawCenteredString(this.title, this.xSize / 2, 6);
-        this.drawString(this.container.player.inventory.getDisplayName(), 21, 112);
+        this.drawString(this.container.player.inventory.getDisplayName(), 32, 112);
 
         String range = I18n.format("gui.itemcollectors.basic_collector.range")
             .replace("$numberx$", "" + (tile.rangeX * 2 + 1))
