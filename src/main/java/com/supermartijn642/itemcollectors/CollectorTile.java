@@ -1,7 +1,6 @@
 package com.supermartijn642.itemcollectors;
 
 import net.minecraft.entity.Entity;
-import net.minecraft.entity.EntityType;
 import net.minecraft.entity.item.ItemEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompoundNBT;
@@ -64,7 +63,7 @@ public class CollectorTile extends TileEntity implements ITickableTileEntity {
             AxisAlignedBB area = new AxisAlignedBB(this.pos.add(-this.rangeX, -this.rangeY, -this.rangeZ), this.pos.add(this.rangeX + 1, this.rangeY + 1, this.rangeZ + 1));
 
             List<Entity> items = this.world.getEntitiesWithinAABB(ItemEntity.class, area, item -> {
-                if(!(item instanceof ItemEntity) ||
+                if(!(item instanceof ItemEntity) || !item.isAlive() ||
                     (item.getPersistentData().contains("PreventRemoteMovement") && !item.getPersistentData().contains("AllowMachineRemoteMovement")))
                     return false;
                 if(!this.hasFilter)
@@ -83,12 +82,13 @@ public class CollectorTile extends TileEntity implements ITickableTileEntity {
 
             loop:
             for(Entity entity : items){
-                ItemStack stack = ((ItemEntity)entity).getItem();
+                ItemStack stack = ((ItemEntity)entity).getItem().copy();
                 for(int slot = 0; slot < itemHandler.getSlots(); slot++)
                     if(itemHandler.isItemValid(slot, stack)){
                         stack = itemHandler.insertItem(slot, stack, false);
                         if(stack.isEmpty()){
                             ((ItemEntity)entity).setItem(ItemStack.EMPTY);
+                            entity.remove();
                             continue loop;
                         }
                     }
