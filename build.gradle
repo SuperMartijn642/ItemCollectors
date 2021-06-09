@@ -3,14 +3,17 @@ buildscript {
         maven { url = 'https://files.minecraftforge.net/maven' }
         jcenter()
         mavenCentral()
+        maven { url = 'https://plugins.gradle.org/m2'}
     }
     dependencies {
         classpath group: 'net.minecraftforge.gradle', name: 'ForgeGradle', version: '3.+', changing: true
+        classpath group: 'com.wynprice.cursemaven', name: 'CurseMaven', version: '2.1.4'
     }
 }
 apply plugin: 'net.minecraftforge.gradle'
 // Only edit below this line, the above code adds and enables the necessary things for Forge to be setup.
 apply plugin: 'eclipse'
+apply plugin: 'com.wynprice.cursemaven'
 
 version = '1.0.11-mc1.15'
 group = 'com.supermartijn642.itemcollectors' // http://maven.apache.org/guides/mini/guide-naming-conventions.html
@@ -66,28 +69,11 @@ minecraft {
     }
 }
 
-repositories {
-    maven {
-        // location of the maven that hosts JEI files
-        name = "Progwml6 maven"
-        url = "https://dvs1.progwml6.com/files/maven/"
-    }
-    maven {
-        // location of a maven mirror for JEI files, as a fallback
-        name = "ModMaven"
-        url = "https://modmaven.k-4u.nl"
-    }
-    maven {
-        name = "Curios Maven"
-        url = "https://maven.theillusivec4.top/"
-    }
-}
-
 dependencies {
     minecraft 'net.minecraftforge:forge:1.15.2-31.1.1'
 
-    // compile against the JEI API but do not include it at runtime
-    compileOnly fg.deobf("mezz.jei:jei-1.15.2:6.0.0.2:api")
-    // at runtime, use the full JEI jar
-    runtimeOnly fg.deobf("mezz.jei:jei-1.15.2:6.0.0.2")
+    // Core lib
+    compile fg.deobf('curse.maven:supermartijn642s-core-lib:3336257')
+    // Config lib
+    compile fg.deobf('curse.maven:supermartijn642s-config-lib:3344079')
 }

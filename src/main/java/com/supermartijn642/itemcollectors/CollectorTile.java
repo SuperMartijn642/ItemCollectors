@@ -1,10 +1,9 @@
 package com.supermartijn642.itemcollectors;
 
+import com.supermartijn642.core.block.BaseTileEntity;
 import net.minecraft.entity.item.ItemEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.network.NetworkManager;
-import net.minecraft.network.play.server.SUpdateTileEntityPacket;
 import net.minecraft.tileentity.ITickableTileEntity;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.tileentity.TileEntityType;
@@ -14,40 +13,37 @@ import net.minecraftforge.common.util.LazyOptional;
 import net.minecraftforge.items.CapabilityItemHandler;
 import net.minecraftforge.items.IItemHandler;
 
-import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.Supplier;
 
 /**
  * Created 7/15/2020 by SuperMartijn642
  */
-public class CollectorTile extends TileEntity implements ITickableTileEntity {
+public class CollectorTile extends BaseTileEntity implements ITickableTileEntity {
 
     private static final int MIN_RANGE = 1;
-    public static final int BASIC_MAX_RANGE = 5, BASIC_DEFAULT_RANGE = 3;
-    public static final int ADVANCED_MAX_RANGE = 7, ADVANCED_DEFAULT_RANGE = 5;
 
     public static CollectorTile basicTile(){
-        return new CollectorTile(ItemCollectors.basic_collector_tile, BASIC_MAX_RANGE, BASIC_DEFAULT_RANGE, false);
+        return new CollectorTile(ItemCollectors.basic_collector_tile, ItemCollectorsConfig.basicCollectorMaxRange, ItemCollectorsConfig.basicCollectorFilter);
     }
 
     public static CollectorTile advancedTile(){
-        return new CollectorTile(ItemCollectors.advanced_collector_tile, ADVANCED_MAX_RANGE, ADVANCED_DEFAULT_RANGE, true);
+        return new CollectorTile(ItemCollectors.advanced_collector_tile, ItemCollectorsConfig.advancedCollectorMaxRange, ItemCollectorsConfig.advancedCollectorFilter);
     }
 
-    private final int maxRange;
-    private final boolean hasFilter;
+    private final Supplier<Integer> maxRange;
+    private final Supplier<Boolean> hasFilter;
 
     public int rangeX, rangeY, rangeZ;
     public final List<ItemStack> filter = new ArrayList<>(9);
     public boolean filterWhitelist;
     public boolean filterDurability = true;
-    private boolean dataChanged;
 
-    public CollectorTile(TileEntityType<CollectorTile> tileEntityType, int maxRange, int range, boolean hasFilter){
+    public CollectorTile(TileEntityType<CollectorTile> tileEntityType, Supplier<Integer> maxRange, Supplier<Boolean> hasFilter){
         super(tileEntityType);
         this.maxRange = maxRange;
-        this.rangeX = this.rangeY = this.rangeZ = range;
+        this.rangeX = this.rangeY = this.rangeZ = (int)Math.ceil(maxRange.get() / 2f);
         this.hasFilter = hasFilter;
         for(int i = 0; i < 9; i++)
             this.filter.add(ItemStack.EMPTY);
@@ -64,7 +60,7 @@ public class CollectorTile extends TileEntity implements ITickableTileEntity {
             List<ItemEntity> items = this.world.getEntitiesWithinAABB(ItemEntity.class, area, item -> {
                 if(!item.isAlive() || (item.getPersistentData().contains("PreventRemoteMovement") && !item.getPersistentData().contains("AllowMachineRemoteMovement")))
                     return false;
-                if(!this.hasFilter)
+                if(!this.hasFilter.get())
                     return true;
                 ItemStack stack = item.getItem();
                 if(stack.isEmpty())
@@ -104,97 +100,51 @@ public class CollectorTile extends TileEntity implements ITickableTileEntity {
 
     public void setRangeX(int range){
         int old = this.rangeX;
-        this.rangeX = Math.min(Math.max(range, MIN_RANGE), this.maxRange);
+        this.rangeX = Math.min(Math.max(range, MIN_RANGE), this.maxRange.get());
         if(this.rangeX != old)
             this.dataChanged();
     }
 
     public void setRangeY(int range){
         int old = this.rangeY;
-        this.rangeY = Math.min(Math.max(range, MIN_RANGE), this.maxRange);
+        this.rangeY = Math.min(Math.max(range, MIN_RANGE), this.maxRange.get());
         if(this.rangeY != old)
             this.dataChanged();
     }
 
     public void setRangeZ(int range){
         int old = this.rangeZ;
-        this.rangeZ = Math.min(Math.max(range, MIN_RANGE), this.maxRange);
+        this.rangeZ = Math.min(Math.max(range, MIN_RANGE), this.maxRange.get());
         if(this.rangeZ != old)
             this.dataChanged();
     }
 
-    public void dataChanged(){
-        if(!this.world.isRemote){
-            this.dataChanged = true;
-            this.world.notifyBlockUpdate(this.pos, this.getBlockState(), this.getBlockState(), 2);
-        }
-    }
-
-    private CompoundNBT getChangedData(){
-        return this.dataChanged ? this.getData() : null;
-    }
-
-    private CompoundNBT getData(){
+    @Override
+    protected CompoundNBT writeData(){
         CompoundNBT tag = new CompoundNBT();
         tag.putInt("rangeX", this.rangeX);
         tag.putInt("rangeY", this.rangeY);
         tag.putInt("rangeZ", this.rangeZ);
-        if(this.hasFilter){
-            for(int i = 0; i < 9; i++){
-                if(!this.filter.get(i).isEmpty())
-                    tag.put("filter" + i, this.filter.get(i).write(new CompoundNBT()));
-            }
-            tag.putBoolean("filterWhitelist", this.filterWhitelist);
-            tag.putBoolean("filterDurability", this.filterDurability);
+        for(int i = 0; i < 9; i++){
+            if(!this.filter.get(i).isEmpty())
+                tag.put("filter" + i, this.filter.get(i).write(new CompoundNBT()));
         }
+        tag.putBoolean("filterWhitelist", this.filterWhitelist);
+        tag.putBoolean("filterDurability", this.filterDurability);
         return tag;
     }
 
-    private void handleData(CompoundNBT tag){
+    @Override
+    protected void readData(CompoundNBT tag){
         if(tag.contains("rangeX"))
             this.rangeX = tag.getInt("rangeX");
         if(tag.contains("rangeY"))
             this.rangeY = tag.getInt("rangeY");
         if(tag.contains("rangeZ"))
             this.rangeZ = tag.getInt("rangeZ");
-        if(this.hasFilter){
-            for(int i = 0; i < 9; i++)
-                this.filter.set(i, tag.contains("filter" + i) ? ItemStack.read(tag.getCompound("filter" + i)) : ItemStack.EMPTY);
-            this.filterWhitelist = tag.contains("filterWhitelist") && tag.getBoolean("filterWhitelist");
-            this.filterDurability = tag.contains("filterDurability") && tag.getBoolean("filterDurability");
-        }
-    }
-
-    @Override
-    public CompoundNBT write(CompoundNBT compound){
-        super.write(compound);
-        compound.put("data", this.getData());
-        return compound;
-    }
-
-    @Override
-    public void read(CompoundNBT compound){
-        super.read(compound);
-        if(compound.contains("data"))
-            this.handleData(compound.getCompound("data"));
-    }
-
-    @Nullable
-    @Override
-    public SUpdateTileEntityPacket getUpdatePacket(){
-        CompoundNBT tag = this.getChangedData();
-        return tag == null || tag.isEmpty() ? null : new SUpdateTileEntityPacket(this.pos, 0, tag);
-    }
-
-    @Override
-    public void onDataPacket(NetworkManager net, SUpdateTileEntityPacket pkt){
-        this.handleData(pkt.getNbtCompound());
-    }
-
-    @Override
-    public CompoundNBT getUpdateTag(){
-        CompoundNBT tag = super.getUpdateTag();
-        tag.put("data", this.getData());
-        return tag;
+        for(int i = 0; i < 9; i++)
+            this.filter.set(i, tag.contains("filter" + i) ? ItemStack.read(tag.getCompound("filter" + i)) : ItemStack.EMPTY);
+        this.filterWhitelist = tag.contains("filterWhitelist") && tag.getBoolean("filterWhitelist");
+        this.filterDurability = tag.contains("filterDurability") && tag.getBoolean("filterDurability");
     }
 }
