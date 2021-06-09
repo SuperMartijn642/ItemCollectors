@@ -1,8 +1,10 @@
 package com.supermartijn642.itemcollectors;
 
 import com.google.common.collect.Lists;
-import net.minecraft.block.Block;
-import net.minecraft.block.SoundType;
+import com.supermartijn642.core.ClientUtils;
+import com.supermartijn642.core.ToolType;
+import com.supermartijn642.core.block.BaseBlock;
+import com.supermartijn642.itemcollectors.screen.BasicCollectorScreen;
 import net.minecraft.block.material.MapColor;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.state.BlockFaceShape;
@@ -34,7 +36,7 @@ import java.util.function.Supplier;
 /**
  * Created 7/15/2020 by SuperMartijn642
  */
-public class CollectorBlock extends Block {
+public class CollectorBlock extends BaseBlock {
 
     private static final List<AxisAlignedBB> SHAPES = Lists.newArrayList(
         new AxisAlignedBB(3 / 16d, 0 / 16d, 3 / 16d, 13 / 16d, 1 / 16d, 13 / 16d),
@@ -61,33 +63,26 @@ public class CollectorBlock extends Block {
     }
 
     private final Supplier<CollectorTile> tileSupplier;
-    private final int maxRange;
-    private final int guiId;
+    private final Supplier<Integer> maxRange;
+    private final Supplier<Boolean> hasFilter;
 
-    public CollectorBlock(String registryName, Supplier<CollectorTile> tileSupplier, int maxRange, int guiId){
-        super(Material.ROCK, MapColor.BLACK);
-        this.setRegistryName(registryName);
-        this.setUnlocalizedName(ItemCollectors.MODID + "." + registryName);
+    public CollectorBlock(String registryName, Supplier<CollectorTile> tileSupplier, Supplier<Integer> maxRange, Supplier<Boolean> hasFilter){
+        super(registryName, false, Properties.create(Material.ROCK, MapColor.BLACK).harvestTool(ToolType.PICKAXE).harvestLevel(1).hardnessAndResistance(5, 1200));
         this.tileSupplier = tileSupplier;
         this.maxRange = maxRange;
-        this.guiId = guiId;
-
+        this.hasFilter = hasFilter;
         this.setCreativeTab(CreativeTabs.SEARCH);
-        this.setHardness(5);
-        this.setResistance(1200);
-        this.setHarvestLevel("pickaxe", 1);
-        this.setSoundType(SoundType.STONE);
     }
 
     @Override
-    public boolean onBlockActivated(World worldIn, BlockPos pos, IBlockState state, EntityPlayer playerIn, EnumHand hand, EnumFacing facing, float hitX, float hitY, float hitZ){
-        if(!worldIn.isRemote)
-            playerIn.openGui(ItemCollectors.instance, this.guiId, worldIn, pos.getX(), pos.getY(), pos.getZ());
+    public boolean onBlockActivated(World worldIn, BlockPos pos, IBlockState state, EntityPlayer player, EnumHand handIn, EnumFacing facing, float hitX, float hitY, float hitZ){
+        if(worldIn.isRemote && !this.hasFilter.get())
+            ClientUtils.displayScreen(new BasicCollectorScreen(pos));
+        else if(!worldIn.isRemote && this.hasFilter.get())
+            player.openGui(ItemCollectors.instance, 0, worldIn, pos.getX(), pos.getY(), pos.getZ());
         return true;
     }
 
-    @Override
-    @SuppressWarnings("deprecation")
     @Nonnull
     @SideOnly(Side.CLIENT)
     public AxisAlignedBB getBoundingBox(IBlockState state, IBlockAccess source, BlockPos pos){

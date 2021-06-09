@@ -1,23 +1,24 @@
 package com.supermartijn642.itemcollectors.packet;
 
+import com.supermartijn642.core.network.PacketContext;
+import com.supermartijn642.core.network.TileEntityBasePacket;
 import com.supermartijn642.itemcollectors.CollectorTile;
-import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.World;
 
 /**
  * Created 7/15/2020 by SuperMartijn642
  */
-public class PacketIncreaseZRange extends CollectorPacket<PacketIncreaseZRange> {
-    public PacketIncreaseZRange(BlockPos pos){
-        super(pos);
-    }
+public class PacketIncreaseZRange extends TileEntityBasePacket<CollectorTile> {
 
     public PacketIncreaseZRange(){
     }
 
+    public PacketIncreaseZRange(BlockPos pos){
+        super(pos);
+    }
+
     @Override
-    protected void handle(PacketIncreaseZRange message, EntityPlayer player, World world, CollectorTile tile){
+    protected void handle(CollectorTile tile, PacketContext context){
         tile.setRangeZ(tile.rangeZ + 1);
     }
 }

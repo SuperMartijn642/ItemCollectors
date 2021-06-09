@@ -1,5 +1,6 @@
 package com.supermartijn642.itemcollectors.screen;
 
+import com.supermartijn642.core.gui.TileEntityBaseContainer;
 import com.supermartijn642.itemcollectors.CollectorTile;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.ClickType;
@@ -13,27 +14,29 @@ import javax.annotation.Nonnull;
 /**
  * Created 7/15/2020 by SuperMartijn642
  */
-public class AdvancedCollectorContainer extends CollectorContainer {
+public class AdvancedCollectorContainer extends TileEntityBaseContainer<CollectorTile> {
 
     public AdvancedCollectorContainer(EntityPlayer player, BlockPos pos){
-        super(player, pos, 224, 206, true);
+        super(player, pos);
+        this.addSlots();
     }
 
     @Override
-    protected void addSlots(CollectorTile tile){
+    protected void addSlots(EntityPlayer player, CollectorTile tile){
         for(int i = 0; i < 9; i++)
-            this.addSlotToContainer(new SlotItemHandler(this.itemHandler(), i, 8 + i * 18, 90) {
+            this.addSlot(new SlotItemHandler(this.itemHandler(), i, 8 + i * 18, 90) {
                 @Override
                 public boolean canTakeStack(EntityPlayer playerIn){
                     return false;
                 }
             });
+        this.addPlayerSlots(32, 124);
     }
 
     @Override
     public ItemStack slotClick(int slotId, int dragType, ClickType clickTypeIn, EntityPlayer player){
         if(slotId >= 0 && slotId < 9){
-            CollectorTile tile = this.getTileOrClose();
+            CollectorTile tile = this.getObjectOrClose();
             if(tile != null){
                 if(player.inventory.getItemStack().isEmpty())
                     tile.filter.set(slotId, ItemStack.EMPTY);
@@ -51,7 +54,7 @@ public class AdvancedCollectorContainer extends CollectorContainer {
     @Override
     public ItemStack transferStackInSlot(EntityPlayer playerIn, int index){
         if(index >= 0 && index < 9){
-            CollectorTile tile = this.getTileOrClose();
+            CollectorTile tile = this.getObjectOrClose();
             if(tile != null){
                 if(player.inventory.getItemStack().isEmpty())
                     tile.filter.set(index, ItemStack.EMPTY);
@@ -74,7 +77,7 @@ public class AdvancedCollectorContainer extends CollectorContainer {
                     firstEmpty = i;
             }
             if(!contains && firstEmpty != -1){
-                CollectorTile tile = this.getTileOrClose();
+                CollectorTile tile = this.getObjectOrClose();
                 if(tile != null){
                     ItemStack stack = this.getSlot(index).getStack().copy();
                     stack.setCount(1);
@@ -90,9 +93,13 @@ public class AdvancedCollectorContainer extends CollectorContainer {
             @Nonnull
             @Override
             public ItemStack getStackInSlot(int slot){
-                CollectorTile tile = AdvancedCollectorContainer.this.getTileOrClose();
+                CollectorTile tile = AdvancedCollectorContainer.this.getObjectOrClose();
                 return tile == null ? ItemStack.EMPTY : tile.filter.get(slot);
             }
         };
+    }
+
+    public BlockPos getTilePos(){
+        return this.tilePos;
     }
 }
