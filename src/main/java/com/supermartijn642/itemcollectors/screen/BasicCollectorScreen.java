@@ -16,6 +16,8 @@ import net.minecraft.util.text.TranslationTextComponent;
  */
 public class BasicCollectorScreen extends TileEntityBaseScreen<CollectorTile> {
 
+    private ShowAreaButton showAreaButton;
+
     public BasicCollectorScreen(BlockPos pos){
         super(new StringTextComponent(""), pos);
     }
@@ -32,12 +34,19 @@ public class BasicCollectorScreen extends TileEntityBaseScreen<CollectorTile> {
 
     @Override
     protected void addWidgets(CollectorTile tile){
-        this.addWidget(new ArrowButton(40, 37, false, () -> ItemCollectors.CHANNEL.sendToServer(new PacketIncreaseXRange(this.tilePos))));
-        this.addWidget(new ArrowButton(40, 63, true, () -> ItemCollectors.CHANNEL.sendToServer(new PacketDecreaseXRange(this.tilePos))));
-        this.addWidget(new ArrowButton(93, 37, false, () -> ItemCollectors.CHANNEL.sendToServer(new PacketIncreaseYRange(this.tilePos))));
-        this.addWidget(new ArrowButton(93, 63, true, () -> ItemCollectors.CHANNEL.sendToServer(new PacketDecreaseYRange(this.tilePos))));
-        this.addWidget(new ArrowButton(146, 37, false, () -> ItemCollectors.CHANNEL.sendToServer(new PacketIncreaseZRange(this.tilePos))));
-        this.addWidget(new ArrowButton(146, 63, true, () -> ItemCollectors.CHANNEL.sendToServer(new PacketDecreaseZRange(this.tilePos))));
+        this.addWidget(new ArrowButton(30, 37, false, () -> ItemCollectors.CHANNEL.sendToServer(new PacketIncreaseXRange(this.tilePos))));
+        this.addWidget(new ArrowButton(30, 63, true, () -> ItemCollectors.CHANNEL.sendToServer(new PacketDecreaseXRange(this.tilePos))));
+        this.addWidget(new ArrowButton(73, 37, false, () -> ItemCollectors.CHANNEL.sendToServer(new PacketIncreaseYRange(this.tilePos))));
+        this.addWidget(new ArrowButton(73, 63, true, () -> ItemCollectors.CHANNEL.sendToServer(new PacketDecreaseYRange(this.tilePos))));
+        this.addWidget(new ArrowButton(116, 37, false, () -> ItemCollectors.CHANNEL.sendToServer(new PacketIncreaseZRange(this.tilePos))));
+        this.addWidget(new ArrowButton(116, 63, true, () -> ItemCollectors.CHANNEL.sendToServer(new PacketDecreaseZRange(this.tilePos))));
+        this.showAreaButton = this.addWidget(new ShowAreaButton(160, 45, () -> ItemCollectors.CHANNEL.sendToServer(new PacketToggleShowArea(this.tilePos))));
+        this.showAreaButton.update(tile.showArea);
+    }
+
+    @Override
+    protected void tick(CollectorTile tile){
+        this.showAreaButton.update(tile.showArea);
     }
 
     @Override
@@ -48,12 +57,12 @@ public class BasicCollectorScreen extends TileEntityBaseScreen<CollectorTile> {
 
         ScreenUtils.drawString(matrixStack, new TranslationTextComponent("gui.itemcollectors.basic_collector.range",
             (tile.rangeX * 2 + 1), (tile.rangeY * 2 + 1), (tile.rangeZ * 2 + 1)), 8, 26);
-        ScreenUtils.drawCenteredString(matrixStack, new StringTextComponent("x:"), 35, 51);
-        ScreenUtils.drawCenteredString(matrixStack, new StringTextComponent("" + tile.rangeX), 49, 52);
-        ScreenUtils.drawCenteredString(matrixStack, new StringTextComponent("y:"), 88, 51);
-        ScreenUtils.drawCenteredString(matrixStack, new StringTextComponent("" + tile.rangeY), 102, 52);
-        ScreenUtils.drawCenteredString(matrixStack, new StringTextComponent("z:"), 141, 51);
-        ScreenUtils.drawCenteredString(matrixStack, new StringTextComponent("" + tile.rangeZ), 155, 52);
+        ScreenUtils.drawCenteredString(matrixStack, new StringTextComponent("x:"), 25, 51);
+        ScreenUtils.drawCenteredString(matrixStack, new StringTextComponent("" + tile.rangeX), 39, 52);
+        ScreenUtils.drawCenteredString(matrixStack, new StringTextComponent("y:"), 68, 51);
+        ScreenUtils.drawCenteredString(matrixStack, new StringTextComponent("" + tile.rangeY), 82, 52);
+        ScreenUtils.drawCenteredString(matrixStack, new StringTextComponent("z:"), 111, 51);
+        ScreenUtils.drawCenteredString(matrixStack, new StringTextComponent("" + tile.rangeZ), 125, 52);
 
         GlStateManager.enableAlphaTest();
     }
