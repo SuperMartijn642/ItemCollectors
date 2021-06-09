@@ -1,29 +1,24 @@
 package com.supermartijn642.itemcollectors.packet;
 
+import com.supermartijn642.core.network.PacketContext;
+import com.supermartijn642.core.network.TileEntityBasePacket;
 import com.supermartijn642.itemcollectors.CollectorTile;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.network.PacketBuffer;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.World;
 
 /**
  * Created 7/15/2020 by SuperMartijn642
  */
-public class PacketDecreaseYRange extends CollectorPacket {
+public class PacketDecreaseYRange extends TileEntityBasePacket<CollectorTile> {
+
+    public PacketDecreaseYRange(){
+    }
+
     public PacketDecreaseYRange(BlockPos pos){
         super(pos);
     }
 
-    public PacketDecreaseYRange(PacketBuffer buffer){
-        super(buffer);
-    }
-
-    public static PacketDecreaseYRange decode(PacketBuffer buffer){
-        return new PacketDecreaseYRange(buffer);
-    }
-
     @Override
-    protected void handle(PlayerEntity player, World world, CollectorTile tile){
+    protected void handle(CollectorTile tile, PacketContext context){
         tile.setRangeY(tile.rangeY - 1);
     }
 }
