@@ -1,52 +1,52 @@
 package com.supermartijn642.itemcollectors.screen;
 
 import com.mojang.blaze3d.matrix.MatrixStack;
+import com.supermartijn642.core.gui.ScreenUtils;
+import com.supermartijn642.core.gui.TileEntityBaseContainerScreen;
 import com.supermartijn642.itemcollectors.CollectorTile;
 import com.supermartijn642.itemcollectors.ItemCollectors;
 import com.supermartijn642.itemcollectors.packet.*;
 import net.minecraft.client.resources.I18n;
+import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.text.StringTextComponent;
 import net.minecraft.util.text.TranslationTextComponent;
 
 /**
  * Created 7/15/2020 by SuperMartijn642
  */
-public class AdvancedCollectorScreen extends CollectorScreen<AdvancedCollectorContainer> {
+public class AdvancedCollectorScreen extends TileEntityBaseContainerScreen<CollectorTile,AdvancedCollectorContainer> {
 
-    private ArrowButton upXButton, downXButton;
-    private ArrowButton upYButton, downYButton;
-    private ArrowButton upZButton, downZButton;
+    private static final ResourceLocation BACKGROUND = new ResourceLocation("itemcollectors", "textures/filter_screen.png");
+
     private WhitelistButton whitelistButton;
     private DurabilityButton durabilityButton;
 
     public AdvancedCollectorScreen(AdvancedCollectorContainer container){
-        super(container, ItemCollectors.advanced_collector.getTranslationKey());
+        super(container, ItemCollectors.advanced_collector.getTranslatedName());
     }
 
     @Override
-    protected void addButtons(CollectorTile tile){
-        this.upXButton = this.addButton(new ArrowButton(this.guiLeft + 40, this.guiTop + 37, false, () -> ItemCollectors.CHANNEL.sendToServer(new PacketIncreaseXRange(this.container.pos))));
-        this.downXButton = this.addButton(new ArrowButton(this.guiLeft + 40, this.guiTop + 63, true, () -> ItemCollectors.CHANNEL.sendToServer(new PacketDecreaseXRange(this.container.pos))));
-        this.upYButton = this.addButton(new ArrowButton(this.guiLeft + 93, this.guiTop + 37, false, () -> ItemCollectors.CHANNEL.sendToServer(new PacketIncreaseYRange(this.container.pos))));
-        this.downYButton = this.addButton(new ArrowButton(this.guiLeft + 93, this.guiTop + 63, true, () -> ItemCollectors.CHANNEL.sendToServer(new PacketDecreaseYRange(this.container.pos))));
-        this.upZButton = this.addButton(new ArrowButton(this.guiLeft + 146, this.guiTop + 37, false, () -> ItemCollectors.CHANNEL.sendToServer(new PacketIncreaseZRange(this.container.pos))));
-        this.downZButton = this.addButton(new ArrowButton(this.guiLeft + 146, this.guiTop + 63, true, () -> ItemCollectors.CHANNEL.sendToServer(new PacketDecreaseZRange(this.container.pos))));
-        this.whitelistButton = this.addButton(new WhitelistButton(this.guiLeft + 175, this.guiTop + 88, () -> ItemCollectors.CHANNEL.sendToServer(new PacketToggleWhitelist(this.container.pos))));
+    protected int sizeX(CollectorTile tile){
+        return 224;
+    }
+
+    @Override
+    protected int sizeY(CollectorTile tile){
+        return 206;
+    }
+
+    @Override
+    protected void addWidgets(CollectorTile tile){
+        this.addWidget(new ArrowButton(40, 37, false, () -> ItemCollectors.CHANNEL.sendToServer(new PacketIncreaseXRange(this.container.getTilePos()))));
+        this.addWidget(new ArrowButton(40, 63, true, () -> ItemCollectors.CHANNEL.sendToServer(new PacketDecreaseXRange(this.container.getTilePos()))));
+        this.addWidget(new ArrowButton(93, 37, false, () -> ItemCollectors.CHANNEL.sendToServer(new PacketIncreaseYRange(this.container.getTilePos()))));
+        this.addWidget(new ArrowButton(93, 63, true, () -> ItemCollectors.CHANNEL.sendToServer(new PacketDecreaseYRange(this.container.getTilePos()))));
+        this.addWidget(new ArrowButton(146, 37, false, () -> ItemCollectors.CHANNEL.sendToServer(new PacketIncreaseZRange(this.container.getTilePos()))));
+        this.addWidget(new ArrowButton(146, 63, true, () -> ItemCollectors.CHANNEL.sendToServer(new PacketDecreaseZRange(this.container.getTilePos()))));
+        this.whitelistButton = this.addWidget(new WhitelistButton(175, 88, () -> ItemCollectors.CHANNEL.sendToServer(new PacketToggleWhitelist(this.container.getTilePos()))));
         this.whitelistButton.update(tile.filterWhitelist);
-        this.durabilityButton = this.addButton(new DurabilityButton(this.guiLeft + 197, this.guiTop + 88, () -> ItemCollectors.CHANNEL.sendToServer(new PacketToggleDurability(this.container.pos))));
+        this.durabilityButton = this.addWidget(new DurabilityButton(197, 88, () -> ItemCollectors.CHANNEL.sendToServer(new PacketToggleDurability(this.container.getTilePos()))));
         this.durabilityButton.update(tile.filterDurability);
-    }
-
-    @Override
-    protected void drawToolTips(MatrixStack matrixStack, CollectorTile tile, int mouseX, int mouseY){
-        if(this.upXButton.isHovered() || this.upYButton.isHovered() || this.upZButton.isHovered())
-            this.renderToolTip(matrixStack, true, "gui.itemcollectors.basic_collector.range.increase", mouseX, mouseY);
-        if(this.downXButton.isHovered() || this.downYButton.isHovered() || this.downZButton.isHovered())
-            this.renderToolTip(matrixStack, true, "gui.itemcollectors.basic_collector.range.decrease", mouseX, mouseY);
-        if(this.whitelistButton.isHovered())
-            this.renderToolTip(matrixStack, true, "gui.itemcollectors.advanced_collector.whitelist." + (tile.filterWhitelist ? "on" : "off"), mouseX, mouseY);
-        if(this.durabilityButton.isHovered())
-            this.renderToolTip(matrixStack, true, "gui.itemcollectors.advanced_collector.durability." + (tile.filterDurability ? "on" : "off"), mouseX, mouseY);
     }
 
     @Override
@@ -56,26 +56,27 @@ public class AdvancedCollectorScreen extends CollectorScreen<AdvancedCollectorCo
     }
 
     @Override
-    protected String getBackground(){
-        return "advanced_collector_screen.png";
+    protected void renderBackground(MatrixStack matrixStack, int mouseX, int mouseY, CollectorTile tile){
+        ScreenUtils.bindTexture(BACKGROUND);
+        ScreenUtils.drawTexture(matrixStack, 0, 0, this.sizeX(), this.sizeY());
     }
 
     @Override
-    protected void drawText(MatrixStack matrixStack, CollectorTile tile){
-        this.drawCenteredString(matrixStack, this.title, this.xSize / 2f, 6);
-        this.drawString(matrixStack, this.playerInventory.getDisplayName(), 32, 112);
+    protected void renderForeground(MatrixStack matrixStack, int mouseX, int mouseY, CollectorTile tile){
+        ScreenUtils.drawCenteredString(matrixStack, this.title, this.sizeX() / 2f, 6);
+        ScreenUtils.drawString(matrixStack, this.playerInventory.getDisplayName(), 32, 112);
 
         String range = I18n.format("gui.itemcollectors.basic_collector.range")
             .replace("$numberx$", "" + (tile.rangeX * 2 + 1))
             .replace("$numbery$", "" + (tile.rangeY * 2 + 1))
             .replace("$numberz$", "" + (tile.rangeZ * 2 + 1));
-        this.drawString(matrixStack, new StringTextComponent(range), 8, 26);
-        this.drawCenteredString(matrixStack, new StringTextComponent("x:"), 35, 51);
-        this.drawCenteredString(matrixStack, new StringTextComponent("" + tile.rangeX), 49, 52);
-        this.drawCenteredString(matrixStack, new StringTextComponent("y:"), 88, 51);
-        this.drawCenteredString(matrixStack, new StringTextComponent("" + tile.rangeY), 102, 52);
-        this.drawCenteredString(matrixStack, new StringTextComponent("z:"), 141, 51);
-        this.drawCenteredString(matrixStack, new StringTextComponent("" + tile.rangeZ), 155, 52);
-        this.drawString(matrixStack, new TranslationTextComponent("gui.itemcollectors.advanced_collector.filter"), 8, 78);
+        ScreenUtils.drawString(matrixStack, new StringTextComponent(range), 8, 26);
+        ScreenUtils.drawCenteredString(matrixStack, new StringTextComponent("x:"), 35, 51);
+        ScreenUtils.drawCenteredString(matrixStack, new StringTextComponent("" + tile.rangeX), 49, 52);
+        ScreenUtils.drawCenteredString(matrixStack, new StringTextComponent("y:"), 88, 51);
+        ScreenUtils.drawCenteredString(matrixStack, new StringTextComponent("" + tile.rangeY), 102, 52);
+        ScreenUtils.drawCenteredString(matrixStack, new StringTextComponent("z:"), 141, 51);
+        ScreenUtils.drawCenteredString(matrixStack, new StringTextComponent("" + tile.rangeZ), 155, 52);
+        ScreenUtils.drawString(matrixStack, new TranslationTextComponent("gui.itemcollectors.advanced_collector.filter"), 8, 78);
     }
 }
