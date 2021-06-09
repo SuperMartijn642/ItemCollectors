@@ -17,7 +17,7 @@ import net.minecraft.util.text.TranslationTextComponent;
 public class BasicCollectorScreen extends TileEntityBaseScreen<CollectorTile> {
 
     public BasicCollectorScreen(BlockPos pos){
-        super(ItemCollectors.basic_collector.getTranslatedName(), pos);
+        super(new StringTextComponent(""), pos);
     }
 
     @Override
@@ -44,7 +44,7 @@ public class BasicCollectorScreen extends TileEntityBaseScreen<CollectorTile> {
     protected void render(MatrixStack matrixStack, int mouseX, int mouseY, CollectorTile tile){
         this.drawScreenBackground(matrixStack);
 
-        ScreenUtils.drawCenteredString(matrixStack, this.title, this.sizeX(tile) / 2f, 6);
+        ScreenUtils.drawCenteredString(matrixStack, tile.getBlockState().getBlock().getTranslatedName(), this.sizeX(tile) / 2f, 6);
 
         ScreenUtils.drawString(matrixStack, new TranslationTextComponent("gui.itemcollectors.basic_collector.range",
             (tile.rangeX * 2 + 1), (tile.rangeY * 2 + 1), (tile.rangeZ * 2 + 1)), 8, 26);
