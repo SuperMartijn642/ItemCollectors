@@ -104,7 +104,7 @@ public class CollectorBlock extends BaseBlock {
 
     @Override
     public void addInformation(ItemStack stack, IBlockReader worldIn, List<ITextComponent> tooltip, ITooltipFlag flagIn){
-        tooltip.add(new TranslationTextComponent("itemcollectors." + this.getRegistryName().getPath() + ".info", this.maxRange.get()).mergeStyle(TextFormatting.AQUA));
+        tooltip.add(new TranslationTextComponent("itemcollectors." + (this.hasFilter.get() ? "advanced" : "basic") + "_collector.info", this.maxRange.get()).mergeStyle(TextFormatting.AQUA));
         super.addInformation(stack, worldIn, tooltip, flagIn);
     }
 }
