@@ -20,7 +20,7 @@ public class AdvancedCollectorScreen extends TileEntityBaseContainerScreen<Colle
     private DurabilityButton durabilityButton;
 
     public AdvancedCollectorScreen(AdvancedCollectorContainer container){
-        super(container, ItemCollectors.advanced_collector.getNameTextComponent());
+        super(container, new StringTextComponent(""));
     }
 
     @Override
@@ -61,7 +61,7 @@ public class AdvancedCollectorScreen extends TileEntityBaseContainerScreen<Colle
 
     @Override
     protected void renderForeground(int mouseX, int mouseY, CollectorTile tile){
-        ScreenUtils.drawCenteredString(this.title, this.sizeX() / 2f, 6);
+        ScreenUtils.drawCenteredString(tile.getBlockState().getBlock().getNameTextComponent(), this.sizeX() / 2f, 6);
         ScreenUtils.drawString(this.playerInventory.getDisplayName(), 32, 112);
 
         ScreenUtils.drawString(new TranslationTextComponent("gui.itemcollectors.basic_collector.range",
