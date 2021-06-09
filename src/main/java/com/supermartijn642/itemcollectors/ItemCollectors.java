@@ -9,14 +9,10 @@ import net.minecraft.item.BlockItem;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemGroup;
 import net.minecraft.tileentity.TileEntityType;
-import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.common.extensions.IForgeContainerType;
 import net.minecraftforge.event.RegistryEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
-import net.minecraftforge.fml.DistExecutor;
 import net.minecraftforge.fml.common.Mod;
-import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
-import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
 import net.minecraftforge.registries.ObjectHolder;
 
 /**
@@ -41,8 +37,6 @@ public class ItemCollectors {
     public static ContainerType<AdvancedCollectorContainer> advanced_collector_container;
 
     public ItemCollectors(){
-        FMLJavaModLoadingContext.get().getModEventBus().addListener(this::init);
-
         CHANNEL.registerMessage(PacketIncreaseXRange.class, PacketIncreaseXRange::new, true);
         CHANNEL.registerMessage(PacketDecreaseXRange.class, PacketDecreaseXRange::new, true);
         CHANNEL.registerMessage(PacketIncreaseYRange.class, PacketIncreaseYRange::new, true);
@@ -51,10 +45,7 @@ public class ItemCollectors {
         CHANNEL.registerMessage(PacketDecreaseZRange.class, PacketDecreaseZRange::new, true);
         CHANNEL.registerMessage(PacketToggleWhitelist.class, PacketToggleWhitelist::new, true);
         CHANNEL.registerMessage(PacketToggleDurability.class, PacketToggleDurability::new, true);
-    }
-
-    public void init(FMLCommonSetupEvent e){
-        DistExecutor.runWhenOn(Dist.CLIENT, () -> ClientProxy::registerScreen);
+        CHANNEL.registerMessage(PacketToggleShowArea.class, PacketToggleShowArea::new, true);
     }
 
     @Mod.EventBusSubscriber(bus = Mod.EventBusSubscriber.Bus.MOD)
