@@ -18,9 +18,9 @@ public class ItemCollectorsConfig {
         ModConfigBuilder builder = new ModConfigBuilder();
 
         builder.push("General");
-        basicCollectorMaxRange = builder.comment("What should be the maximum range of the basic item collector?").define("basicCollectorMaxRange", 3, 1, 10);
+        basicCollectorMaxRange = builder.comment("What should be the maximum range of the basic item collector?").define("basicCollectorMaxRange", 5, 1, 10);
         basicCollectorFilter = builder.comment("Should the basic item collector have a filter?").define("basicCollectorFilter", false);
-        advancedCollectorMaxRange = builder.comment("What should be the maximum range of the advanced item collector?").define("advancedCollectorMaxRange", 5, 1, 10);
+        advancedCollectorMaxRange = builder.comment("What should be the maximum range of the advanced item collector?").define("advancedCollectorMaxRange", 7, 1, 10);
         advancedCollectorFilter = builder.comment("Should the advanced item collector have a filter?").define("advancedCollectorFilter", true);
         builder.pop();
 
