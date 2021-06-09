@@ -10,5 +10,7 @@
   "gui.itemcollectors.advanced_collector.whitelist.off": "Blacklist",
   "gui.itemcollectors.advanced_collector.durability.on": "Match NBT",
   "gui.itemcollectors.advanced_collector.durability.off": "Ignore NBT",
-  "gui.itemcollectors.advanced_collector.filter": "Filter"
+  "gui.itemcollectors.advanced_collector.filter": "Filter",
+  "gui.itemcollectors.advanced_collector.show_area.on": "Range Hidden",
+  "gui.itemcollectors.advanced_collector.show_area.off": "Range Shown"
 }
