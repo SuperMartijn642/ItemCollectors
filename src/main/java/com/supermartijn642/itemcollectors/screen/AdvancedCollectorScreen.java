@@ -5,7 +5,6 @@ import com.supermartijn642.core.gui.TileEntityBaseContainerScreen;
 import com.supermartijn642.itemcollectors.CollectorTile;
 import com.supermartijn642.itemcollectors.ItemCollectors;
 import com.supermartijn642.itemcollectors.packet.*;
-import net.minecraft.client.resources.I18n;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.text.TextComponentString;
 import net.minecraft.util.text.TextComponentTranslation;
@@ -65,11 +64,8 @@ public class AdvancedCollectorScreen extends TileEntityBaseContainerScreen<Colle
         ScreenUtils.drawCenteredString(this.title, this.sizeX() / 2f, 6);
         ScreenUtils.drawString(this.container.player.inventory.getDisplayName(), 32, 112);
 
-        String range = I18n.format("gui.itemcollectors.basic_collector.range")
-            .replace("$numberx$", "" + (tile.rangeX * 2 + 1))
-            .replace("$numbery$", "" + (tile.rangeY * 2 + 1))
-            .replace("$numberz$", "" + (tile.rangeZ * 2 + 1));
-        ScreenUtils.drawString(new TextComponentString(range), 8, 26);
+        ScreenUtils.drawString(new TextComponentTranslation("gui.itemcollectors.basic_collector.range",
+            (tile.rangeX * 2 + 1), (tile.rangeY * 2 + 1), (tile.rangeZ * 2 + 1)), 8, 26);
         ScreenUtils.drawCenteredString(new TextComponentString("x:"), 35, 51);
         ScreenUtils.drawCenteredString(new TextComponentString("" + tile.rangeX), 49, 52);
         ScreenUtils.drawCenteredString(new TextComponentString("y:"), 88, 51);
