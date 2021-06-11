@@ -52,6 +52,7 @@ public class CollectorTile extends BaseTileEntity implements ITickable {
     public final List<ItemStack> filter = new ArrayList<>(9);
     public boolean filterWhitelist;
     public boolean filterDurability = true;
+    public boolean showArea = false;
 
     public CollectorTile(Supplier<Integer> maxRange, Supplier<Boolean> hasFilter){
         super();
@@ -68,7 +69,7 @@ public class CollectorTile extends BaseTileEntity implements ITickable {
             if(itemHandler.getSlots() <= 0)
                 return;
 
-            AxisAlignedBB area = new AxisAlignedBB(this.pos.add(-this.rangeX, -this.rangeY, -this.rangeZ), this.pos.add(this.rangeX + 1, this.rangeY + 1, this.rangeZ + 1));
+            AxisAlignedBB area = this.getAffectedArea();
 
             List<EntityItem> items = this.world.getEntitiesWithinAABB(EntityItem.class, area, item -> {
                 if(!item.isEntityAlive() || (item.getEntityData().hasKey("PreventRemoteMovement") && !item.getEntityData().hasKey("AllowMachineRemoteMovement")))
@@ -104,6 +105,10 @@ public class CollectorTile extends BaseTileEntity implements ITickable {
         });
     }
 
+    public AxisAlignedBB getAffectedArea(){
+        return new AxisAlignedBB(this.pos.add(-this.rangeX, -this.rangeY, -this.rangeZ), this.pos.add(this.rangeX + 1, this.rangeY + 1, this.rangeZ + 1));
+    }
+
     private Optional<IItemHandler> getOutputItemHandler(){
         TileEntity tile = this.world.getTileEntity(this.pos.down());
         if(tile == null || !tile.hasCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, EnumFacing.UP))
@@ -132,6 +137,13 @@ public class CollectorTile extends BaseTileEntity implements ITickable {
             this.dataChanged();
     }
 
+    public void setShowArea(boolean showArea){
+        if(this.showArea != showArea){
+            this.showArea = showArea;
+            this.dataChanged();
+        }
+    }
+
     @Override
     protected NBTTagCompound writeData(){
         NBTTagCompound tag = new NBTTagCompound();
@@ -144,6 +156,7 @@ public class CollectorTile extends BaseTileEntity implements ITickable {
         }
         tag.setBoolean("filterWhitelist", this.filterWhitelist);
         tag.setBoolean("filterDurability", this.filterDurability);
+        tag.setBoolean("showArea", this.showArea);
         return tag;
     }
 
@@ -159,5 +172,11 @@ public class CollectorTile extends BaseTileEntity implements ITickable {
             this.filter.set(i, tag.hasKey("filter" + i) ? new ItemStack(tag.getCompoundTag("filter" + i)) : ItemStack.EMPTY);
         this.filterWhitelist = tag.hasKey("filterWhitelist") && tag.getBoolean("filterWhitelist");
         this.filterDurability = tag.hasKey("filterDurability") && tag.getBoolean("filterDurability");
+        this.showArea = tag.hasKey("showArea") && tag.getBoolean("showArea");
+    }
+
+    @Override
+    public AxisAlignedBB getRenderBoundingBox(){
+        return this.getAffectedArea();
     }
 }

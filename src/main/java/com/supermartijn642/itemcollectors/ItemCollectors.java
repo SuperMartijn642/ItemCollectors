@@ -43,6 +43,7 @@ public class ItemCollectors {
         CHANNEL.registerMessage(PacketDecreaseZRange.class, PacketDecreaseZRange::new, true);
         CHANNEL.registerMessage(PacketToggleWhitelist.class, PacketToggleWhitelist::new, true);
         CHANNEL.registerMessage(PacketToggleDurability.class, PacketToggleDurability::new, true);
+        CHANNEL.registerMessage(PacketToggleShowArea.class, PacketToggleShowArea::new, true);
     }
 
     @Mod.EventHandler
