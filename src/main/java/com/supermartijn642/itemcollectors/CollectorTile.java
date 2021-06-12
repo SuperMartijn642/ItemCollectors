@@ -1,6 +1,7 @@
 package com.supermartijn642.itemcollectors;
 
 import com.supermartijn642.core.block.BaseTileEntity;
+import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.item.EntityItem;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
@@ -110,10 +111,14 @@ public class CollectorTile extends BaseTileEntity implements ITickable {
     }
 
     private Optional<IItemHandler> getOutputItemHandler(){
-        TileEntity tile = this.world.getTileEntity(this.pos.down());
-        if(tile == null || !tile.hasCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, EnumFacing.UP))
+        IBlockState state = this.getBlockState();
+        if(!state.getPropertyKeys().contains(CollectorBlock.DIRECTION))
             return Optional.empty();
-        return Optional.ofNullable(tile.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, EnumFacing.UP));
+        EnumFacing direction = state.getValue(CollectorBlock.DIRECTION);
+        TileEntity tile = this.world.getTileEntity(this.pos.offset(direction));
+        if(tile == null || !tile.hasCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, direction.getOpposite()))
+            return Optional.empty();
+        return Optional.ofNullable(tile.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, direction.getOpposite()));
     }
 
     public void setRangeX(int range){

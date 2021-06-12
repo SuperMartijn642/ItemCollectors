@@ -1,5 +1,10 @@
 {
   "variants": {
-    "normal": { "model": "itemcollectors:advanced_collector" }
+    "facing=down": { "model": "itemcollectors:advanced_collector" },
+    "facing=up": { "model": "itemcollectors:advanced_collector", "x": 180 },
+    "facing=north": { "model": "itemcollectors:advanced_collector", "x": 90, "y": 180 },
+    "facing=east": { "model": "itemcollectors:advanced_collector", "x": 90, "y": 270 },
+    "facing=south": { "model": "itemcollectors:advanced_collector", "x": 90 },
+    "facing=west": { "model": "itemcollectors:advanced_collector", "x": 90, "y": 90 }
   }
 }

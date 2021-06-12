@@ -1,21 +1,24 @@
 package com.supermartijn642.itemcollectors;
 
-import com.google.common.collect.Lists;
 import com.supermartijn642.core.ClientUtils;
 import com.supermartijn642.core.ToolType;
 import com.supermartijn642.core.block.BaseBlock;
+import com.supermartijn642.core.block.BlockShape;
 import com.supermartijn642.itemcollectors.screen.BasicCollectorScreen;
+import net.minecraft.block.BlockDirectional;
 import net.minecraft.block.material.MapColor;
 import net.minecraft.block.material.Material;
+import net.minecraft.block.properties.PropertyEnum;
 import net.minecraft.block.state.BlockFaceShape;
+import net.minecraft.block.state.BlockStateContainer;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.util.ITooltipFlag;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.BlockRenderLayer;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.EnumHand;
 import net.minecraft.util.math.AxisAlignedBB;
@@ -38,28 +41,30 @@ import java.util.function.Supplier;
  */
 public class CollectorBlock extends BaseBlock {
 
-    private static final List<AxisAlignedBB> SHAPES = Lists.newArrayList(
-        new AxisAlignedBB(3 / 16d, 0 / 16d, 3 / 16d, 13 / 16d, 1 / 16d, 13 / 16d),
-        new AxisAlignedBB(5 / 16d, 1 / 16d, 5 / 16d, 11 / 16d, 2 / 16d, 11 / 16d),
-        new AxisAlignedBB(6 / 16d, 2 / 16d, 6 / 16d, 10 / 16d, 5 / 16d, 10 / 16d),
-        new AxisAlignedBB(5 / 16d, 5 / 16d, 5 / 16d, 11 / 16d, 6 / 16d, 11 / 16d),
-        new AxisAlignedBB(5 / 16d, 6 / 16d, 5 / 16d, 6 / 16d, 11 / 16d, 6 / 16d),
-        new AxisAlignedBB(5 / 16d, 6 / 16d, 10 / 16d, 6 / 16d, 11 / 16d, 11 / 16d),
-        new AxisAlignedBB(10 / 16d, 6 / 16d, 5 / 16d, 11 / 16d, 11 / 16d, 6 / 16d),
-        new AxisAlignedBB(10 / 16d, 6 / 16d, 10 / 16d, 11 / 16d, 11 / 16d, 11 / 16d),
-        new AxisAlignedBB(6 / 16d, 10 / 16d, 5 / 16d, 11 / 16d, 11 / 16d, 6 / 16d),
-        new AxisAlignedBB(6 / 16d, 10 / 16d, 10 / 16d, 10 / 16d, 11 / 16d, 11 / 16d),
-        new AxisAlignedBB(5 / 16d, 10 / 16d, 6 / 16d, 6 / 16d, 11 / 16d, 10 / 16d),
-        new AxisAlignedBB(10 / 16d, 10 / 16d, 6 / 16d, 11 / 16d, 11 / 16d, 10 / 16d),
-        new AxisAlignedBB(6 / 16d, 6 / 16d, 6 / 16d, 10 / 16d, 10 / 16d, 10 / 16d)
-    );
-    private static final AxisAlignedBB SHAPE;
+    public static final PropertyEnum<EnumFacing> DIRECTION = BlockDirectional.FACING;
+    private static final BlockShape SHAPE = BlockShape.or(
+        BlockShape.createBlockShape(3, 0, 3, 13, 1, 13),
+        BlockShape.createBlockShape(5, 1, 5, 11, 2, 11),
+        BlockShape.createBlockShape(6, 2, 6, 10, 5, 10),
+        BlockShape.createBlockShape(5, 5, 5, 11, 6, 11),
+        BlockShape.createBlockShape(5, 6, 5, 6, 11, 6),
+        BlockShape.createBlockShape(5, 6, 10, 6, 11, 11),
+        BlockShape.createBlockShape(10, 6, 5, 11, 11, 6),
+        BlockShape.createBlockShape(10, 6, 10, 11, 11, 11),
+        BlockShape.createBlockShape(6, 10, 5, 11, 11, 6),
+        BlockShape.createBlockShape(6, 10, 10, 10, 11, 11),
+        BlockShape.createBlockShape(5, 10, 6, 6, 11, 10),
+        BlockShape.createBlockShape(10, 10, 6, 11, 11, 10),
+        BlockShape.createBlockShape(6, 6, 6, 10, 10, 10));
+    private static final BlockShape[] SHAPES = new BlockShape[6];
 
     static{
-        AxisAlignedBB shape = SHAPES.get(0);
-        for(int i = 1; i < SHAPES.size(); i++)
-            shape = shape.union(SHAPES.get(i));
-        SHAPE = shape;
+        SHAPES[EnumFacing.DOWN.getIndex()] = SHAPE;
+        SHAPES[EnumFacing.UP.getIndex()] = SHAPE.rotate(EnumFacing.Axis.X).rotate(EnumFacing.Axis.X);
+        SHAPES[EnumFacing.NORTH.getIndex()] = SHAPE.rotate(EnumFacing.Axis.X).rotate(EnumFacing.Axis.Y).rotate(EnumFacing.Axis.Y);
+        SHAPES[EnumFacing.EAST.getIndex()] = SHAPE.rotate(EnumFacing.Axis.X).rotate(EnumFacing.Axis.Y).rotate(EnumFacing.Axis.Y).rotate(EnumFacing.Axis.Y);
+        SHAPES[EnumFacing.SOUTH.getIndex()] = SHAPE.rotate(EnumFacing.Axis.X);
+        SHAPES[EnumFacing.WEST.getIndex()] = SHAPE.rotate(EnumFacing.Axis.X).rotate(EnumFacing.Axis.Y);
     }
 
     private final Supplier<CollectorTile> tileSupplier;
@@ -72,6 +77,7 @@ public class CollectorBlock extends BaseBlock {
         this.maxRange = maxRange;
         this.hasFilter = hasFilter;
         this.setCreativeTab(CreativeTabs.SEARCH);
+        this.setDefaultState(this.getDefaultState().withProperty(DIRECTION, EnumFacing.DOWN));
     }
 
     @Override
@@ -86,13 +92,13 @@ public class CollectorBlock extends BaseBlock {
     @Nonnull
     @SideOnly(Side.CLIENT)
     public AxisAlignedBB getBoundingBox(IBlockState state, IBlockAccess source, BlockPos pos){
-        return SHAPE;
+        return SHAPES[state.getValue(DIRECTION).getIndex()].simplify();
     }
 
     @Override
     @SuppressWarnings("deprecation")
     public void addCollisionBoxToList(IBlockState state, World worldIn, BlockPos pos, AxisAlignedBB entityBox, List<AxisAlignedBB> collidingBoxes, @Nullable Entity entityIn, boolean isActualState){
-        for(AxisAlignedBB box : SHAPES)
+        for(AxisAlignedBB box : SHAPES[state.getValue(DIRECTION).getIndex()].toBoxes())
             addCollisionBoxToList(pos, entityBox, collidingBoxes, box);
     }
 
@@ -103,7 +109,7 @@ public class CollectorBlock extends BaseBlock {
 
     @Override
     public BlockFaceShape getBlockFaceShape(IBlockAccess worldIn, IBlockState state, BlockPos pos, EnumFacing face){
-        return face == EnumFacing.DOWN ? BlockFaceShape.CENTER : BlockFaceShape.UNDEFINED;
+        return face == state.getValue(DIRECTION) ? BlockFaceShape.CENTER : BlockFaceShape.UNDEFINED;
     }
 
     @Override
@@ -118,11 +124,6 @@ public class CollectorBlock extends BaseBlock {
     }
 
     @Override
-    public BlockRenderLayer getBlockLayer(){
-        return BlockRenderLayer.CUTOUT;
-    }
-
-    @Override
     public boolean isOpaqueCube(IBlockState state){
         return false;
     }
@@ -131,5 +132,25 @@ public class CollectorBlock extends BaseBlock {
     public void addInformation(ItemStack stack, World player, List<String> tooltip, ITooltipFlag advanced){
         tooltip.add(new TextComponentTranslation("itemcollectors." + (this.hasFilter.get() ? "advanced" : "basic") + "_collector.info", this.maxRange.get()).setStyle(new Style().setColor(TextFormatting.AQUA)).getFormattedText());
         super.addInformation(stack, player, tooltip, advanced);
+    }
+
+    @Override
+    protected BlockStateContainer createBlockState(){
+        return new BlockStateContainer(this, DIRECTION);
+    }
+
+    @Override
+    public IBlockState getStateForPlacement(World world, BlockPos pos, EnumFacing facing, float hitX, float hitY, float hitZ, int meta, EntityLivingBase placer, EnumHand hand){
+        return this.getDefaultState().withProperty(DIRECTION, facing.getOpposite());
+    }
+
+    @Override
+    public int getMetaFromState(IBlockState state){
+        return state.getValue(DIRECTION).getIndex();
+    }
+
+    @Override
+    public IBlockState getStateFromMeta(int meta){
+        return this.getDefaultState().withProperty(DIRECTION, EnumFacing.getFront(meta));
     }
 }
