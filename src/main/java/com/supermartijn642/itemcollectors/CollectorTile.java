@@ -1,6 +1,7 @@
 package com.supermartijn642.itemcollectors;
 
 import com.supermartijn642.core.block.BaseTileEntity;
+import net.minecraft.block.BlockState;
 import net.minecraft.entity.item.ItemEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompoundNBT;
@@ -97,10 +98,14 @@ public class CollectorTile extends BaseTileEntity implements ITickableTileEntity
     }
 
     private LazyOptional<IItemHandler> getOutputItemHandler(){
-        TileEntity tile = this.world.getTileEntity(this.pos.down());
+        BlockState state = this.getBlockState();
+        if(!state.has(CollectorBlock.DIRECTION))
+            return LazyOptional.empty();
+        Direction direction = state.get(CollectorBlock.DIRECTION);
+        TileEntity tile = this.world.getTileEntity(this.pos.offset(direction));
         if(tile == null)
             return LazyOptional.empty();
-        return tile.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, Direction.UP);
+        return tile.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, direction.getOpposite());
     }
 
     public void setRangeX(int range){
