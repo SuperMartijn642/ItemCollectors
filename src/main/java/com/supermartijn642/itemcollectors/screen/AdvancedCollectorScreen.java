@@ -1,14 +1,13 @@
 package com.supermartijn642.itemcollectors.screen;
 
 import com.mojang.blaze3d.matrix.MatrixStack;
+import com.supermartijn642.core.TextComponents;
 import com.supermartijn642.core.gui.ScreenUtils;
 import com.supermartijn642.core.gui.TileEntityBaseContainerScreen;
 import com.supermartijn642.itemcollectors.CollectorTile;
 import com.supermartijn642.itemcollectors.ItemCollectors;
 import com.supermartijn642.itemcollectors.packet.*;
 import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.text.StringTextComponent;
-import net.minecraft.util.text.TranslationTextComponent;
 
 /**
  * Created 7/15/2020 by SuperMartijn642
@@ -22,7 +21,7 @@ public class AdvancedCollectorScreen extends TileEntityBaseContainerScreen<Colle
     private ShowAreaButton showAreaButton;
 
     public AdvancedCollectorScreen(AdvancedCollectorContainer container){
-        super(container, new StringTextComponent(""));
+        super(container, TextComponents.empty().get());
     }
 
     @Override
@@ -69,14 +68,14 @@ public class AdvancedCollectorScreen extends TileEntityBaseContainerScreen<Colle
         ScreenUtils.drawCenteredString(matrixStack, tile.getBlockState().getBlock().getTranslatedName(), this.sizeX() / 2f, 6);
         ScreenUtils.drawString(matrixStack, this.playerInventory.getDisplayName(), 32, 112);
 
-        ScreenUtils.drawString(matrixStack, new TranslationTextComponent("gui.itemcollectors.basic_collector.range",
-            (tile.rangeX * 2 + 1), (tile.rangeY * 2 + 1), (tile.rangeZ * 2 + 1)), 8, 26);
-        ScreenUtils.drawCenteredString(matrixStack, new StringTextComponent("x:"), 25, 51);
-        ScreenUtils.drawCenteredString(matrixStack, new StringTextComponent("" + tile.rangeX), 39, 52);
-        ScreenUtils.drawCenteredString(matrixStack, new StringTextComponent("y:"), 68, 51);
-        ScreenUtils.drawCenteredString(matrixStack, new StringTextComponent("" + tile.rangeY), 82, 52);
-        ScreenUtils.drawCenteredString(matrixStack, new StringTextComponent("z:"), 111, 51);
-        ScreenUtils.drawCenteredString(matrixStack, new StringTextComponent("" + tile.rangeZ), 125, 52);
-        ScreenUtils.drawString(matrixStack, new TranslationTextComponent("gui.itemcollectors.advanced_collector.filter"), 8, 78);
+        ScreenUtils.drawString(matrixStack, TextComponents.translation("gui.itemcollectors.basic_collector.range",
+            (tile.rangeX * 2 + 1), (tile.rangeY * 2 + 1), (tile.rangeZ * 2 + 1)).get(), 8, 26);
+        ScreenUtils.drawCenteredString(matrixStack, TextComponents.string("x:").get(), 25, 51);
+        ScreenUtils.drawCenteredString(matrixStack, TextComponents.string("" + tile.rangeX).get(), 39, 52);
+        ScreenUtils.drawCenteredString(matrixStack, TextComponents.string("y:").get(), 68, 51);
+        ScreenUtils.drawCenteredString(matrixStack, TextComponents.string("" + tile.rangeY).get(), 82, 52);
+        ScreenUtils.drawCenteredString(matrixStack, TextComponents.string("z:").get(), 111, 51);
+        ScreenUtils.drawCenteredString(matrixStack, TextComponents.string("" + tile.rangeZ).get(), 125, 52);
+        ScreenUtils.drawString(matrixStack, TextComponents.translation("gui.itemcollectors.advanced_collector.filter").get(), 8, 78);
     }
 }
