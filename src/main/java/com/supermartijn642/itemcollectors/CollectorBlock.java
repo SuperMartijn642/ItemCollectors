@@ -1,11 +1,9 @@
 package com.supermartijn642.itemcollectors;
 
-import com.supermartijn642.core.ClientUtils;
 import com.supermartijn642.core.TextComponents;
 import com.supermartijn642.core.block.BaseBlock;
 import com.supermartijn642.core.block.BlockShape;
 import com.supermartijn642.itemcollectors.screen.AdvancedCollectorContainer;
-import com.supermartijn642.itemcollectors.screen.BasicCollectorScreen;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.material.Material;
@@ -85,7 +83,7 @@ public class CollectorBlock extends BaseBlock {
     @Override
     public boolean onBlockActivated(BlockState state, World worldIn, BlockPos pos, PlayerEntity player, Hand handIn, BlockRayTraceResult p_225533_6_){
         if(worldIn.isRemote && !this.hasFilter.get())
-            ClientUtils.displayScreen(new BasicCollectorScreen(pos));
+            ClientProxy.openBasicCollectorScreen(pos);
         else if(!worldIn.isRemote && this.hasFilter.get())
             NetworkHooks.openGui((ServerPlayerEntity)player, new INamedContainerProvider() {
                 @Override
