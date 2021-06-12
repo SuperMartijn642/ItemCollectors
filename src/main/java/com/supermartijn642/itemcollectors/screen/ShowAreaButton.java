@@ -1,11 +1,11 @@
 package com.supermartijn642.itemcollectors.screen;
 
+import com.supermartijn642.core.TextComponents;
 import com.supermartijn642.core.gui.ScreenUtils;
 import com.supermartijn642.core.gui.widget.AbstractButtonWidget;
 import com.supermartijn642.core.gui.widget.IHoverTextWidget;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.text.ITextComponent;
-import net.minecraft.util.text.TranslationTextComponent;
 
 /**
  * Created 7/8/2020 by SuperMartijn642
@@ -37,6 +37,6 @@ public class ShowAreaButton extends AbstractButtonWidget implements IHoverTextWi
 
     @Override
     public ITextComponent getHoverText(){
-        return new TranslationTextComponent("gui.itemcollectors.advanced_collector.show_area." + (this.on ? "on" : "off"));
+        return TextComponents.translation("gui.itemcollectors.advanced_collector.show_area." + (this.on ? "on" : "off")).get();
     }
 }
