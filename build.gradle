@@ -72,11 +72,17 @@ minecraft {
     }
 }
 
+repositories {
+    flatDir {
+        dirs 'lib'
+    }
+}
+
 dependencies {
     minecraft 'net.minecraftforge:forge:1.16.4-35.0.1'
 
     // Core lib
-    compile fg.deobf('curse.maven:supermartijn642s-core-lib:3336261')
+    compile fg.deobf('com.supermartijn642.core:supermartijn642corelib:1.0.5-dev-mc1.16.5')//fg.deobf('curse.maven:supermartijn642s-core-lib:3336261')
     // Config lib
     compile fg.deobf('curse.maven:supermartijn642s-config-lib:3344080')
 }
