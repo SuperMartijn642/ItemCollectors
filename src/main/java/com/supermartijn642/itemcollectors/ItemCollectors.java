@@ -21,7 +21,7 @@ import net.minecraftforge.registries.ObjectHolder;
 @Mod("itemcollectors")
 public class ItemCollectors {
 
-    public static final PacketChannel CHANNEL = PacketChannel.create();
+    public static final PacketChannel CHANNEL = PacketChannel.create("itemcollectors");
 
     @ObjectHolder("itemcollectors:basic_collector")
     public static Block basic_collector;
