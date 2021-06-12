@@ -1,5 +1,6 @@
 package com.supermartijn642.itemcollectors;
 
+import com.supermartijn642.core.render.RenderUtils;
 import net.minecraft.client.renderer.tileentity.TileEntitySpecialRenderer;
 
 /**
@@ -9,9 +10,7 @@ public class CollectorTileRenderer extends TileEntitySpecialRenderer<CollectorTi
 
     @Override
     public void render(CollectorTile tile, double x, double y, double z, float partialTicks, int destroyStage, float alpha){
-        if(!tile.showArea)
-            return;
-
-        ClientProxy.drawShape(tile.getAffectedArea(), 245 / 255f, 212 / 255f, 66 / 255f, 1);
+        if(tile.showArea)
+            RenderUtils.renderBox(tile.getAffectedArea(), 245 / 255f, 212 / 255f, 66 / 255f);
     }
 }

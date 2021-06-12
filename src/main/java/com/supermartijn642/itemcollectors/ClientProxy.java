@@ -1,14 +1,11 @@
 package com.supermartijn642.itemcollectors;
 
 import com.supermartijn642.core.ClientUtils;
+import com.supermartijn642.core.render.RenderUtils;
 import net.minecraft.block.Block;
-import net.minecraft.client.renderer.GlStateManager;
-import net.minecraft.client.renderer.RenderGlobal;
 import net.minecraft.client.renderer.block.model.ModelResourceLocation;
-import net.minecraft.client.renderer.entity.RenderManager;
 import net.minecraft.item.Item;
 import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.RayTraceResult;
 import net.minecraft.world.World;
 import net.minecraftforge.client.event.DrawBlockHighlightEvent;
@@ -48,25 +45,8 @@ public class ClientProxy {
             World world = ClientUtils.getWorld();
             TileEntity tile = world.getTileEntity(e.getTarget().getBlockPos());
             if(tile instanceof CollectorTile)
-                drawShape(((CollectorTile)tile).getAffectedArea(), 245 / 255f, 212 / 255f, 66 / 255f, 1);
+                RenderUtils.renderBox(((CollectorTile)tile).getAffectedArea(), 245 / 255f, 212 / 255f, 66 / 255f);
         }
-    }
-
-    public static void drawShape(AxisAlignedBB box, float red, float green, float blue, float alpha){
-        GlStateManager.pushMatrix();
-        GlStateManager.disableTexture2D();
-        GlStateManager.disableLighting();
-        GlStateManager.disableBlend();
-        GlStateManager.enableBlend();
-        GlStateManager.tryBlendFuncSeparate(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA, GlStateManager.SourceFactor.ONE, GlStateManager.DestFactor.ZERO);
-
-        RenderManager manager = ClientUtils.getMinecraft().getRenderManager();
-        GlStateManager.translate(-manager.viewerPosX, -manager.viewerPosY, -manager.viewerPosZ);
-
-        RenderGlobal.drawSelectionBoundingBox(box, red, green, blue, alpha);
-
-        GlStateManager.popMatrix();
-        GlStateManager.enableTexture2D();
     }
 
 }
