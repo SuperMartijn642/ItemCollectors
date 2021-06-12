@@ -27,7 +27,7 @@ public class ItemCollectors {
     @Mod.Instance
     public static ItemCollectors instance;
 
-    public static final PacketChannel CHANNEL = PacketChannel.create();
+    public static final PacketChannel CHANNEL = PacketChannel.create("itemcollectors");
 
     @GameRegistry.ObjectHolder("itemcollectors:basic_collector")
     public static Block basic_collector;
