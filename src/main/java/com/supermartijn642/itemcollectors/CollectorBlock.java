@@ -2,8 +2,10 @@ package com.supermartijn642.itemcollectors;
 
 import com.supermartijn642.core.ClientUtils;
 import com.supermartijn642.core.block.BaseBlock;
+import com.supermartijn642.core.block.BlockShape;
 import com.supermartijn642.itemcollectors.screen.AdvancedCollectorContainer;
 import com.supermartijn642.itemcollectors.screen.BasicCollectorScreen;
+import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.material.MaterialColor;
@@ -13,15 +15,19 @@ import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.inventory.container.Container;
 import net.minecraft.inventory.container.INamedContainerProvider;
+import net.minecraft.item.BlockItemUseContext;
 import net.minecraft.item.ItemStack;
+import net.minecraft.state.EnumProperty;
+import net.minecraft.state.StateContainer;
+import net.minecraft.state.properties.BlockStateProperties;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.ActionResultType;
+import net.minecraft.util.Direction;
 import net.minecraft.util.Hand;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.BlockRayTraceResult;
 import net.minecraft.util.math.shapes.ISelectionContext;
 import net.minecraft.util.math.shapes.VoxelShape;
-import net.minecraft.util.math.shapes.VoxelShapes;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.StringTextComponent;
 import net.minecraft.util.text.TextFormatting;
@@ -40,20 +46,31 @@ import java.util.function.Supplier;
  */
 public class CollectorBlock extends BaseBlock {
 
-    private static final VoxelShape SHAPE = VoxelShapes.or(
-        VoxelShapes.create(3 / 16d, 0 / 16d, 3 / 16d, 13 / 16d, 1 / 16d, 13 / 16d),
-        VoxelShapes.create(5 / 16d, 1 / 16d, 5 / 16d, 11 / 16d, 2 / 16d, 11 / 16d),
-        VoxelShapes.create(6 / 16d, 2 / 16d, 6 / 16d, 10 / 16d, 5 / 16d, 10 / 16d),
-        VoxelShapes.create(5 / 16d, 5 / 16d, 5 / 16d, 11 / 16d, 6 / 16d, 11 / 16d),
-        VoxelShapes.create(5 / 16d, 6 / 16d, 5 / 16d, 6 / 16d, 11 / 16d, 6 / 16d),
-        VoxelShapes.create(5 / 16d, 6 / 16d, 10 / 16d, 6 / 16d, 11 / 16d, 11 / 16d),
-        VoxelShapes.create(10 / 16d, 6 / 16d, 5 / 16d, 11 / 16d, 11 / 16d, 6 / 16d),
-        VoxelShapes.create(10 / 16d, 6 / 16d, 10 / 16d, 11 / 16d, 11 / 16d, 11 / 16d),
-        VoxelShapes.create(6 / 16d, 10 / 16d, 5 / 16d, 11 / 16d, 11 / 16d, 6 / 16d),
-        VoxelShapes.create(6 / 16d, 10 / 16d, 10 / 16d, 10 / 16d, 11 / 16d, 11 / 16d),
-        VoxelShapes.create(5 / 16d, 10 / 16d, 6 / 16d, 6 / 16d, 11 / 16d, 10 / 16d),
-        VoxelShapes.create(10 / 16d, 10 / 16d, 6 / 16d, 11 / 16d, 11 / 16d, 10 / 16d),
-        VoxelShapes.create(6 / 16d, 6 / 16d, 6 / 16d, 10 / 16d, 10 / 16d, 10 / 16d));
+    public static final EnumProperty<Direction> DIRECTION = BlockStateProperties.FACING;
+    private static final BlockShape SHAPE = BlockShape.or(
+        BlockShape.createBlockShape(3, 0, 3, 13, 1, 13),
+        BlockShape.createBlockShape(5, 1, 5, 11, 2, 11),
+        BlockShape.createBlockShape(6, 2, 6, 10, 5, 10),
+        BlockShape.createBlockShape(5, 5, 5, 11, 6, 11),
+        BlockShape.createBlockShape(5, 6, 5, 6, 11, 6),
+        BlockShape.createBlockShape(5, 6, 10, 6, 11, 11),
+        BlockShape.createBlockShape(10, 6, 5, 11, 11, 6),
+        BlockShape.createBlockShape(10, 6, 10, 11, 11, 11),
+        BlockShape.createBlockShape(6, 10, 5, 11, 11, 6),
+        BlockShape.createBlockShape(6, 10, 10, 10, 11, 11),
+        BlockShape.createBlockShape(5, 10, 6, 6, 11, 10),
+        BlockShape.createBlockShape(10, 10, 6, 11, 11, 10),
+        BlockShape.createBlockShape(6, 6, 6, 10, 10, 10));
+    private static final BlockShape[] SHAPES = new BlockShape[6];
+
+    static{
+        SHAPES[Direction.DOWN.getIndex()] = SHAPE;
+        SHAPES[Direction.UP.getIndex()] = SHAPE.rotate(Direction.Axis.X).rotate(Direction.Axis.X);
+        SHAPES[Direction.NORTH.getIndex()] = SHAPE.rotate(Direction.Axis.X).rotate(Direction.Axis.Y).rotate(Direction.Axis.Y);
+        SHAPES[Direction.EAST.getIndex()] = SHAPE.rotate(Direction.Axis.X).rotate(Direction.Axis.Y).rotate(Direction.Axis.Y).rotate(Direction.Axis.Y);
+        SHAPES[Direction.SOUTH.getIndex()] = SHAPE.rotate(Direction.Axis.X);
+        SHAPES[Direction.WEST.getIndex()] = SHAPE.rotate(Direction.Axis.X).rotate(Direction.Axis.Y);
+    }
 
     private final Supplier<CollectorTile> tileSupplier;
     private final Supplier<Integer> maxRange;
@@ -64,6 +81,7 @@ public class CollectorBlock extends BaseBlock {
         this.tileSupplier = tileSupplier;
         this.maxRange = maxRange;
         this.hasFilter = hasFilter;
+        this.setDefaultState(this.getDefaultState().with(DIRECTION, Direction.DOWN));
     }
 
     @Override
@@ -99,12 +117,23 @@ public class CollectorBlock extends BaseBlock {
 
     @Override
     public VoxelShape getShape(BlockState state, IBlockReader worldIn, BlockPos pos, ISelectionContext context){
-        return SHAPE;
+        return SHAPES[state.get(DIRECTION).getIndex()].getUnderlying();
     }
 
     @Override
     public void addInformation(ItemStack stack, IBlockReader worldIn, List<ITextComponent> tooltip, ITooltipFlag flagIn){
         tooltip.add(new TranslationTextComponent("itemcollectors." + (this.hasFilter.get() ? "advanced" : "basic") + "_collector.info", this.maxRange.get()).applyTextStyle(TextFormatting.AQUA));
         super.addInformation(stack, worldIn, tooltip, flagIn);
+    }
+
+    @Override
+    protected void fillStateContainer(StateContainer.Builder<Block,BlockState> builder){
+        builder.add(DIRECTION);
+    }
+
+    @Nullable
+    @Override
+    public BlockState getStateForPlacement(BlockItemUseContext context){
+        return this.getDefaultState().with(DIRECTION, context.getFace().getOpposite());
     }
 }
