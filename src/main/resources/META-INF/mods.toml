@@ -55,7 +55,7 @@ description='''Item Collectors adds Collectors which collect items in a specifie
 [[dependencies.itemcollectors]]
     modId="supermartijn642corelib"
     mandatory=true
-    versionRange="[1.0.5,1.1.0)"
+    versionRange="[1.0.6,1.1.0)"
     ordering="NONE"
     side="BOTH"
 # Here's another dependency
