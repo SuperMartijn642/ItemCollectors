@@ -1,11 +1,11 @@
 package com.supermartijn642.itemcollectors.screen;
 
+import com.supermartijn642.core.TextComponents;
 import com.supermartijn642.core.gui.ScreenUtils;
 import com.supermartijn642.core.gui.widget.AbstractButtonWidget;
 import com.supermartijn642.core.gui.widget.IHoverTextWidget;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.text.ITextComponent;
-import net.minecraft.util.text.TextComponentTranslation;
 
 /**
  * Created 7/8/2020 by SuperMartijn642
@@ -37,6 +37,6 @@ public class DurabilityButton extends AbstractButtonWidget implements IHoverText
 
     @Override
     public ITextComponent getHoverText(){
-        return new TextComponentTranslation("gui.itemcollectors.advanced_collector.durability." + (this.on ? "on" : "off"));
+        return TextComponents.translation("gui.itemcollectors.advanced_collector.durability." + (this.on ? "on" : "off")).get();
     }
 }
