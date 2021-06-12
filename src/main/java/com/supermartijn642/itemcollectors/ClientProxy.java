@@ -1,18 +1,11 @@
 package com.supermartijn642.itemcollectors;
 
-import com.mojang.blaze3d.matrix.MatrixStack;
-import com.mojang.blaze3d.vertex.IVertexBuilder;
 import com.supermartijn642.core.ClientUtils;
+import com.supermartijn642.core.render.RenderUtils;
 import com.supermartijn642.itemcollectors.screen.AdvancedCollectorContainer;
 import com.supermartijn642.itemcollectors.screen.AdvancedCollectorScreen;
-import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.ScreenManager;
-import net.minecraft.client.renderer.RenderType;
 import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.math.AxisAlignedBB;
-import net.minecraft.util.math.shapes.VoxelShapes;
-import net.minecraft.util.math.vector.Matrix4f;
-import net.minecraft.util.math.vector.Vector3d;
 import net.minecraft.world.World;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.client.event.DrawHighlightEvent;
@@ -41,27 +34,9 @@ public class ClientProxy {
         public static void onBlockHighlight(DrawHighlightEvent.HighlightBlock e){
             World world = ClientUtils.getWorld();
             TileEntity tile = world.getTileEntity(e.getTarget().getPos());
-            if(tile instanceof CollectorTile){
-                MatrixStack matrixStack = e.getMatrix();
-                matrixStack.push();
-
-                Vector3d playerPos = Minecraft.getInstance().player.getEyePosition(e.getPartialTicks());
-                matrixStack.translate(-playerPos.x, -playerPos.y, -playerPos.z);
-                IVertexBuilder builder = e.getBuffers().getBuffer(RenderType.getLines());
-
-                drawShape(matrixStack, builder, ((CollectorTile)tile).getAffectedArea(), 245 / 255f, 212 / 255f, 66 / 255f, 1);
-
-                matrixStack.pop();
-            }
+            if(tile instanceof CollectorTile)
+                RenderUtils.renderBox(e.getMatrix(), ((CollectorTile)tile).getAffectedArea(), 245 / 255f, 212 / 255f, 66 / 255f);
         }
-    }
-
-    public static void drawShape(MatrixStack matrixStackIn, IVertexBuilder bufferIn, AxisAlignedBB box, float red, float green, float blue, float alpha){
-        Matrix4f matrix4f = matrixStackIn.getLast().getMatrix();
-        VoxelShapes.create(box).forEachEdge((x1, y1, z1, x2, y2, z2) -> {
-            bufferIn.pos(matrix4f, (float)x1, (float)y1, (float)z1).color(red, green, blue, alpha).endVertex();
-            bufferIn.pos(matrix4f, (float)x2, (float)y2, (float)z2).color(red, green, blue, alpha).endVertex();
-        });
     }
 
 }
