@@ -1,6 +1,7 @@
 package com.supermartijn642.itemcollectors;
 
 import com.supermartijn642.core.ClientUtils;
+import com.supermartijn642.core.TextComponents;
 import com.supermartijn642.core.block.BaseBlock;
 import com.supermartijn642.core.block.BlockShape;
 import com.supermartijn642.itemcollectors.screen.AdvancedCollectorContainer;
@@ -29,9 +30,7 @@ import net.minecraft.util.math.BlockRayTraceResult;
 import net.minecraft.util.math.shapes.ISelectionContext;
 import net.minecraft.util.math.shapes.VoxelShape;
 import net.minecraft.util.text.ITextComponent;
-import net.minecraft.util.text.StringTextComponent;
 import net.minecraft.util.text.TextFormatting;
-import net.minecraft.util.text.TranslationTextComponent;
 import net.minecraft.world.IBlockReader;
 import net.minecraft.world.World;
 import net.minecraftforge.common.ToolType;
@@ -92,7 +91,7 @@ public class CollectorBlock extends BaseBlock {
             NetworkHooks.openGui((ServerPlayerEntity)player, new INamedContainerProvider() {
                 @Override
                 public ITextComponent getDisplayName(){
-                    return new StringTextComponent("");
+                    return TextComponents.empty().get();
                 }
 
                 @Nullable
@@ -122,7 +121,7 @@ public class CollectorBlock extends BaseBlock {
 
     @Override
     public void addInformation(ItemStack stack, IBlockReader worldIn, List<ITextComponent> tooltip, ITooltipFlag flagIn){
-        tooltip.add(new TranslationTextComponent("itemcollectors." + (this.hasFilter.get() ? "advanced" : "basic") + "_collector.info", this.maxRange.get()).mergeStyle(TextFormatting.AQUA));
+        tooltip.add(TextComponents.translation("itemcollectors." + (this.hasFilter.get() ? "advanced" : "basic") + "_collector.info", this.maxRange.get()).color(TextFormatting.AQUA).get());
         super.addInformation(stack, worldIn, tooltip, flagIn);
     }
 
