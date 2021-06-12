@@ -1,11 +1,9 @@
 package com.supermartijn642.itemcollectors;
 
-import com.supermartijn642.core.ClientUtils;
 import com.supermartijn642.core.TextComponents;
 import com.supermartijn642.core.ToolType;
 import com.supermartijn642.core.block.BaseBlock;
 import com.supermartijn642.core.block.BlockShape;
-import com.supermartijn642.itemcollectors.screen.BasicCollectorScreen;
 import net.minecraft.block.BlockDirectional;
 import net.minecraft.block.material.MapColor;
 import net.minecraft.block.material.Material;
@@ -82,7 +80,7 @@ public class CollectorBlock extends BaseBlock {
     @Override
     public boolean onBlockActivated(World worldIn, BlockPos pos, IBlockState state, EntityPlayer player, EnumHand handIn, EnumFacing facing, float hitX, float hitY, float hitZ){
         if(worldIn.isRemote && !this.hasFilter.get())
-            ClientUtils.displayScreen(new BasicCollectorScreen(pos));
+            ClientProxy.openBasicCollectorScreen(pos);
         else if(!worldIn.isRemote && this.hasFilter.get())
             player.openGui(ItemCollectors.instance, 0, worldIn, pos.getX(), pos.getY(), pos.getZ());
         return true;
