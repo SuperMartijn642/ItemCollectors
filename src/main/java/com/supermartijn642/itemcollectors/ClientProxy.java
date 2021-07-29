@@ -24,7 +24,7 @@ public class ClientProxy {
 
     @SubscribeEvent
     public static void onSetup(FMLClientSetupEvent e){
-        ScreenManager.registerFactory(ItemCollectors.advanced_collector_container, (ScreenManager.IScreenFactory<AdvancedCollectorContainer,AdvancedCollectorScreen>)(container, inventory, title) -> new AdvancedCollectorScreen(container));
+        ScreenManager.register(ItemCollectors.advanced_collector_container, (ScreenManager.IScreenFactory<AdvancedCollectorContainer,AdvancedCollectorScreen>)(container, inventory, title) -> new AdvancedCollectorScreen(container));
         ClientRegistry.bindTileEntityRenderer(ItemCollectors.basic_collector_tile, CollectorTileRenderer::new);
         ClientRegistry.bindTileEntityRenderer(ItemCollectors.advanced_collector_tile, CollectorTileRenderer::new);
     }
@@ -35,7 +35,7 @@ public class ClientProxy {
         @SubscribeEvent
         public static void onBlockHighlight(DrawHighlightEvent.HighlightBlock e){
             World world = ClientUtils.getWorld();
-            TileEntity tile = world.getTileEntity(e.getTarget().getPos());
+            TileEntity tile = world.getBlockEntity(e.getTarget().getBlockPos());
             if(tile instanceof CollectorTile)
                 RenderUtils.renderBox(e.getMatrix(), ((CollectorTile)tile).getAffectedArea(), 245 / 255f, 212 / 255f, 66 / 255f);
         }

@@ -19,12 +19,12 @@ public class CollectorTileRenderer extends TileEntityRenderer<CollectorTile> {
     @Override
     public void render(CollectorTile tile, float partialTicks, MatrixStack matrixStack, IRenderTypeBuffer buffer, int combinedLight, int combinedOverlay){
         if(tile.showArea){
-            matrixStack.push();
+            matrixStack.pushPose();
             Vector3d camera = RenderUtils.getCameraPosition();
             matrixStack.translate(camera.x, camera.y, camera.z);
-            matrixStack.translate(-tile.getPos().getX(), -tile.getPos().getY(), -tile.getPos().getZ());
+            matrixStack.translate(-tile.getBlockPos().getX(), -tile.getBlockPos().getY(), -tile.getBlockPos().getZ());
             RenderUtils.renderBox(matrixStack, tile.getAffectedArea(), 245 / 255f, 212 / 255f, 66 / 255f);
-            matrixStack.pop();
+            matrixStack.popPose();
         }
     }
 }

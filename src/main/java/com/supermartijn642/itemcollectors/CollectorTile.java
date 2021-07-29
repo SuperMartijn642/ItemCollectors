@@ -59,7 +59,7 @@ public class CollectorTile extends BaseTileEntity implements ITickableTileEntity
 
             AxisAlignedBB area = this.getAffectedArea();
 
-            List<ItemEntity> items = this.world.getEntitiesWithinAABB(ItemEntity.class, area, item -> {
+            List<ItemEntity> items = this.level.getEntitiesOfClass(ItemEntity.class, area, item -> {
                 if(!item.isAlive() || (item.getPersistentData().contains("PreventRemoteMovement") && !item.getPersistentData().contains("AllowMachineRemoteMovement")))
                     return false;
                 if(!this.hasFilter.get())
@@ -69,8 +69,8 @@ public class CollectorTile extends BaseTileEntity implements ITickableTileEntity
                     return false;
                 for(int i = 0; i < 9; i++){
                     ItemStack filter = this.filter.get(i);
-                    if(ItemStack.areItemsEqual(filter, stack) &&
-                        (!this.filterDurability || ItemStack.areItemStackTagsEqual(filter, stack)))
+                    if(ItemStack.isSame(filter, stack) &&
+                        (!this.filterDurability || ItemStack.tagMatches(filter, stack)))
                         return this.filterWhitelist;
                 }
                 return !this.filterWhitelist;
@@ -94,15 +94,15 @@ public class CollectorTile extends BaseTileEntity implements ITickableTileEntity
     }
 
     public AxisAlignedBB getAffectedArea(){
-        return new AxisAlignedBB(this.pos.add(-this.rangeX, -this.rangeY, -this.rangeZ), this.pos.add(this.rangeX + 1, this.rangeY + 1, this.rangeZ + 1));
+        return new AxisAlignedBB(this.worldPosition.offset(-this.rangeX, -this.rangeY, -this.rangeZ), this.worldPosition.offset(this.rangeX + 1, this.rangeY + 1, this.rangeZ + 1));
     }
 
     private LazyOptional<IItemHandler> getOutputItemHandler(){
         BlockState state = this.getBlockState();
         if(!state.hasProperty(CollectorBlock.DIRECTION))
             return LazyOptional.empty();
-        Direction direction = state.get(CollectorBlock.DIRECTION);
-        TileEntity tile = this.world.getTileEntity(this.pos.offset(direction));
+        Direction direction = state.getValue(CollectorBlock.DIRECTION);
+        TileEntity tile = this.level.getBlockEntity(this.worldPosition.relative(direction));
         if(tile == null)
             return LazyOptional.empty();
         return tile.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, direction.getOpposite());
@@ -144,7 +144,7 @@ public class CollectorTile extends BaseTileEntity implements ITickableTileEntity
         tag.putInt("rangeZ", this.rangeZ);
         for(int i = 0; i < 9; i++){
             if(!this.filter.get(i).isEmpty())
-                tag.put("filter" + i, this.filter.get(i).write(new CompoundNBT()));
+                tag.put("filter" + i, this.filter.get(i).save(new CompoundNBT()));
         }
         tag.putBoolean("filterWhitelist", this.filterWhitelist);
         tag.putBoolean("filterDurability", this.filterDurability);
@@ -161,7 +161,7 @@ public class CollectorTile extends BaseTileEntity implements ITickableTileEntity
         if(tag.contains("rangeZ"))
             this.rangeZ = tag.getInt("rangeZ");
         for(int i = 0; i < 9; i++)
-            this.filter.set(i, tag.contains("filter" + i) ? ItemStack.read(tag.getCompound("filter" + i)) : ItemStack.EMPTY);
+            this.filter.set(i, tag.contains("filter" + i) ? ItemStack.of(tag.getCompound("filter" + i)) : ItemStack.EMPTY);
         this.filterWhitelist = tag.contains("filterWhitelist") && tag.getBoolean("filterWhitelist");
         this.filterDurability = tag.contains("filterDurability") && tag.getBoolean("filterDurability");
         this.showArea = tag.contains("showArea") && tag.getBoolean("showArea");

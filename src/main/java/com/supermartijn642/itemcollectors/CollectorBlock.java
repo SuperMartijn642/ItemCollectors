@@ -61,12 +61,12 @@ public class CollectorBlock extends BaseBlock {
     private static final BlockShape[] SHAPES = new BlockShape[6];
 
     static{
-        SHAPES[Direction.DOWN.getIndex()] = SHAPE;
-        SHAPES[Direction.UP.getIndex()] = SHAPE.rotate(Direction.Axis.X).rotate(Direction.Axis.X);
-        SHAPES[Direction.NORTH.getIndex()] = SHAPE.rotate(Direction.Axis.X).rotate(Direction.Axis.Y).rotate(Direction.Axis.Y);
-        SHAPES[Direction.EAST.getIndex()] = SHAPE.rotate(Direction.Axis.X).rotate(Direction.Axis.Y).rotate(Direction.Axis.Y).rotate(Direction.Axis.Y);
-        SHAPES[Direction.SOUTH.getIndex()] = SHAPE.rotate(Direction.Axis.X);
-        SHAPES[Direction.WEST.getIndex()] = SHAPE.rotate(Direction.Axis.X).rotate(Direction.Axis.Y);
+        SHAPES[Direction.DOWN.get3DDataValue()] = SHAPE;
+        SHAPES[Direction.UP.get3DDataValue()] = SHAPE.rotate(Direction.Axis.X).rotate(Direction.Axis.X);
+        SHAPES[Direction.NORTH.get3DDataValue()] = SHAPE.rotate(Direction.Axis.X).rotate(Direction.Axis.Y).rotate(Direction.Axis.Y);
+        SHAPES[Direction.EAST.get3DDataValue()] = SHAPE.rotate(Direction.Axis.X).rotate(Direction.Axis.Y).rotate(Direction.Axis.Y).rotate(Direction.Axis.Y);
+        SHAPES[Direction.SOUTH.get3DDataValue()] = SHAPE.rotate(Direction.Axis.X);
+        SHAPES[Direction.WEST.get3DDataValue()] = SHAPE.rotate(Direction.Axis.X).rotate(Direction.Axis.Y);
     }
 
     private final Supplier<CollectorTile> tileSupplier;
@@ -74,18 +74,18 @@ public class CollectorBlock extends BaseBlock {
     private final Supplier<Boolean> hasFilter;
 
     public CollectorBlock(String registryName, Supplier<CollectorTile> tileSupplier, Supplier<Integer> maxRange, Supplier<Boolean> hasFilter){
-        super(registryName, false, Properties.create(Material.ROCK, MaterialColor.BLACK).harvestTool(ToolType.PICKAXE).harvestLevel(1).hardnessAndResistance(5, 1200));
+        super(registryName, false, Properties.of(Material.STONE, MaterialColor.COLOR_BLACK).harvestTool(ToolType.PICKAXE).harvestLevel(1).strength(5, 1200));
         this.tileSupplier = tileSupplier;
         this.maxRange = maxRange;
         this.hasFilter = hasFilter;
-        this.setDefaultState(this.getDefaultState().with(DIRECTION, Direction.DOWN));
+        this.registerDefaultState(this.defaultBlockState().setValue(DIRECTION, Direction.DOWN));
     }
 
     @Override
-    public ActionResultType onBlockActivated(BlockState state, World worldIn, BlockPos pos, PlayerEntity player, Hand handIn, BlockRayTraceResult p_225533_6_){
-        if(worldIn.isRemote && !this.hasFilter.get())
+    public ActionResultType use(BlockState state, World worldIn, BlockPos pos, PlayerEntity player, Hand handIn, BlockRayTraceResult p_225533_6_){
+        if(worldIn.isClientSide && !this.hasFilter.get())
             ClientProxy.openBasicCollectorScreen(pos);
-        else if(!worldIn.isRemote && this.hasFilter.get())
+        else if(!worldIn.isClientSide && this.hasFilter.get())
             NetworkHooks.openGui((ServerPlayerEntity)player, new INamedContainerProvider() {
                 @Override
                 public ITextComponent getDisplayName(){
@@ -114,23 +114,23 @@ public class CollectorBlock extends BaseBlock {
 
     @Override
     public VoxelShape getShape(BlockState state, IBlockReader worldIn, BlockPos pos, ISelectionContext context){
-        return SHAPES[state.get(DIRECTION).getIndex()].getUnderlying();
+        return SHAPES[state.getValue(DIRECTION).get3DDataValue()].getUnderlying();
     }
 
     @Override
-    public void addInformation(ItemStack stack, IBlockReader worldIn, List<ITextComponent> tooltip, ITooltipFlag flagIn){
+    public void appendHoverText(ItemStack stack, IBlockReader worldIn, List<ITextComponent> tooltip, ITooltipFlag flagIn){
         tooltip.add(TextComponents.translation("itemcollectors." + (this.hasFilter.get() ? "advanced" : "basic") + "_collector.info", this.maxRange.get()).color(TextFormatting.AQUA).get());
-        super.addInformation(stack, worldIn, tooltip, flagIn);
+        super.appendHoverText(stack, worldIn, tooltip, flagIn);
     }
 
     @Override
-    protected void fillStateContainer(StateContainer.Builder<Block,BlockState> builder){
+    protected void createBlockStateDefinition(StateContainer.Builder<Block,BlockState> builder){
         builder.add(DIRECTION);
     }
 
     @Nullable
     @Override
     public BlockState getStateForPlacement(BlockItemUseContext context){
-        return this.getDefaultState().with(DIRECTION, context.getFace().getOpposite());
+        return this.defaultBlockState().setValue(DIRECTION, context.getClickedFace().getOpposite());
     }
 }

@@ -63,6 +63,6 @@ public class BasicCollectorScreen extends TileEntityBaseScreen<CollectorTile> {
         ScreenUtils.drawCenteredString(matrixStack, TextComponents.string("z:").get(), 111, 51);
         ScreenUtils.drawCenteredString(matrixStack, TextComponents.string("" + tile.rangeZ).get(), 125, 52);
 
-        GlStateManager.enableAlphaTest();
+        GlStateManager._enableAlphaTest();
     }
 }
