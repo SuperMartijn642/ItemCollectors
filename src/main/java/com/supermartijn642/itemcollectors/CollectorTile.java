@@ -1,15 +1,16 @@
 package com.supermartijn642.itemcollectors;
 
 import com.supermartijn642.core.block.BaseTileEntity;
-import net.minecraft.block.BlockState;
-import net.minecraft.entity.item.ItemEntity;
-import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.tileentity.ITickableTileEntity;
-import net.minecraft.tileentity.TileEntity;
-import net.minecraft.tileentity.TileEntityType;
-import net.minecraft.util.Direction;
-import net.minecraft.util.math.AxisAlignedBB;
+import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.item.ItemEntity;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.world.level.block.entity.BlockEntityType;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.phys.AABB;
 import net.minecraftforge.common.util.LazyOptional;
 import net.minecraftforge.items.CapabilityItemHandler;
 import net.minecraftforge.items.IItemHandler;
@@ -21,16 +22,16 @@ import java.util.function.Supplier;
 /**
  * Created 7/15/2020 by SuperMartijn642
  */
-public class CollectorTile extends BaseTileEntity implements ITickableTileEntity {
+public class CollectorTile extends BaseTileEntity {
 
     private static final int MIN_RANGE = 1;
 
-    public static CollectorTile basicTile(){
-        return new CollectorTile(ItemCollectors.basic_collector_tile, ItemCollectorsConfig.basicCollectorMaxRange, ItemCollectorsConfig.basicCollectorFilter);
+    public static CollectorTile basicTile(BlockPos pos, BlockState state){
+        return new CollectorTile(ItemCollectors.basic_collector_tile, pos, state, ItemCollectorsConfig.basicCollectorMaxRange, ItemCollectorsConfig.basicCollectorFilter);
     }
 
-    public static CollectorTile advancedTile(){
-        return new CollectorTile(ItemCollectors.advanced_collector_tile, ItemCollectorsConfig.advancedCollectorMaxRange, ItemCollectorsConfig.advancedCollectorFilter);
+    public static CollectorTile advancedTile(BlockPos pos, BlockState state){
+        return new CollectorTile(ItemCollectors.advanced_collector_tile, pos, state, ItemCollectorsConfig.advancedCollectorMaxRange, ItemCollectorsConfig.advancedCollectorFilter);
     }
 
     private final Supplier<Integer> maxRange;
@@ -42,8 +43,8 @@ public class CollectorTile extends BaseTileEntity implements ITickableTileEntity
     public boolean filterDurability = true;
     public boolean showArea = false;
 
-    public CollectorTile(TileEntityType<CollectorTile> tileEntityType, Supplier<Integer> maxRange, Supplier<Boolean> hasFilter){
-        super(tileEntityType);
+    public CollectorTile(BlockEntityType<CollectorTile> tileEntityType, BlockPos pos, BlockState state, Supplier<Integer> maxRange, Supplier<Boolean> hasFilter){
+        super(tileEntityType, pos, state);
         this.maxRange = maxRange;
         this.rangeX = this.rangeY = this.rangeZ = (int)Math.ceil(maxRange.get() / 2f);
         this.hasFilter = hasFilter;
@@ -51,13 +52,12 @@ public class CollectorTile extends BaseTileEntity implements ITickableTileEntity
             this.filter.add(ItemStack.EMPTY);
     }
 
-    @Override
     public void tick(){
         this.getOutputItemHandler().ifPresent(itemHandler -> {
             if(itemHandler.getSlots() <= 0)
                 return;
 
-            AxisAlignedBB area = this.getAffectedArea();
+            AABB area = this.getAffectedArea();
 
             List<ItemEntity> items = this.level.getEntitiesOfClass(ItemEntity.class, area, item -> {
                 if(!item.isAlive() || (item.getPersistentData().contains("PreventRemoteMovement") && !item.getPersistentData().contains("AllowMachineRemoteMovement")))
@@ -84,7 +84,7 @@ public class CollectorTile extends BaseTileEntity implements ITickableTileEntity
                         stack = itemHandler.insertItem(slot, stack, false);
                         if(stack.isEmpty()){
                             entity.setItem(ItemStack.EMPTY);
-                            entity.remove();
+                            entity.remove(Entity.RemovalReason.DISCARDED);
                             continue loop;
                         }
                     }
@@ -93,8 +93,8 @@ public class CollectorTile extends BaseTileEntity implements ITickableTileEntity
         });
     }
 
-    public AxisAlignedBB getAffectedArea(){
-        return new AxisAlignedBB(this.worldPosition.offset(-this.rangeX, -this.rangeY, -this.rangeZ), this.worldPosition.offset(this.rangeX + 1, this.rangeY + 1, this.rangeZ + 1));
+    public AABB getAffectedArea(){
+        return new AABB(this.worldPosition.offset(-this.rangeX, -this.rangeY, -this.rangeZ), this.worldPosition.offset(this.rangeX + 1, this.rangeY + 1, this.rangeZ + 1));
     }
 
     private LazyOptional<IItemHandler> getOutputItemHandler(){
@@ -102,7 +102,7 @@ public class CollectorTile extends BaseTileEntity implements ITickableTileEntity
         if(!state.hasProperty(CollectorBlock.DIRECTION))
             return LazyOptional.empty();
         Direction direction = state.getValue(CollectorBlock.DIRECTION);
-        TileEntity tile = this.level.getBlockEntity(this.worldPosition.relative(direction));
+        BlockEntity tile = this.level.getBlockEntity(this.worldPosition.relative(direction));
         if(tile == null)
             return LazyOptional.empty();
         return tile.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, direction.getOpposite());
@@ -137,14 +137,14 @@ public class CollectorTile extends BaseTileEntity implements ITickableTileEntity
     }
 
     @Override
-    protected CompoundNBT writeData(){
-        CompoundNBT tag = new CompoundNBT();
+    protected CompoundTag writeData(){
+        CompoundTag tag = new CompoundTag();
         tag.putInt("rangeX", this.rangeX);
         tag.putInt("rangeY", this.rangeY);
         tag.putInt("rangeZ", this.rangeZ);
         for(int i = 0; i < 9; i++){
             if(!this.filter.get(i).isEmpty())
-                tag.put("filter" + i, this.filter.get(i).save(new CompoundNBT()));
+                tag.put("filter" + i, this.filter.get(i).save(new CompoundTag()));
         }
         tag.putBoolean("filterWhitelist", this.filterWhitelist);
         tag.putBoolean("filterDurability", this.filterDurability);
@@ -153,7 +153,7 @@ public class CollectorTile extends BaseTileEntity implements ITickableTileEntity
     }
 
     @Override
-    protected void readData(CompoundNBT tag){
+    protected void readData(CompoundTag tag){
         if(tag.contains("rangeX"))
             this.rangeX = tag.getInt("rangeX");
         if(tag.contains("rangeY"))
@@ -168,7 +168,7 @@ public class CollectorTile extends BaseTileEntity implements ITickableTileEntity
     }
 
     @Override
-    public AxisAlignedBB getRenderBoundingBox(){
+    public AABB getRenderBoundingBox(){
         return this.getAffectedArea();
     }
 }

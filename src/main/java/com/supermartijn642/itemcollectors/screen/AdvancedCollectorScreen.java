@@ -1,13 +1,13 @@
 package com.supermartijn642.itemcollectors.screen;
 
-import com.mojang.blaze3d.matrix.MatrixStack;
+import com.mojang.blaze3d.vertex.PoseStack;
 import com.supermartijn642.core.TextComponents;
 import com.supermartijn642.core.gui.ScreenUtils;
 import com.supermartijn642.core.gui.TileEntityBaseContainerScreen;
 import com.supermartijn642.itemcollectors.CollectorTile;
 import com.supermartijn642.itemcollectors.ItemCollectors;
 import com.supermartijn642.itemcollectors.packet.*;
-import net.minecraft.util.ResourceLocation;
+import net.minecraft.resources.ResourceLocation;
 
 /**
  * Created 7/15/2020 by SuperMartijn642
@@ -51,22 +51,22 @@ public class AdvancedCollectorScreen extends TileEntityBaseContainerScreen<Colle
     }
 
     @Override
-    protected void tick(CollectorTile tile){
+    protected void containerTick(CollectorTile tile){
         this.whitelistButton.update(tile.filterWhitelist);
         this.durabilityButton.update(tile.filterDurability);
         this.showAreaButton.update(tile.showArea);
     }
 
     @Override
-    protected void renderBackground(MatrixStack matrixStack, int mouseX, int mouseY, CollectorTile tile){
+    protected void renderBackground(PoseStack matrixStack, int mouseX, int mouseY, CollectorTile tile){
         ScreenUtils.bindTexture(BACKGROUND);
         ScreenUtils.drawTexture(matrixStack, 0, 0, this.sizeX(), this.sizeY());
     }
 
     @Override
-    protected void renderForeground(MatrixStack matrixStack, int mouseX, int mouseY, CollectorTile tile){
+    protected void renderForeground(PoseStack matrixStack, int mouseX, int mouseY, CollectorTile tile){
         ScreenUtils.drawCenteredString(matrixStack, tile.getBlockState().getBlock().getName(), this.sizeX() / 2f, 6);
-        ScreenUtils.drawString(matrixStack, this.inventory.getDisplayName(), 32, 112);
+        ScreenUtils.drawString(matrixStack, this.playerInventoryTitle, 32, 112);
 
         ScreenUtils.drawString(matrixStack, TextComponents.translation("gui.itemcollectors.basic_collector.range",
             (tile.rangeX * 2 + 1), (tile.rangeY * 2 + 1), (tile.rangeZ * 2 + 1)).get(), 8, 26);

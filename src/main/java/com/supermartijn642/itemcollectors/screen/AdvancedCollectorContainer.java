@@ -3,10 +3,10 @@ package com.supermartijn642.itemcollectors.screen;
 import com.supermartijn642.core.gui.TileEntityBaseContainer;
 import com.supermartijn642.itemcollectors.CollectorTile;
 import com.supermartijn642.itemcollectors.ItemCollectors;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.inventory.container.ClickType;
-import net.minecraft.item.ItemStack;
-import net.minecraft.util.math.BlockPos;
+import net.minecraft.core.BlockPos;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.inventory.ClickType;
+import net.minecraft.world.item.ItemStack;
 import net.minecraftforge.items.ItemStackHandler;
 import net.minecraftforge.items.SlotItemHandler;
 
@@ -17,17 +17,17 @@ import javax.annotation.Nonnull;
  */
 public class AdvancedCollectorContainer extends TileEntityBaseContainer<CollectorTile> {
 
-    public AdvancedCollectorContainer(int id, PlayerEntity player, BlockPos pos){
+    public AdvancedCollectorContainer(int id, Player player, BlockPos pos){
         super(ItemCollectors.advanced_collector_container, id, player, pos);
         this.addSlots();
     }
 
     @Override
-    protected void addSlots(PlayerEntity player, CollectorTile tile){
+    protected void addSlots(Player player, CollectorTile tile){
         for(int i = 0; i < 9; i++)
             this.addSlot(new SlotItemHandler(this.itemHandler(), i, 8 + i * 18, 90) {
                 @Override
-                public boolean mayPickup(PlayerEntity playerIn){
+                public boolean mayPickup(Player playerIn){
                     return false;
                 }
             });
@@ -35,32 +35,32 @@ public class AdvancedCollectorContainer extends TileEntityBaseContainer<Collecto
     }
 
     @Override
-    public ItemStack clicked(int slotId, int dragType, ClickType clickTypeIn, PlayerEntity player){
+    public void clicked(int slotId, int dragType, ClickType clickTypeIn, Player player){
         if(slotId >= 0 && slotId < 9){
             CollectorTile tile = this.getObjectOrClose();
             if(tile != null){
-                if(player.inventory.getCarried().isEmpty())
+                if(this.getCarried().isEmpty())
                     tile.filter.set(slotId, ItemStack.EMPTY);
                 else{
-                    ItemStack stack = player.inventory.getCarried().copy();
+                    ItemStack stack = this.getCarried().copy();
                     stack.setCount(1);
                     tile.filter.set(slotId, stack);
                 }
             }
-            return ItemStack.EMPTY;
+            return;
         }
-        return super.clicked(slotId, dragType, clickTypeIn, player);
+        super.clicked(slotId, dragType, clickTypeIn, player);
     }
 
     @Override
-    public ItemStack quickMoveStack(PlayerEntity playerIn, int index){
+    public ItemStack quickMoveStack(Player playerIn, int index){
         if(index >= 0 && index < 9){
             CollectorTile tile = this.getObjectOrClose();
             if(tile != null){
-                if(player.inventory.getCarried().isEmpty())
+                if(this.getCarried().isEmpty())
                     tile.filter.set(index, ItemStack.EMPTY);
                 else{
-                    ItemStack stack = player.inventory.getCarried().copy();
+                    ItemStack stack = this.getCarried().copy();
                     stack.setCount(1);
                     tile.filter.set(index, stack);
                 }

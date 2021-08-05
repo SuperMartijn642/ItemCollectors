@@ -3,12 +3,12 @@ package com.supermartijn642.itemcollectors;
 import com.supermartijn642.core.network.PacketChannel;
 import com.supermartijn642.itemcollectors.packet.*;
 import com.supermartijn642.itemcollectors.screen.AdvancedCollectorContainer;
-import net.minecraft.block.Block;
-import net.minecraft.inventory.container.ContainerType;
-import net.minecraft.item.BlockItem;
-import net.minecraft.item.Item;
-import net.minecraft.item.ItemGroup;
-import net.minecraft.tileentity.TileEntityType;
+import net.minecraft.world.inventory.MenuType;
+import net.minecraft.world.item.BlockItem;
+import net.minecraft.world.item.CreativeModeTab;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraftforge.common.extensions.IForgeContainerType;
 import net.minecraftforge.event.RegistryEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
@@ -29,12 +29,12 @@ public class ItemCollectors {
     public static Block advanced_collector;
 
     @ObjectHolder("itemcollectors:basic_collector_tile")
-    public static TileEntityType<CollectorTile> basic_collector_tile;
+    public static BlockEntityType<CollectorTile> basic_collector_tile;
     @ObjectHolder("itemcollectors:advanced_collector_tile")
-    public static TileEntityType<CollectorTile> advanced_collector_tile;
+    public static BlockEntityType<CollectorTile> advanced_collector_tile;
 
     @ObjectHolder("itemcollectors:filter_collector_container")
-    public static ContainerType<AdvancedCollectorContainer> advanced_collector_container;
+    public static MenuType<AdvancedCollectorContainer> advanced_collector_container;
 
     public ItemCollectors(){
         CHANNEL.registerMessage(PacketIncreaseXRange.class, PacketIncreaseXRange::new, true);
@@ -58,19 +58,19 @@ public class ItemCollectors {
         }
 
         @SubscribeEvent
-        public static void onTileRegistry(final RegistryEvent.Register<TileEntityType<?>> e){
-            e.getRegistry().register(TileEntityType.Builder.of(CollectorTile::basicTile, basic_collector).build(null).setRegistryName("basic_collector_tile"));
-            e.getRegistry().register(TileEntityType.Builder.of(CollectorTile::advancedTile, advanced_collector).build(null).setRegistryName("advanced_collector_tile"));
+        public static void onTileRegistry(final RegistryEvent.Register<BlockEntityType<?>> e){
+            e.getRegistry().register(BlockEntityType.Builder.of(CollectorTile::basicTile, basic_collector).build(null).setRegistryName("basic_collector_tile"));
+            e.getRegistry().register(BlockEntityType.Builder.of(CollectorTile::advancedTile, advanced_collector).build(null).setRegistryName("advanced_collector_tile"));
         }
 
         @SubscribeEvent
         public static void onItemRegistry(final RegistryEvent.Register<Item> e){
-            e.getRegistry().register(new BlockItem(basic_collector, new Item.Properties().tab(ItemGroup.TAB_SEARCH)).setRegistryName("basic_collector"));
-            e.getRegistry().register(new BlockItem(advanced_collector, new Item.Properties().tab(ItemGroup.TAB_SEARCH)).setRegistryName("advanced_collector"));
+            e.getRegistry().register(new BlockItem(basic_collector, new Item.Properties().tab(CreativeModeTab.TAB_SEARCH)).setRegistryName("basic_collector"));
+            e.getRegistry().register(new BlockItem(advanced_collector, new Item.Properties().tab(CreativeModeTab.TAB_SEARCH)).setRegistryName("advanced_collector"));
         }
 
         @SubscribeEvent
-        public static void onContainerRegistry(final RegistryEvent.Register<ContainerType<?>> e){
+        public static void onContainerRegistry(final RegistryEvent.Register<MenuType<?>> e){
             e.getRegistry().register(IForgeContainerType.create((windowId, inv, data) -> new AdvancedCollectorContainer(windowId, inv.player, data.readBlockPos())).setRegistryName("filter_collector_container"));
         }
     }

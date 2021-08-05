@@ -1,14 +1,13 @@
 package com.supermartijn642.itemcollectors.screen;
 
-import com.mojang.blaze3d.matrix.MatrixStack;
-import com.mojang.blaze3d.platform.GlStateManager;
+import com.mojang.blaze3d.vertex.PoseStack;
 import com.supermartijn642.core.TextComponents;
 import com.supermartijn642.core.gui.ScreenUtils;
 import com.supermartijn642.core.gui.TileEntityBaseScreen;
 import com.supermartijn642.itemcollectors.CollectorTile;
 import com.supermartijn642.itemcollectors.ItemCollectors;
 import com.supermartijn642.itemcollectors.packet.*;
-import net.minecraft.util.math.BlockPos;
+import net.minecraft.core.BlockPos;
 
 /**
  * Created 7/15/2020 by SuperMartijn642
@@ -49,7 +48,7 @@ public class BasicCollectorScreen extends TileEntityBaseScreen<CollectorTile> {
     }
 
     @Override
-    protected void render(MatrixStack matrixStack, int mouseX, int mouseY, CollectorTile tile){
+    protected void render(PoseStack matrixStack, int mouseX, int mouseY, CollectorTile tile){
         this.drawScreenBackground(matrixStack);
 
         ScreenUtils.drawCenteredString(matrixStack, TextComponents.blockState(tile.getBlockState()).get(), this.sizeX(tile) / 2f, 6);
@@ -62,7 +61,5 @@ public class BasicCollectorScreen extends TileEntityBaseScreen<CollectorTile> {
         ScreenUtils.drawCenteredString(matrixStack, TextComponents.string("" + tile.rangeY).get(), 82, 52);
         ScreenUtils.drawCenteredString(matrixStack, TextComponents.string("z:").get(), 111, 51);
         ScreenUtils.drawCenteredString(matrixStack, TextComponents.string("" + tile.rangeZ).get(), 125, 52);
-
-        GlStateManager._enableAlphaTest();
     }
 }
