@@ -34,7 +34,6 @@ import net.minecraft.world.level.material.MaterialColor;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.shapes.CollisionContext;
 import net.minecraft.world.phys.shapes.VoxelShape;
-import net.minecraftforge.common.ToolType;
 import net.minecraftforge.fmllegacy.network.NetworkHooks;
 
 import javax.annotation.Nullable;
@@ -78,7 +77,7 @@ public class CollectorBlock extends BaseBlock implements EntityBlock {
     private final Supplier<Boolean> hasFilter;
 
     public CollectorBlock(String registryName, BiFunction<BlockPos,BlockState,CollectorTile> tileSupplier, Supplier<Integer> maxRange, Supplier<Boolean> hasFilter){
-        super(registryName, false, Properties.of(Material.STONE, MaterialColor.COLOR_BLACK).harvestTool(ToolType.PICKAXE).harvestLevel(1).strength(5, 1200));
+        super(registryName, false, Properties.of(Material.STONE, MaterialColor.COLOR_BLACK).requiresCorrectToolForDrops().strength(5, 1200));
         this.tileSupplier = tileSupplier;
         this.maxRange = maxRange;
         this.hasFilter = hasFilter;
