@@ -15,7 +15,7 @@ apply plugin: 'net.minecraftforge.gradle'
 apply plugin: 'eclipse'
 apply plugin: 'com.wynprice.cursemaven'
 
-version = '1.1.2-mc1.14'
+version = '1.1.3-mc1.14'
 group = 'com.supermartijn642.itemcollectors' // http://maven.apache.org/guides/mini/guide-naming-conventions.html
 archivesBaseName = 'itemcollectors'
 
@@ -79,8 +79,8 @@ dependencies {
     minecraft 'net.minecraftforge:forge:1.14.4-28.2.3'
 
     // Core lib
-    compile fg.deobf('curse.maven:supermartijn642s-core-lib:3349594')
-//    implementation 'com.supermartijn642.core:supermartijn642corelib:1.0.12-dev-mc1.14'
+//    compile fg.deobf('curse.maven:supermartijn642s-core-lib:3349594')
+    implementation 'com.supermartijn642.core:supermartijn642corelib:1.0.12-dev-mc1.14'
     // Config lib
     compile fg.deobf('curse.maven:supermartijn642s-config-lib:3413934')
 }
