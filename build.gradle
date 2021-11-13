@@ -71,7 +71,7 @@ minecraft {
 
 repositories {
     flatDir {
-        dirs 'lib'
+        dirs 'libs'
     }
 }
 
