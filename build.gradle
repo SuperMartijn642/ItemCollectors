@@ -70,6 +70,9 @@ minecraft {
 sourceSets.main.resources { srcDir 'src/generated/resources' }
 
 repositories {
+    flatDir {
+        dirs 'libs'
+    }
     maven {
         url "https://www.cursemaven.com"
     }
