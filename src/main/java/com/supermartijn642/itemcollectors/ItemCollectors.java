@@ -21,8 +21,8 @@ public class ItemCollectors {
 
     public static final String MODID = "itemcollectors";
     public static final String NAME = "Item Collectors";
-    public static final String VERSION = "1.1.2";
-    public static final String DEPENDENCIES = "required-after:supermartijn642configlib@[1.0.7,1.1.0);required-after:supermartijn642corelib@[1.0.6,1.1.0)";
+    public static final String VERSION = "1.1.3";
+    public static final String DEPENDENCIES = "required-after:supermartijn642configlib@[1.0.9,1.1.0);required-after:supermartijn642corelib@[1.0.13,1.1.0)";
 
     @Mod.Instance
     public static ItemCollectors instance;
