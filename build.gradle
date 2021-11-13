@@ -78,7 +78,7 @@ repositories {
         url "https://www.cursemaven.com"
     }
     flatDir {
-        dir 'lib'
+        dir 'libs'
     }
 }
 
