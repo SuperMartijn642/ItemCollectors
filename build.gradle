@@ -82,5 +82,5 @@ dependencies {
     compile fg.deobf('curse.maven:supermartijn642s-core-lib:3349594')
 //    implementation 'com.supermartijn642.core:supermartijn642corelib:1.0.12-dev-mc1.14'
     // Config lib
-    compile fg.deobf('curse.maven:supermartijn642s-config-lib:3344070')
+    compile fg.deobf('curse.maven:supermartijn642s-config-lib:3413934')
 }
