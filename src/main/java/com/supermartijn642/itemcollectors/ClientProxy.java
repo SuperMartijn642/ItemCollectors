@@ -7,7 +7,9 @@ import com.supermartijn642.itemcollectors.screen.AdvancedCollectorScreen;
 import com.supermartijn642.itemcollectors.screen.BasicCollectorScreen;
 import net.minecraft.client.gui.ScreenManager;
 import net.minecraft.tileentity.TileEntity;
+import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.vector.Vector3d;
 import net.minecraft.world.World;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.client.event.DrawHighlightEvent;
@@ -15,6 +17,8 @@ import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.client.registry.ClientRegistry;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
+
+import java.util.Random;
 
 /**
  * Created 7/15/2020 by SuperMartijn642
@@ -36,8 +40,24 @@ public class ClientProxy {
         public static void onBlockHighlight(DrawHighlightEvent.HighlightBlock e){
             World world = ClientUtils.getWorld();
             TileEntity tile = world.getBlockEntity(e.getTarget().getBlockPos());
-            if(tile instanceof CollectorTile)
-                RenderUtils.renderBox(e.getMatrix(), ((CollectorTile)tile).getAffectedArea(), 245 / 255f, 212 / 255f, 66 / 255f);
+            if(tile instanceof CollectorTile){
+                e.getMatrix().pushPose();
+                Vector3d camera = RenderUtils.getCameraPosition();
+                e.getMatrix().translate(-camera.x, -camera.y, -camera.z);
+
+                AxisAlignedBB area = ((CollectorTile)tile).getAffectedArea().inflate(0.05f);
+
+                Random random = new Random(tile.getBlockPos().hashCode());
+                float red = random.nextFloat();
+                float green = random.nextFloat();
+                float blue = random.nextFloat();
+                float alpha = 0.3f;
+
+                RenderUtils.renderBox(e.getMatrix(), area, red, green, blue);
+                RenderUtils.renderBoxSides(e.getMatrix(), area, red, green, blue, alpha);
+
+                e.getMatrix().popPose();
+            }
         }
     }
 
