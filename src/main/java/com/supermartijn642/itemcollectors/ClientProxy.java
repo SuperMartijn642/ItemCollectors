@@ -41,9 +41,9 @@ public class ClientProxy {
             Level world = ClientUtils.getWorld();
             BlockEntity tile = world.getBlockEntity(e.getTarget().getBlockPos());
             if(tile instanceof CollectorTile){
-                e.getMatrix().pushPose();
+                e.getPoseStack().pushPose();
                 Vec3 camera = RenderUtils.getCameraPosition();
-                e.getMatrix().translate(-camera.x, -camera.y, -camera.z);
+                e.getPoseStack().translate(-camera.x, -camera.y, -camera.z);
 
                 AABB area = ((CollectorTile)tile).getAffectedArea().inflate(0.05f);
 
@@ -53,10 +53,10 @@ public class ClientProxy {
                 float blue = random.nextFloat();
                 float alpha = 0.3f;
 
-                RenderUtils.renderBox(e.getMatrix(), area, red, green, blue);
-                RenderUtils.renderBoxSides(e.getMatrix(), area, red, green, blue, alpha);
+                RenderUtils.renderBox(e.getPoseStack(), area, red, green, blue);
+                RenderUtils.renderBoxSides(e.getPoseStack(), area, red, green, blue, alpha);
 
-                e.getMatrix().popPose();
+                e.getPoseStack().popPose();
             }
         }
     }
