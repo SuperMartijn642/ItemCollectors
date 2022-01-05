@@ -1,4 +1,5 @@
 <img width='400' src='https://imgur.com/AFMMZIv.png'>  
+
 **Item Collectors** adds **Collectors** which **collect items** in a specified range!
 Item Collectors **range can be changed** and items can be **whitelisted or blacklisted**!
 
