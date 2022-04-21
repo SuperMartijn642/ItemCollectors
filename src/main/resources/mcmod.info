@@ -1,15 +1,15 @@
 [
 {
-  "modid": "itemcollectors",
-  "name": "Item Collectors",
-  "description": "Item Collectors adds Collectors which collect items in a specified range! Item Collectors range can be changed and items can be whitelisted or blacklisted!",
-  "version": "${version}",
-  "mcversion": "${mcversion}",
-  "url": "",
+  "modid": "${mod_id}",
+  "name": "${mod_name}",
+  "description": "${mod_description}",
+  "version": "${mod_version}",
+  "mcversion": "${minecraft_version}",
+  "url": "${mod_page}",
   "updateUrl": "",
   "authorList": ["SuperMartijn642"],
   "credits": "",
-  "logoFile": "itemcollectors.png",
+  "logoFile": "${mod_id}.png",
   "screenshots": [],
   "dependencies": []
 }
