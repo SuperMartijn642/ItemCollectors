@@ -59,14 +59,14 @@ public class ItemCollectors {
 
         @SubscribeEvent
         public static void onTileRegistry(final RegistryEvent.Register<TileEntityType<?>> e){
-            e.getRegistry().register(TileEntityType.Builder.create(CollectorTile::basicTile, basic_collector).build(null).setRegistryName("basic_collector_tile"));
-            e.getRegistry().register(TileEntityType.Builder.create(CollectorTile::advancedTile, advanced_collector).build(null).setRegistryName("advanced_collector_tile"));
+            e.getRegistry().register(TileEntityType.Builder.of(CollectorTile::basicTile, basic_collector).build(null).setRegistryName("basic_collector_tile"));
+            e.getRegistry().register(TileEntityType.Builder.of(CollectorTile::advancedTile, advanced_collector).build(null).setRegistryName("advanced_collector_tile"));
         }
 
         @SubscribeEvent
         public static void onItemRegistry(final RegistryEvent.Register<Item> e){
-            e.getRegistry().register(new BlockItem(basic_collector, new Item.Properties().group(ItemGroup.SEARCH)).setRegistryName("basic_collector"));
-            e.getRegistry().register(new BlockItem(advanced_collector, new Item.Properties().group(ItemGroup.SEARCH)).setRegistryName("advanced_collector"));
+            e.getRegistry().register(new BlockItem(basic_collector, new Item.Properties().tab(ItemGroup.TAB_SEARCH)).setRegistryName("basic_collector"));
+            e.getRegistry().register(new BlockItem(advanced_collector, new Item.Properties().tab(ItemGroup.TAB_SEARCH)).setRegistryName("advanced_collector"));
         }
 
         @SubscribeEvent

@@ -27,7 +27,7 @@ public class AdvancedCollectorContainer extends TileEntityBaseContainer<Collecto
         for(int i = 0; i < 9; i++)
             this.addSlot(new SlotItemHandler(this.itemHandler(), i, 8 + i * 18, 90) {
                 @Override
-                public boolean canTakeStack(PlayerEntity playerIn){
+                public boolean mayPickup(PlayerEntity playerIn){
                     return false;
                 }
             });
@@ -35,42 +35,42 @@ public class AdvancedCollectorContainer extends TileEntityBaseContainer<Collecto
     }
 
     @Override
-    public ItemStack slotClick(int slotId, int dragType, ClickType clickTypeIn, PlayerEntity player){
+    public ItemStack clicked(int slotId, int dragType, ClickType clickTypeIn, PlayerEntity player){
         if(slotId >= 0 && slotId < 9){
             CollectorTile tile = this.getObjectOrClose();
             if(tile != null){
-                if(player.inventory.getItemStack().isEmpty())
+                if(player.inventory.getSelected().isEmpty())
                     tile.filter.set(slotId, ItemStack.EMPTY);
                 else{
-                    ItemStack stack = player.inventory.getItemStack().copy();
+                    ItemStack stack = player.inventory.getSelected().copy();
                     stack.setCount(1);
                     tile.filter.set(slotId, stack);
                 }
             }
             return ItemStack.EMPTY;
         }
-        return super.slotClick(slotId, dragType, clickTypeIn, player);
+        return super.clicked(slotId, dragType, clickTypeIn, player);
     }
 
     @Override
-    public ItemStack transferStackInSlot(PlayerEntity playerIn, int index){
+    public ItemStack quickMoveStack(PlayerEntity playerIn, int index){
         if(index >= 0 && index < 9){
             CollectorTile tile = this.getObjectOrClose();
             if(tile != null){
-                if(player.inventory.getItemStack().isEmpty())
+                if(player.inventory.getSelected().isEmpty())
                     tile.filter.set(index, ItemStack.EMPTY);
                 else{
-                    ItemStack stack = player.inventory.getItemStack().copy();
+                    ItemStack stack = player.inventory.getSelected().copy();
                     stack.setCount(1);
                     tile.filter.set(index, stack);
                 }
             }
-        }else if(!this.getSlot(index).getStack().isEmpty()){
+        }else if(!this.getSlot(index).getItem().isEmpty()){
             boolean contains = false;
             int firstEmpty = -1;
             for(int i = 0; i < 9; i++){
                 ItemStack stack = this.itemHandler().getStackInSlot(i);
-                if(ItemStack.areItemsEqual(stack, this.getSlot(index).getStack()) && ItemStack.areItemStackTagsEqual(stack, this.getSlot(index).getStack())){
+                if(ItemStack.isSame(stack, this.getSlot(index).getItem()) && ItemStack.tagMatches(stack, this.getSlot(index).getItem())){
                     contains = true;
                     break;
                 }
@@ -80,7 +80,7 @@ public class AdvancedCollectorContainer extends TileEntityBaseContainer<Collecto
             if(!contains && firstEmpty != -1){
                 CollectorTile tile = this.getObjectOrClose();
                 if(tile != null){
-                    ItemStack stack = this.getSlot(index).getStack().copy();
+                    ItemStack stack = this.getSlot(index).getItem().copy();
                     stack.setCount(1);
                     tile.filter.set(firstEmpty, stack);
                 }

@@ -20,9 +20,9 @@ public class CollectorTileRenderer extends TileEntityRenderer<CollectorTile> {
             Vec3d camera = RenderUtils.getCameraPosition();
             GlStateManager.translated(-camera.x, -camera.y, -camera.z);
 
-            AxisAlignedBB area = tile.getAffectedArea().grow(0.05f);
+            AxisAlignedBB area = tile.getAffectedArea().inflate(0.05f);
 
-            Random random = new Random(tile.getPos().hashCode());
+            Random random = new Random(tile.getBlockPos().hashCode());
             float red = random.nextFloat();
             float green = random.nextFloat();
             float blue = random.nextFloat();
