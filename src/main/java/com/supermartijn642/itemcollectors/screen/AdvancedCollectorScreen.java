@@ -35,17 +35,17 @@ public class AdvancedCollectorScreen extends TileEntityBaseContainerScreen<Colle
 
     @Override
     protected void addWidgets(CollectorTile tile){
-        this.addWidget(new ArrowButton(30, 37, false, () -> ItemCollectors.CHANNEL.sendToServer(new PacketIncreaseXRange(this.container.getTilePos()))));
-        this.addWidget(new ArrowButton(30, 63, true, () -> ItemCollectors.CHANNEL.sendToServer(new PacketDecreaseXRange(this.container.getTilePos()))));
-        this.addWidget(new ArrowButton(73, 37, false, () -> ItemCollectors.CHANNEL.sendToServer(new PacketIncreaseYRange(this.container.getTilePos()))));
-        this.addWidget(new ArrowButton(73, 63, true, () -> ItemCollectors.CHANNEL.sendToServer(new PacketDecreaseYRange(this.container.getTilePos()))));
-        this.addWidget(new ArrowButton(116, 37, false, () -> ItemCollectors.CHANNEL.sendToServer(new PacketIncreaseZRange(this.container.getTilePos()))));
-        this.addWidget(new ArrowButton(116, 63, true, () -> ItemCollectors.CHANNEL.sendToServer(new PacketDecreaseZRange(this.container.getTilePos()))));
-        this.whitelistButton = this.addWidget(new WhitelistButton(175, 88, () -> ItemCollectors.CHANNEL.sendToServer(new PacketToggleWhitelist(this.container.getTilePos()))));
+        this.addWidget(new ArrowButton(30, 37, false, () -> ItemCollectors.CHANNEL.sendToServer(new PacketIncreaseXRange(this.menu.getTilePos()))));
+        this.addWidget(new ArrowButton(30, 63, true, () -> ItemCollectors.CHANNEL.sendToServer(new PacketDecreaseXRange(this.menu.getTilePos()))));
+        this.addWidget(new ArrowButton(73, 37, false, () -> ItemCollectors.CHANNEL.sendToServer(new PacketIncreaseYRange(this.menu.getTilePos()))));
+        this.addWidget(new ArrowButton(73, 63, true, () -> ItemCollectors.CHANNEL.sendToServer(new PacketDecreaseYRange(this.menu.getTilePos()))));
+        this.addWidget(new ArrowButton(116, 37, false, () -> ItemCollectors.CHANNEL.sendToServer(new PacketIncreaseZRange(this.menu.getTilePos()))));
+        this.addWidget(new ArrowButton(116, 63, true, () -> ItemCollectors.CHANNEL.sendToServer(new PacketDecreaseZRange(this.menu.getTilePos()))));
+        this.whitelistButton = this.addWidget(new WhitelistButton(175, 88, () -> ItemCollectors.CHANNEL.sendToServer(new PacketToggleWhitelist(this.menu.getTilePos()))));
         this.whitelistButton.update(tile.filterWhitelist);
-        this.durabilityButton = this.addWidget(new DurabilityButton(197, 88, () -> ItemCollectors.CHANNEL.sendToServer(new PacketToggleDurability(this.container.getTilePos()))));
+        this.durabilityButton = this.addWidget(new DurabilityButton(197, 88, () -> ItemCollectors.CHANNEL.sendToServer(new PacketToggleDurability(this.menu.getTilePos()))));
         this.durabilityButton.update(tile.filterDurability);
-        this.showAreaButton = this.addWidget(new ShowAreaButton(160, 45, () -> ItemCollectors.CHANNEL.sendToServer(new PacketToggleShowArea(this.container.getTilePos()))));
+        this.showAreaButton = this.addWidget(new ShowAreaButton(160, 45, () -> ItemCollectors.CHANNEL.sendToServer(new PacketToggleShowArea(this.menu.getTilePos()))));
         this.showAreaButton.update(tile.showArea);
     }
 
@@ -65,7 +65,7 @@ public class AdvancedCollectorScreen extends TileEntityBaseContainerScreen<Colle
     @Override
     protected void renderForeground(int mouseX, int mouseY, CollectorTile tile){
         ScreenUtils.drawCenteredString(TextComponents.blockState(tile.getBlockState()).get(), this.sizeX() / 2f, 6);
-        ScreenUtils.drawString(this.playerInventory.getDisplayName(), 32, 112);
+        ScreenUtils.drawString(this.inventory.getDisplayName(), 32, 112);
 
         ScreenUtils.drawString(TextComponents.translation("gui.itemcollectors.basic_collector.range",
             (tile.rangeX * 2 + 1), (tile.rangeY * 2 + 1), (tile.rangeZ * 2 + 1)).get(), 8, 26);

@@ -21,12 +21,12 @@ public class CollectorTileRenderer extends TileEntityRenderer<CollectorTile> {
     @Override
     public void render(CollectorTile tile, float partialTicks, MatrixStack matrixStack, IRenderTypeBuffer buffer, int combinedLight, int combinedOverlay){
         if(tile.showArea){
-            matrixStack.push();
-            matrixStack.translate(-tile.getPos().getX(), -tile.getPos().getY(), -tile.getPos().getZ());
+            matrixStack.pushPose();
+            matrixStack.translate(-tile.getBlockPos().getX(), -tile.getBlockPos().getY(), -tile.getBlockPos().getZ());
 
-            AxisAlignedBB area = tile.getAffectedArea().grow(0.05f);
+            AxisAlignedBB area = tile.getAffectedArea().inflate(0.05f);
 
-            Random random = new Random(tile.getPos().hashCode());
+            Random random = new Random(tile.getBlockPos().hashCode());
             float red = random.nextFloat();
             float green = random.nextFloat();
             float blue = random.nextFloat();
@@ -35,7 +35,7 @@ public class CollectorTileRenderer extends TileEntityRenderer<CollectorTile> {
             RenderUtils.renderBox(matrixStack, area, red, green, blue);
             RenderUtils.renderBoxSides(matrixStack, area, red, green, blue, alpha);
 
-            matrixStack.pop();
+            matrixStack.popPose();
         }
     }
 }

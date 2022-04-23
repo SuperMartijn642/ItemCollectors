@@ -28,7 +28,7 @@ public class ClientProxy {
 
     @SubscribeEvent
     public static void onSetup(FMLClientSetupEvent e){
-        ScreenManager.registerFactory(ItemCollectors.advanced_collector_container, (ScreenManager.IScreenFactory<AdvancedCollectorContainer,AdvancedCollectorScreen>)(container, inventory, title) -> new AdvancedCollectorScreen(container));
+        ScreenManager.register(ItemCollectors.advanced_collector_container, (ScreenManager.IScreenFactory<AdvancedCollectorContainer,AdvancedCollectorScreen>)(container, inventory, title) -> new AdvancedCollectorScreen(container));
         ClientRegistry.bindTileEntityRenderer(ItemCollectors.basic_collector_tile, CollectorTileRenderer::new);
         ClientRegistry.bindTileEntityRenderer(ItemCollectors.advanced_collector_tile, CollectorTileRenderer::new);
     }
@@ -39,15 +39,15 @@ public class ClientProxy {
         @SubscribeEvent
         public static void onBlockHighlight(DrawHighlightEvent.HighlightBlock e){
             World world = ClientUtils.getWorld();
-            TileEntity tile = world.getTileEntity(e.getTarget().getPos());
+            TileEntity tile = world.getBlockEntity(e.getTarget().getBlockPos());
             if(tile instanceof CollectorTile){
-                e.getMatrix().push();
+                e.getMatrix().pushPose();
                 Vec3d camera = RenderUtils.getCameraPosition();
                 e.getMatrix().translate(-camera.x, -camera.y, -camera.z);
 
-                AxisAlignedBB area = ((CollectorTile)tile).getAffectedArea().grow(0.05f);
+                AxisAlignedBB area = ((CollectorTile)tile).getAffectedArea().inflate(0.05f);
 
-                Random random = new Random(tile.getPos().hashCode());
+                Random random = new Random(tile.getBlockPos().hashCode());
                 float red = random.nextFloat();
                 float green = random.nextFloat();
                 float blue = random.nextFloat();
@@ -56,7 +56,7 @@ public class ClientProxy {
                 RenderUtils.renderBox(e.getMatrix(), area, red, green, blue);
                 RenderUtils.renderBoxSides(e.getMatrix(), area, red, green, blue, alpha);
 
-                e.getMatrix().pop();
+                e.getMatrix().popPose();
             }
         }
     }
