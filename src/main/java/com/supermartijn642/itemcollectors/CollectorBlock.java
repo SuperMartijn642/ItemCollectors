@@ -35,6 +35,7 @@ import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.shapes.CollisionContext;
 import net.minecraft.world.phys.shapes.VoxelShape;
 import net.minecraftforge.network.NetworkHooks;
+import net.minecraftforge.registries.ForgeRegistries;
 
 import javax.annotation.Nullable;
 import java.util.List;
@@ -113,7 +114,7 @@ public class CollectorBlock extends BaseBlock implements EntityBlock {
     @Nullable
     @Override
     public <T extends BlockEntity> BlockEntityTicker<T> getTicker(Level world, BlockState state, BlockEntityType<T> blockEntityType){
-        return blockEntityType.getRegistryName().getNamespace().equals("itemcollectors") ?
+        return ForgeRegistries.BLOCK_ENTITIES.getKey(blockEntityType).getNamespace().equals("itemcollectors") ?
             (world2, pos, state2, entity) -> ((CollectorTile)entity).tick() : null;
     }
 
