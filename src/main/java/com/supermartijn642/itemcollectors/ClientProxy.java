@@ -13,7 +13,7 @@ import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.client.event.DrawSelectionEvent;
+import net.minecraftforge.client.event.RenderHighlightEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
@@ -37,7 +37,7 @@ public class ClientProxy {
     public static class Events {
 
         @SubscribeEvent
-        public static void onBlockHighlight(DrawSelectionEvent.HighlightBlock e){
+        public static void onBlockHighlight(RenderHighlightEvent.Block e){
             Level world = ClientUtils.getWorld();
             BlockEntity tile = world.getBlockEntity(e.getTarget().getBlockPos());
             if(tile instanceof CollectorTile){
