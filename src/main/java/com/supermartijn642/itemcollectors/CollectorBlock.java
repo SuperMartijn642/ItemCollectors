@@ -90,7 +90,7 @@ public class CollectorBlock extends BaseBlock implements EntityBlock {
         if(worldIn.isClientSide && !this.hasFilter.get())
             ClientProxy.openBasicCollectorScreen(pos);
         else if(!worldIn.isClientSide && this.hasFilter.get())
-            NetworkHooks.openGui((ServerPlayer)player, new MenuProvider() {
+            NetworkHooks.openScreen((ServerPlayer)player, new MenuProvider() {
                 @Override
                 public Component getDisplayName(){
                     return TextComponents.empty().get();
@@ -114,7 +114,7 @@ public class CollectorBlock extends BaseBlock implements EntityBlock {
     @Nullable
     @Override
     public <T extends BlockEntity> BlockEntityTicker<T> getTicker(Level world, BlockState state, BlockEntityType<T> blockEntityType){
-        return ForgeRegistries.BLOCK_ENTITIES.getKey(blockEntityType).getNamespace().equals("itemcollectors") ?
+        return ForgeRegistries.BLOCK_ENTITY_TYPES.getKey(blockEntityType).getNamespace().equals("itemcollectors") ?
             (world2, pos, state2, entity) -> ((CollectorTile)entity).tick() : null;
     }
 
