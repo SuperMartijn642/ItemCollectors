@@ -1,6 +1,7 @@
 package com.supermartijn642.itemcollectors;
 
-import com.supermartijn642.configlib.ModConfigBuilder;
+import com.supermartijn642.configlib.api.ConfigBuilders;
+import com.supermartijn642.configlib.api.IConfigBuilder;
 
 import java.util.function.Supplier;
 
@@ -15,7 +16,7 @@ public class ItemCollectorsConfig {
     public static final Supplier<Boolean> advancedCollectorFilter;
 
     static{
-        ModConfigBuilder builder = new ModConfigBuilder();
+        IConfigBuilder builder = ConfigBuilders.newTomlConfig("itemcollectors", null, false);
 
         builder.push("General");
         basicCollectorMaxRange = builder.comment("What should be the maximum range of the basic item collector?").define("basicCollectorMaxRange", 5, 1, 10);
