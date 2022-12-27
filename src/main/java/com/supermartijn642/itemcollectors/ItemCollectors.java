@@ -1,23 +1,22 @@
 package com.supermartijn642.itemcollectors;
 
+import com.supermartijn642.core.ClientUtils;
+import com.supermartijn642.core.block.BaseBlock;
+import com.supermartijn642.core.block.BaseBlockEntityType;
+import com.supermartijn642.core.gui.BaseContainerType;
+import com.supermartijn642.core.item.BaseBlockItem;
+import com.supermartijn642.core.item.CreativeItemGroup;
+import com.supermartijn642.core.item.ItemProperties;
 import com.supermartijn642.core.network.PacketChannel;
+import com.supermartijn642.core.registry.GeneratorRegistrationHandler;
+import com.supermartijn642.core.registry.RegistrationHandler;
+import com.supermartijn642.itemcollectors.generators.*;
 import com.supermartijn642.itemcollectors.packet.*;
 import com.supermartijn642.itemcollectors.screen.AdvancedCollectorContainer;
-import net.minecraft.world.inventory.MenuType;
-import net.minecraft.world.item.BlockItem;
-import net.minecraft.world.item.CreativeModeTab;
-import net.minecraft.world.item.Item;
-import net.minecraft.world.level.block.Block;
-import net.minecraft.world.level.block.entity.BlockEntityType;
-import net.minecraftforge.common.extensions.IForgeMenuType;
-import net.minecraftforge.eventbus.api.SubscribeEvent;
+import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.fml.DistExecutor;
 import net.minecraftforge.fml.common.Mod;
-import net.minecraftforge.registries.ForgeRegistries;
-import net.minecraftforge.registries.IForgeRegistry;
 import net.minecraftforge.registries.ObjectHolder;
-import net.minecraftforge.registries.RegisterEvent;
-
-import java.util.Objects;
 
 /**
  * Created 7/15/2020 by SuperMartijn642
@@ -28,17 +27,17 @@ public class ItemCollectors {
     public static final PacketChannel CHANNEL = PacketChannel.create("itemcollectors");
 
     @ObjectHolder(value = "itemcollectors:basic_collector", registryName = "minecraft:block")
-    public static Block basic_collector;
+    public static BaseBlock basic_collector;
     @ObjectHolder(value = "itemcollectors:advanced_collector", registryName = "minecraft:block")
-    public static Block advanced_collector;
+    public static BaseBlock advanced_collector;
 
     @ObjectHolder(value = "itemcollectors:basic_collector_tile", registryName = "minecraft:block_entity_type")
-    public static BlockEntityType<CollectorTile> basic_collector_tile;
+    public static BaseBlockEntityType<CollectorBlockEntity> basic_collector_tile;
     @ObjectHolder(value = "itemcollectors:advanced_collector_tile", registryName = "minecraft:block_entity_type")
-    public static BlockEntityType<CollectorTile> advanced_collector_tile;
+    public static BaseBlockEntityType<CollectorBlockEntity> advanced_collector_tile;
 
     @ObjectHolder(value = "itemcollectors:filter_collector_container", registryName = "minecraft:menu")
-    public static MenuType<AdvancedCollectorContainer> advanced_collector_container;
+    public static BaseContainerType<AdvancedCollectorContainer> filter_collector_container;
 
     public ItemCollectors(){
         CHANNEL.registerMessage(PacketIncreaseXRange.class, PacketIncreaseXRange::new, true);
@@ -50,41 +49,37 @@ public class ItemCollectors {
         CHANNEL.registerMessage(PacketToggleWhitelist.class, PacketToggleWhitelist::new, true);
         CHANNEL.registerMessage(PacketToggleDurability.class, PacketToggleDurability::new, true);
         CHANNEL.registerMessage(PacketToggleShowArea.class, PacketToggleShowArea::new, true);
+
+        register();
+        DistExecutor.safeRunWhenOn(Dist.CLIENT, () -> ItemCollectorsClient::register);
+        registerGenerators();
     }
 
-    @Mod.EventBusSubscriber(bus = Mod.EventBusSubscriber.Bus.MOD)
-    public static class RegistryEvents {
-
-        @SubscribeEvent
-        public static void onRegisterEvent(RegisterEvent e){
-            if(e.getRegistryKey().equals(ForgeRegistries.Keys.BLOCKS))
-                onBlockRegistry(Objects.requireNonNull(e.getForgeRegistry()));
-            else if(e.getRegistryKey().equals(ForgeRegistries.Keys.BLOCK_ENTITY_TYPES))
-                onTileRegistry(Objects.requireNonNull(e.getForgeRegistry()));
-            else if(e.getRegistryKey().equals(ForgeRegistries.Keys.ITEMS))
-                onItemRegistry(Objects.requireNonNull(e.getForgeRegistry()));
-            else if(e.getRegistryKey().equals(ForgeRegistries.Keys.MENU_TYPES))
-                onContainerRegistry(Objects.requireNonNull(e.getForgeRegistry()));
-        }
-
-        public static void onBlockRegistry(IForgeRegistry<Block> registry){
-            registry.register("basic_collector", new CollectorBlock("basic_collector", CollectorTile::basicTile, ItemCollectorsConfig.basicCollectorMaxRange, ItemCollectorsConfig.basicCollectorFilter));
-            registry.register("advanced_collector", new CollectorBlock("advanced_collector", CollectorTile::advancedTile, ItemCollectorsConfig.advancedCollectorMaxRange, ItemCollectorsConfig.advancedCollectorFilter));
-        }
-
-        public static void onTileRegistry(IForgeRegistry<BlockEntityType<?>> registry){
-            registry.register("basic_collector_tile", BlockEntityType.Builder.of(CollectorTile::basicTile, basic_collector).build(null));
-            registry.register("advanced_collector_tile", BlockEntityType.Builder.of(CollectorTile::advancedTile, advanced_collector).build(null));
-        }
-
-        public static void onItemRegistry(IForgeRegistry<Item> registry){
-            registry.register("basic_collector", new BlockItem(basic_collector, new Item.Properties().tab(CreativeModeTab.TAB_SEARCH)));
-            registry.register("advanced_collector", new BlockItem(advanced_collector, new Item.Properties().tab(CreativeModeTab.TAB_SEARCH)));
-        }
-
-        public static void onContainerRegistry(IForgeRegistry<MenuType<?>> registry){
-            registry.register("filter_collector_container", IForgeMenuType.create((windowId, inv, data) -> new AdvancedCollectorContainer(windowId, inv.player, data.readBlockPos())));
-        }
+    private static void register(){
+        RegistrationHandler handler = RegistrationHandler.get("itemcollectors");
+        // Blocks
+        handler.registerBlock("basic_collector", () -> new CollectorBlock(() -> basic_collector_tile, ItemCollectorsConfig.basicCollectorMaxRange, ItemCollectorsConfig.basicCollectorFilter));
+        handler.registerBlock("advanced_collector", () -> new CollectorBlock(() -> advanced_collector_tile, ItemCollectorsConfig.advancedCollectorMaxRange, ItemCollectorsConfig.advancedCollectorFilter));
+        // Block entity types
+        handler.registerBlockEntityType("basic_collector_tile", () -> BaseBlockEntityType.create(CollectorBlockEntity::basicCollectorEntity, basic_collector));
+        handler.registerBlockEntityType("advanced_collector_tile", () -> BaseBlockEntityType.create(CollectorBlockEntity::advancedCollectorEntity, advanced_collector));
+        // Items
+        handler.registerItem("basic_collector", () -> new BaseBlockItem(basic_collector, ItemProperties.create().group(CreativeItemGroup.getDecoration())));
+        handler.registerItem("advanced_collector", () -> new BaseBlockItem(advanced_collector, ItemProperties.create().group(CreativeItemGroup.getDecoration())));
+        // Container type
+        handler.registerMenuType("filter_collector_container", () -> BaseContainerType.create(
+            (container, data) -> data.writeBlockPos(container.getCollectorPosition()),
+            (player, data) -> new AdvancedCollectorContainer(filter_collector_container, player, ClientUtils.getWorld(), data.readBlockPos())
+        ));
     }
 
+    private static void registerGenerators(){
+        GeneratorRegistrationHandler handler = GeneratorRegistrationHandler.get("itemcollectors");
+        handler.addGenerator(CollectorModelGenerator::new);
+        handler.addGenerator(CollectorBlockStateGenerator::new);
+        handler.addGenerator(CollectorLanguageGenerator::new);
+        handler.addGenerator(CollectorLootTableGenerator::new);
+        handler.addGenerator(CollectorRecipeGenerator::new);
+        handler.addGenerator(CollectorTagGenerator::new);
+    }
 }

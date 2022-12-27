@@ -3,19 +3,21 @@ package com.supermartijn642.itemcollectors.screen;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.supermartijn642.core.TextComponents;
 import com.supermartijn642.core.gui.ScreenUtils;
-import com.supermartijn642.core.gui.widget.AbstractButtonWidget;
-import com.supermartijn642.core.gui.widget.IHoverTextWidget;
+import com.supermartijn642.core.gui.widget.premade.AbstractButtonWidget;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
+
+import java.util.function.Consumer;
 
 /**
  * Created 7/8/2020 by SuperMartijn642
  */
-public class ShowAreaButton extends AbstractButtonWidget implements IHoverTextWidget {
+public class ShowAreaButton extends AbstractButtonWidget {
 
-    private final ResourceLocation BUTTONS = new ResourceLocation("itemcollectors", "textures/visualize_button.png");
+    private static final ResourceLocation BUTTONS = new ResourceLocation("itemcollectors", "textures/visualize_button.png");
 
     public boolean on = true;
+    public boolean active = true;
 
     public ShowAreaButton(int x, int y, Runnable onPress){
         super(x, y, 20, 20, onPress);
@@ -26,18 +28,18 @@ public class ShowAreaButton extends AbstractButtonWidget implements IHoverTextWi
     }
 
     @Override
-    protected Component getNarrationMessage(){
-        return this.getHoverText();
-    }
-
-    @Override
-    public void render(PoseStack matrixStack, int mouseX, int mouseY, float partialTicks){
-        ScreenUtils.bindTexture(BUTTONS);
-        ScreenUtils.drawTexture(matrixStack, this.x, this.y, this.width, this.height, this.on ? 0 : 0.5f, this.active ? this.hovered ? 1 / 3f : 0 : 2 / 3f, 0.5f, 1 / 3f);
-    }
-
-    @Override
-    public Component getHoverText(){
+    public Component getNarrationMessage(){
         return TextComponents.translation("gui.itemcollectors.advanced_collector.show_area." + (this.on ? "on" : "off")).get();
+    }
+
+    @Override
+    public void render(PoseStack poseStack, int mouseX, int mouseY){
+        ScreenUtils.bindTexture(BUTTONS);
+        ScreenUtils.drawTexture(poseStack, this.x, this.y, this.width, this.height, this.on ? 0 : 0.5f, this.active ? this.isFocused() ? 1 / 3f : 0 : 2 / 3f, 0.5f, 1 / 3f);
+    }
+
+    @Override
+    protected void getTooltips(Consumer<Component> tooltips){
+        tooltips.accept(this.getNarrationMessage());
     }
 }

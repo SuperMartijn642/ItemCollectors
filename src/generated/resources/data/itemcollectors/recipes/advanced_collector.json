@@ -1,0 +1,22 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    " A ",
+    " B ",
+    "CCC"
+  ],
+  "key": {
+    "A": {
+      "item": "minecraft:ender_eye"
+    },
+    "B": {
+      "item": "itemcollectors:basic_collector"
+    },
+    "C": {
+      "tag": "forge:obsidian"
+    }
+  },
+  "result": {
+    "item": "itemcollectors:advanced_collector"
+  }
+}
