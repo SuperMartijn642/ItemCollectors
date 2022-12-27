@@ -10,13 +10,13 @@ import com.supermartijn642.core.item.ItemProperties;
 import com.supermartijn642.core.network.PacketChannel;
 import com.supermartijn642.core.registry.GeneratorRegistrationHandler;
 import com.supermartijn642.core.registry.RegistrationHandler;
+import com.supermartijn642.core.registry.RegistryEntryAcceptor;
 import com.supermartijn642.itemcollectors.generators.*;
 import com.supermartijn642.itemcollectors.packet.*;
 import com.supermartijn642.itemcollectors.screen.AdvancedCollectorContainer;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.fml.DistExecutor;
 import net.minecraftforge.fml.common.Mod;
-import net.minecraftforge.registries.ObjectHolder;
 
 /**
  * Created 7/15/2020 by SuperMartijn642
@@ -26,17 +26,17 @@ public class ItemCollectors {
 
     public static final PacketChannel CHANNEL = PacketChannel.create("itemcollectors");
 
-    @ObjectHolder(value = "itemcollectors:basic_collector", registryName = "minecraft:block")
+    @RegistryEntryAcceptor(namespace = "itemcollectors", identifier = "basic_collector", registry = RegistryEntryAcceptor.Registry.BLOCKS)
     public static BaseBlock basic_collector;
-    @ObjectHolder(value = "itemcollectors:advanced_collector", registryName = "minecraft:block")
+    @RegistryEntryAcceptor(namespace = "itemcollectors", identifier = "advanced_collector", registry = RegistryEntryAcceptor.Registry.BLOCKS)
     public static BaseBlock advanced_collector;
 
-    @ObjectHolder(value = "itemcollectors:basic_collector_tile", registryName = "minecraft:block_entity_type")
+    @RegistryEntryAcceptor(namespace = "itemcollectors", identifier = "basic_collector_tile", registry = RegistryEntryAcceptor.Registry.BLOCK_ENTITY_TYPES)
     public static BaseBlockEntityType<CollectorBlockEntity> basic_collector_tile;
-    @ObjectHolder(value = "itemcollectors:advanced_collector_tile", registryName = "minecraft:block_entity_type")
+    @RegistryEntryAcceptor(namespace = "itemcollectors", identifier = "advanced_collector_tile", registry = RegistryEntryAcceptor.Registry.BLOCK_ENTITY_TYPES)
     public static BaseBlockEntityType<CollectorBlockEntity> advanced_collector_tile;
 
-    @ObjectHolder(value = "itemcollectors:filter_collector_container", registryName = "minecraft:menu")
+    @RegistryEntryAcceptor(namespace = "itemcollectors", identifier = "filter_collector_container", registry = RegistryEntryAcceptor.Registry.MENU_TYPES)
     public static BaseContainerType<AdvancedCollectorContainer> filter_collector_container;
 
     public ItemCollectors(){
