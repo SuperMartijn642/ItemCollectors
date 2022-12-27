@@ -1,14 +1,14 @@
 package com.supermartijn642.itemcollectors.packet;
 
+import com.supermartijn642.core.network.BlockEntityBasePacket;
 import com.supermartijn642.core.network.PacketContext;
-import com.supermartijn642.core.network.TileEntityBasePacket;
-import com.supermartijn642.itemcollectors.CollectorTile;
+import com.supermartijn642.itemcollectors.CollectorBlockEntity;
 import net.minecraft.util.math.BlockPos;
 
 /**
  * Created 7/15/2020 by SuperMartijn642
  */
-public class PacketIncreaseXRange extends TileEntityBasePacket<CollectorTile> {
+public class PacketIncreaseXRange extends BlockEntityBasePacket<CollectorBlockEntity> {
 
     public PacketIncreaseXRange(){
     }
@@ -18,7 +18,7 @@ public class PacketIncreaseXRange extends TileEntityBasePacket<CollectorTile> {
     }
 
     @Override
-    protected void handle(CollectorTile tile, PacketContext context){
-        tile.setRangeX(tile.rangeX + 1);
+    protected void handle(CollectorBlockEntity entity, PacketContext context){
+        entity.setRangeX(entity.rangeX + 1);
     }
 }

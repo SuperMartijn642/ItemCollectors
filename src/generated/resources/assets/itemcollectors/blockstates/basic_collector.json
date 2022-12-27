@@ -1,0 +1,30 @@
+{
+  "variants": {
+    "facing\u003ddown": {
+      "model": "itemcollectors:block/basic_collector"
+    },
+    "facing\u003dwest": {
+      "model": "itemcollectors:block/basic_collector",
+      "x": 90,
+      "y": 90
+    },
+    "facing\u003dnorth": {
+      "model": "itemcollectors:block/basic_collector",
+      "x": 90,
+      "y": 180
+    },
+    "facing\u003dsouth": {
+      "model": "itemcollectors:block/basic_collector",
+      "x": 90
+    },
+    "facing\u003deast": {
+      "model": "itemcollectors:block/basic_collector",
+      "x": 90,
+      "y": 270
+    },
+    "facing\u003dup": {
+      "model": "itemcollectors:block/basic_collector",
+      "x": 180
+    }
+  }
+}
