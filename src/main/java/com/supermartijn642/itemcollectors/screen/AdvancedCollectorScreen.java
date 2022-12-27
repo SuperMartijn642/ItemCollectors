@@ -1,18 +1,22 @@
 package com.supermartijn642.itemcollectors.screen;
 
 import com.mojang.blaze3d.matrix.MatrixStack;
+import com.supermartijn642.core.ClientUtils;
 import com.supermartijn642.core.TextComponents;
 import com.supermartijn642.core.gui.ScreenUtils;
-import com.supermartijn642.core.gui.TileEntityBaseContainerScreen;
-import com.supermartijn642.itemcollectors.CollectorTile;
+import com.supermartijn642.core.gui.widget.BlockEntityBaseContainerWidget;
+import com.supermartijn642.itemcollectors.CollectorBlockEntity;
 import com.supermartijn642.itemcollectors.ItemCollectors;
 import com.supermartijn642.itemcollectors.packet.*;
 import net.minecraft.util.ResourceLocation;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.text.ITextComponent;
+import net.minecraft.world.World;
 
 /**
  * Created 7/15/2020 by SuperMartijn642
  */
-public class AdvancedCollectorScreen extends TileEntityBaseContainerScreen<CollectorTile,AdvancedCollectorContainer> {
+public class AdvancedCollectorScreen extends BlockEntityBaseContainerWidget<CollectorBlockEntity,AdvancedCollectorContainer> {
 
     private static final ResourceLocation BACKGROUND = new ResourceLocation("itemcollectors", "textures/filter_screen.png");
 
@@ -20,62 +24,61 @@ public class AdvancedCollectorScreen extends TileEntityBaseContainerScreen<Colle
     private DurabilityButton durabilityButton;
     private ShowAreaButton showAreaButton;
 
-    public AdvancedCollectorScreen(AdvancedCollectorContainer container){
-        super(container, TextComponents.empty().get());
+    public AdvancedCollectorScreen(World level, BlockPos pos){
+        super(0, 0, 224, 206, level, pos);
     }
 
     @Override
-    protected int sizeX(CollectorTile tile){
-        return 224;
+    protected ITextComponent getNarrationMessage(CollectorBlockEntity entity){
+        return TextComponents.blockState(entity.getBlockState()).get();
     }
 
     @Override
-    protected int sizeY(CollectorTile tile){
-        return 206;
+    protected void addWidgets(CollectorBlockEntity entity){
+        this.addWidget(new ArrowButton(30, 37, false, () -> ItemCollectors.CHANNEL.sendToServer(new PacketIncreaseXRange(this.object.getBlockPos()))));
+        this.addWidget(new ArrowButton(30, 63, true, () -> ItemCollectors.CHANNEL.sendToServer(new PacketDecreaseXRange(this.object.getBlockPos()))));
+        this.addWidget(new ArrowButton(73, 37, false, () -> ItemCollectors.CHANNEL.sendToServer(new PacketIncreaseYRange(this.object.getBlockPos()))));
+        this.addWidget(new ArrowButton(73, 63, true, () -> ItemCollectors.CHANNEL.sendToServer(new PacketDecreaseYRange(this.object.getBlockPos()))));
+        this.addWidget(new ArrowButton(116, 37, false, () -> ItemCollectors.CHANNEL.sendToServer(new PacketIncreaseZRange(this.object.getBlockPos()))));
+        this.addWidget(new ArrowButton(116, 63, true, () -> ItemCollectors.CHANNEL.sendToServer(new PacketDecreaseZRange(this.object.getBlockPos()))));
+        this.whitelistButton = this.addWidget(new WhitelistButton(175, 88, () -> ItemCollectors.CHANNEL.sendToServer(new PacketToggleWhitelist(this.object.getBlockPos()))));
+        this.whitelistButton.update(entity.filterWhitelist);
+        this.durabilityButton = this.addWidget(new DurabilityButton(197, 88, () -> ItemCollectors.CHANNEL.sendToServer(new PacketToggleDurability(this.object.getBlockPos()))));
+        this.durabilityButton.update(entity.filterDurability);
+        this.showAreaButton = this.addWidget(new ShowAreaButton(160, 45, () -> ItemCollectors.CHANNEL.sendToServer(new PacketToggleShowArea(this.object.getBlockPos()))));
+        this.showAreaButton.update(entity.showArea);
+        super.addWidgets(entity);
     }
 
     @Override
-    protected void addWidgets(CollectorTile tile){
-        this.addWidget(new ArrowButton(30, 37, false, () -> ItemCollectors.CHANNEL.sendToServer(new PacketIncreaseXRange(this.menu.getTilePos()))));
-        this.addWidget(new ArrowButton(30, 63, true, () -> ItemCollectors.CHANNEL.sendToServer(new PacketDecreaseXRange(this.menu.getTilePos()))));
-        this.addWidget(new ArrowButton(73, 37, false, () -> ItemCollectors.CHANNEL.sendToServer(new PacketIncreaseYRange(this.menu.getTilePos()))));
-        this.addWidget(new ArrowButton(73, 63, true, () -> ItemCollectors.CHANNEL.sendToServer(new PacketDecreaseYRange(this.menu.getTilePos()))));
-        this.addWidget(new ArrowButton(116, 37, false, () -> ItemCollectors.CHANNEL.sendToServer(new PacketIncreaseZRange(this.menu.getTilePos()))));
-        this.addWidget(new ArrowButton(116, 63, true, () -> ItemCollectors.CHANNEL.sendToServer(new PacketDecreaseZRange(this.menu.getTilePos()))));
-        this.whitelistButton = this.addWidget(new WhitelistButton(175, 88, () -> ItemCollectors.CHANNEL.sendToServer(new PacketToggleWhitelist(this.menu.getTilePos()))));
-        this.whitelistButton.update(tile.filterWhitelist);
-        this.durabilityButton = this.addWidget(new DurabilityButton(197, 88, () -> ItemCollectors.CHANNEL.sendToServer(new PacketToggleDurability(this.menu.getTilePos()))));
-        this.durabilityButton.update(tile.filterDurability);
-        this.showAreaButton = this.addWidget(new ShowAreaButton(160, 45, () -> ItemCollectors.CHANNEL.sendToServer(new PacketToggleShowArea(this.menu.getTilePos()))));
-        this.showAreaButton.update(tile.showArea);
+    protected void update(CollectorBlockEntity entity){
+        this.whitelistButton.update(entity.filterWhitelist);
+        this.durabilityButton.update(entity.filterDurability);
+        this.showAreaButton.update(entity.showArea);
+        super.update(entity);
     }
 
     @Override
-    protected void tick(CollectorTile tile){
-        this.whitelistButton.update(tile.filterWhitelist);
-        this.durabilityButton.update(tile.filterDurability);
-        this.showAreaButton.update(tile.showArea);
-    }
-
-    @Override
-    protected void renderBackground(MatrixStack matrixStack, int mouseX, int mouseY, CollectorTile tile){
+    protected void renderBackground(MatrixStack poseStack, int mouseX, int mouseY, CollectorBlockEntity entity){
         ScreenUtils.bindTexture(BACKGROUND);
-        ScreenUtils.drawTexture(matrixStack, 0, 0, this.sizeX(), this.sizeY());
+        ScreenUtils.drawTexture(poseStack, 0, 0, this.width(), this.height());
+        super.renderBackground(poseStack, mouseX, mouseY, entity);
     }
 
     @Override
-    protected void renderForeground(MatrixStack matrixStack, int mouseX, int mouseY, CollectorTile tile){
-        ScreenUtils.drawCenteredString(matrixStack, tile.getBlockState().getBlock().getName(), this.sizeX() / 2f, 6);
-        ScreenUtils.drawString(matrixStack, this.inventory.getDisplayName(), 32, 112);
+    protected void renderForeground(MatrixStack poseStack, int mouseX, int mouseY, CollectorBlockEntity entity){
+        ScreenUtils.drawCenteredString(poseStack, entity.getBlockState().getBlock().getName(), this.width() / 2f, 6);
+        ScreenUtils.drawString(poseStack, ClientUtils.getPlayer().inventory.getName(), 32, 112);
 
-        ScreenUtils.drawString(matrixStack, TextComponents.translation("gui.itemcollectors.basic_collector.range",
-            (tile.rangeX * 2 + 1), (tile.rangeY * 2 + 1), (tile.rangeZ * 2 + 1)).get(), 8, 26);
-        ScreenUtils.drawCenteredString(matrixStack, TextComponents.string("x:").get(), 25, 51);
-        ScreenUtils.drawCenteredString(matrixStack, TextComponents.string("" + tile.rangeX).get(), 39, 52);
-        ScreenUtils.drawCenteredString(matrixStack, TextComponents.string("y:").get(), 68, 51);
-        ScreenUtils.drawCenteredString(matrixStack, TextComponents.string("" + tile.rangeY).get(), 82, 52);
-        ScreenUtils.drawCenteredString(matrixStack, TextComponents.string("z:").get(), 111, 51);
-        ScreenUtils.drawCenteredString(matrixStack, TextComponents.string("" + tile.rangeZ).get(), 125, 52);
-        ScreenUtils.drawString(matrixStack, TextComponents.translation("gui.itemcollectors.advanced_collector.filter").get(), 8, 78);
+        ScreenUtils.drawString(poseStack, TextComponents.translation("gui.itemcollectors.basic_collector.range",
+            (entity.rangeX * 2 + 1), (entity.rangeY * 2 + 1), (entity.rangeZ * 2 + 1)).get(), 8, 26);
+        ScreenUtils.drawCenteredString(poseStack, TextComponents.string("x:").get(), 25, 51);
+        ScreenUtils.drawCenteredString(poseStack, TextComponents.number(entity.rangeX).get(), 39, 52);
+        ScreenUtils.drawCenteredString(poseStack, TextComponents.string("y:").get(), 68, 51);
+        ScreenUtils.drawCenteredString(poseStack, TextComponents.number(entity.rangeY).get(), 82, 52);
+        ScreenUtils.drawCenteredString(poseStack, TextComponents.string("z:").get(), 111, 51);
+        ScreenUtils.drawCenteredString(poseStack, TextComponents.number(entity.rangeZ).get(), 125, 52);
+        ScreenUtils.drawString(poseStack, TextComponents.translation("gui.itemcollectors.advanced_collector.filter").get(), 8, 78);
+        super.renderForeground(poseStack, mouseX, mouseY, entity);
     }
 }

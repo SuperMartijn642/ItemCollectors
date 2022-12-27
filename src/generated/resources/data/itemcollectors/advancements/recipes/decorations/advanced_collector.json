@@ -1,0 +1,47 @@
+{
+  "parent": "minecraft:recipes/root",
+  "display": {
+    "icon": {
+      "item": "itemcollectors:advanced_collector"
+    },
+    "title": {
+      "translate": "itemcollectors.advancement.recipes/decorations/advanced_collector.title"
+    },
+    "description": {
+      "translate": "itemcollectors.advancement.recipes/decorations/advanced_collector.description"
+    },
+    "frame": "task",
+    "show_toast": false,
+    "announce_to_chat": false,
+    "hidden": false
+  },
+  "criteria": {
+    "has_the_recipe": {
+      "trigger": "minecraft:recipe_unlocked",
+      "conditions": {
+        "recipe": "itemcollectors:advanced_collector"
+      }
+    },
+    "recipe_condition": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [
+          {
+            "item": "itemcollectors:basic_collector"
+          }
+        ]
+      }
+    }
+  },
+  "requirements": [
+    [
+      "has_the_recipe",
+      "recipe_condition"
+    ]
+  ],
+  "rewards": {
+    "recipes": [
+      "itemcollectors:advanced_collector"
+    ]
+  }
+}
