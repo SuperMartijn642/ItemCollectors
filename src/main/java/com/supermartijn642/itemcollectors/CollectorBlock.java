@@ -1,9 +1,9 @@
 package com.supermartijn642.itemcollectors;
 
+import com.supermartijn642.core.CommonUtils;
 import com.supermartijn642.core.TextComponents;
-import com.supermartijn642.core.ToolType;
-import com.supermartijn642.core.block.BaseBlock;
-import com.supermartijn642.core.block.BlockShape;
+import com.supermartijn642.core.block.*;
+import com.supermartijn642.itemcollectors.screen.AdvancedCollectorContainer;
 import net.minecraft.block.BlockDirectional;
 import net.minecraft.block.material.MapColor;
 import net.minecraft.block.material.Material;
@@ -11,8 +11,6 @@ import net.minecraft.block.properties.PropertyEnum;
 import net.minecraft.block.state.BlockFaceShape;
 import net.minecraft.block.state.BlockStateContainer;
 import net.minecraft.block.state.IBlockState;
-import net.minecraft.client.util.ITooltipFlag;
-import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
@@ -22,6 +20,8 @@ import net.minecraft.util.EnumFacing;
 import net.minecraft.util.EnumHand;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.Vec3d;
+import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.TextFormatting;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
@@ -31,12 +31,13 @@ import net.minecraftforge.fml.relauncher.SideOnly;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.List;
+import java.util.function.Consumer;
 import java.util.function.Supplier;
 
 /**
  * Created 7/15/2020 by SuperMartijn642
  */
-public class CollectorBlock extends BaseBlock {
+public class CollectorBlock extends BaseBlock implements EntityHoldingBlock {
 
     public static final PropertyEnum<EnumFacing> DIRECTION = BlockDirectional.FACING;
     private static final BlockShape SHAPE = BlockShape.or(
@@ -64,26 +65,30 @@ public class CollectorBlock extends BaseBlock {
         SHAPES[EnumFacing.WEST.getIndex()] = SHAPE.rotate(EnumFacing.Axis.X).rotate(EnumFacing.Axis.Y);
     }
 
-    private final Supplier<CollectorTile> tileSupplier;
+    private final Supplier<BaseBlockEntityType<?>> entityType;
     private final Supplier<Integer> maxRange;
     private final Supplier<Boolean> hasFilter;
 
-    public CollectorBlock(String registryName, Supplier<CollectorTile> tileSupplier, Supplier<Integer> maxRange, Supplier<Boolean> hasFilter){
-        super(registryName, false, Properties.create(Material.ROCK, MapColor.BLACK).harvestTool(ToolType.PICKAXE).harvestLevel(1).hardnessAndResistance(5, 1200));
-        this.tileSupplier = tileSupplier;
+    public CollectorBlock(Supplier<BaseBlockEntityType<?>> entityType, Supplier<Integer> maxRange, Supplier<Boolean> hasFilter){
+        super(false, BlockProperties.create(Material.ROCK, MapColor.BLACK).requiresCorrectTool().destroyTime(5).explosionResistance(1200));
+        this.entityType = entityType;
         this.maxRange = maxRange;
         this.hasFilter = hasFilter;
-        this.setCreativeTab(CreativeTabs.SEARCH);
         this.setDefaultState(this.getDefaultState().withProperty(DIRECTION, EnumFacing.DOWN));
     }
 
     @Override
-    public boolean onBlockActivated(World worldIn, BlockPos pos, IBlockState state, EntityPlayer player, EnumHand handIn, EnumFacing facing, float hitX, float hitY, float hitZ){
-        if(worldIn.isRemote && !this.hasFilter.get())
-            ClientProxy.openBasicCollectorScreen(pos);
-        else if(!worldIn.isRemote && this.hasFilter.get())
-            player.openGui(ItemCollectors.instance, 0, worldIn, pos.getX(), pos.getY(), pos.getZ());
-        return true;
+    protected InteractionFeedback interact(IBlockState state, World level, BlockPos pos, EntityPlayer player, EnumHand hand, EnumFacing hitSide, Vec3d hitLocation){
+        if(level.isRemote && !this.hasFilter.get())
+            ItemCollectorsClient.openBasicCollectorScreen(level, pos);
+        else if(!level.isRemote && this.hasFilter.get())
+            CommonUtils.openContainer(new AdvancedCollectorContainer(ItemCollectors.filter_collector_container, player, level, pos));
+        return super.interact(state, level, pos, player, hand, hitSide, hitLocation);
+    }
+
+    @Override
+    public TileEntity createNewBlockEntity(){
+        return this.entityType.get().createBlockEntity();
     }
 
     @Nonnull
@@ -105,19 +110,8 @@ public class CollectorBlock extends BaseBlock {
     }
 
     @Override
-    public BlockFaceShape getBlockFaceShape(IBlockAccess worldIn, IBlockState state, BlockPos pos, EnumFacing face){
+    public BlockFaceShape getBlockFaceShape(IBlockAccess level, IBlockState state, BlockPos pos, EnumFacing face){
         return face == state.getValue(DIRECTION) ? BlockFaceShape.CENTER : BlockFaceShape.UNDEFINED;
-    }
-
-    @Override
-    public boolean hasTileEntity(IBlockState state){
-        return true;
-    }
-
-    @Nullable
-    @Override
-    public TileEntity createTileEntity(World world, IBlockState state){
-        return this.tileSupplier.get();
     }
 
     @Override
@@ -126,9 +120,10 @@ public class CollectorBlock extends BaseBlock {
     }
 
     @Override
-    public void addInformation(ItemStack stack, World player, List<String> tooltip, ITooltipFlag advanced){
-        tooltip.add(TextComponents.translation("itemcollectors." + (this.hasFilter.get() ? "advanced" : "basic") + "_collector.info", this.maxRange.get()).color(TextFormatting.AQUA).format());
-        super.addInformation(stack, player, tooltip, advanced);
+    protected void appendItemInformation(ItemStack stack, @Nullable IBlockAccess level, Consumer<ITextComponent> info, boolean advanced){
+        info.accept(TextComponents.translation("itemcollectors." + (this.hasFilter.get() ? "advanced" : "basic") + "_collector.info").color(TextFormatting.AQUA).get());
+        info.accept(TextComponents.translation("itemcollectors.basic_collector.info.range", TextComponents.number(this.maxRange.get()).color(TextFormatting.GOLD).get()).get());
+        super.appendItemInformation(stack, level, info, advanced);
     }
 
     @Override
@@ -137,7 +132,7 @@ public class CollectorBlock extends BaseBlock {
     }
 
     @Override
-    public IBlockState getStateForPlacement(World world, BlockPos pos, EnumFacing facing, float hitX, float hitY, float hitZ, int meta, EntityLivingBase placer, EnumHand hand){
+    public IBlockState getStateForPlacement(World level, BlockPos pos, EnumFacing facing, float hitX, float hitY, float hitZ, int meta, EntityLivingBase placer, EnumHand hand){
         return this.getDefaultState().withProperty(DIRECTION, facing.getOpposite());
     }
 

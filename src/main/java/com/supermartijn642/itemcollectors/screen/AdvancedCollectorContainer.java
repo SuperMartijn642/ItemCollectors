@@ -1,11 +1,13 @@
 package com.supermartijn642.itemcollectors.screen;
 
-import com.supermartijn642.core.gui.TileEntityBaseContainer;
-import com.supermartijn642.itemcollectors.CollectorTile;
+import com.supermartijn642.core.gui.BaseContainerType;
+import com.supermartijn642.core.gui.BlockEntityBaseContainer;
+import com.supermartijn642.itemcollectors.CollectorBlockEntity;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.ClickType;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.world.World;
 import net.minecraftforge.items.ItemStackHandler;
 import net.minecraftforge.items.SlotItemHandler;
 
@@ -14,19 +16,19 @@ import javax.annotation.Nonnull;
 /**
  * Created 7/15/2020 by SuperMartijn642
  */
-public class AdvancedCollectorContainer extends TileEntityBaseContainer<CollectorTile> {
+public class AdvancedCollectorContainer extends BlockEntityBaseContainer<CollectorBlockEntity> {
 
-    public AdvancedCollectorContainer(EntityPlayer player, BlockPos pos){
-        super(player, pos);
+    public AdvancedCollectorContainer(BaseContainerType<?> containerType, EntityPlayer player, World level, BlockPos pos){
+        super(containerType, player, level, pos);
         this.addSlots();
     }
 
     @Override
-    protected void addSlots(EntityPlayer player, CollectorTile tile){
+    protected void addSlots(EntityPlayer player, CollectorBlockEntity entity){
         for(int i = 0; i < 9; i++)
             this.addSlot(new SlotItemHandler(this.itemHandler(), i, 8 + i * 18, 90) {
                 @Override
-                public boolean canTakeStack(EntityPlayer playerIn){
+                public boolean canTakeStack(EntityPlayer player){
                     return false;
                 }
             });
@@ -34,35 +36,29 @@ public class AdvancedCollectorContainer extends TileEntityBaseContainer<Collecto
     }
 
     @Override
-    public ItemStack slotClick(int slotId, int dragType, ClickType clickTypeIn, EntityPlayer player){
-        if(slotId >= 0 && slotId < 9){
-            CollectorTile tile = this.getObjectOrClose();
-            if(tile != null){
-                if(player.inventory.getItemStack().isEmpty())
-                    tile.filter.set(slotId, ItemStack.EMPTY);
-                else{
-                    ItemStack stack = player.inventory.getItemStack().copy();
-                    stack.setCount(1);
-                    tile.filter.set(slotId, stack);
-                }
+    public ItemStack slotClick(int slot, int dragType, ClickType clickType, EntityPlayer player){
+        if(slot >= 0 && slot < 9){
+            if(this.player.inventory.getItemStack().isEmpty())
+                this.object.filter.set(slot, ItemStack.EMPTY);
+            else{
+                ItemStack stack = this.player.inventory.getItemStack().copy();
+                stack.setCount(1);
+                this.object.filter.set(slot, stack);
             }
             return ItemStack.EMPTY;
         }
-        return super.slotClick(slotId, dragType, clickTypeIn, player);
+        return super.slotClick(slot, dragType, clickType, player);
     }
 
     @Override
-    public ItemStack transferStackInSlot(EntityPlayer playerIn, int index){
+    public ItemStack transferStackInSlot(EntityPlayer player, int index){
         if(index >= 0 && index < 9){
-            CollectorTile tile = this.getObjectOrClose();
-            if(tile != null){
-                if(player.inventory.getItemStack().isEmpty())
-                    tile.filter.set(index, ItemStack.EMPTY);
-                else{
-                    ItemStack stack = player.inventory.getItemStack().copy();
-                    stack.setCount(1);
-                    tile.filter.set(index, stack);
-                }
+            if(this.player.inventory.getItemStack().isEmpty())
+                this.object.filter.set(index, ItemStack.EMPTY);
+            else{
+                ItemStack stack = this.player.inventory.getItemStack().copy();
+                stack.setCount(1);
+                this.object.filter.set(index, stack);
             }
         }else if(!this.getSlot(index).getStack().isEmpty()){
             boolean contains = false;
@@ -77,12 +73,9 @@ public class AdvancedCollectorContainer extends TileEntityBaseContainer<Collecto
                     firstEmpty = i;
             }
             if(!contains && firstEmpty != -1){
-                CollectorTile tile = this.getObjectOrClose();
-                if(tile != null){
-                    ItemStack stack = this.getSlot(index).getStack().copy();
-                    stack.setCount(1);
-                    tile.filter.set(firstEmpty, stack);
-                }
+                ItemStack stack = this.getSlot(index).getStack().copy();
+                stack.setCount(1);
+                this.object.filter.set(firstEmpty, stack);
             }
         }
         return ItemStack.EMPTY;
@@ -93,13 +86,14 @@ public class AdvancedCollectorContainer extends TileEntityBaseContainer<Collecto
             @Nonnull
             @Override
             public ItemStack getStackInSlot(int slot){
-                CollectorTile tile = AdvancedCollectorContainer.this.getObjectOrClose();
-                return tile == null ? ItemStack.EMPTY : tile.filter.get(slot);
+                return AdvancedCollectorContainer.this.validateObjectOrClose() ?
+                    AdvancedCollectorContainer.this.object.filter.get(slot) :
+                    ItemStack.EMPTY;
             }
         };
     }
 
-    public BlockPos getTilePos(){
-        return this.tilePos;
+    public BlockPos getCollectorPosition(){
+        return this.blockEntityPos;
     }
 }

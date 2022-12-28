@@ -1,0 +1,21 @@
+{
+  "type": "forge:ore_shaped",
+  "pattern": [
+    " A ",
+    " B ",
+    "BBB"
+  ],
+  "key": {
+    "A": {
+      "type": "forge:ore_dict",
+      "ore": "enderpearl"
+    },
+    "B": {
+      "type": "forge:ore_dict",
+      "ore": "obsidian"
+    }
+  },
+  "result": {
+    "item": "itemcollectors:basic_collector"
+  }
+}
