@@ -5,10 +5,10 @@
       "item": "itemcollectors:advanced_collector"
     },
     "title": {
-      "translate": "itemcollectors.advancement.recipes/decorations/advanced_collector.title"
+      "translate": "itemcollectors.advancement.recipes/advanced_collector.title"
     },
     "description": {
-      "translate": "itemcollectors.advancement.recipes/decorations/advanced_collector.description"
+      "translate": "itemcollectors.advancement.recipes/advanced_collector.description"
     },
     "frame": "task",
     "show_toast": false,
