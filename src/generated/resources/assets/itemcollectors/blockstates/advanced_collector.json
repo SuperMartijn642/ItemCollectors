@@ -1,5 +1,10 @@
 {
   "variants": {
+    "facing=west": {
+      "model": "itemcollectors:block/advanced_collector",
+      "x": 90,
+      "y": 90
+    },
     "facing=down": {
       "model": "itemcollectors:block/advanced_collector"
     },
@@ -7,24 +12,19 @@
       "model": "itemcollectors:block/advanced_collector",
       "x": 90
     },
+    "facing=up": {
+      "model": "itemcollectors:block/advanced_collector",
+      "x": 180
+    },
     "facing=east": {
       "model": "itemcollectors:block/advanced_collector",
       "x": 90,
       "y": 270
     },
-    "facing=west": {
-      "model": "itemcollectors:block/advanced_collector",
-      "x": 90,
-      "y": 90
-    },
     "facing=north": {
       "model": "itemcollectors:block/advanced_collector",
       "x": 90,
       "y": 180
-    },
-    "facing=up": {
-      "model": "itemcollectors:block/advanced_collector",
-      "x": 180
     }
   }
 }

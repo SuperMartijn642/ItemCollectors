@@ -2,13 +2,13 @@
   "parent": "minecraft:recipes/root",
   "display": {
     "icon": {
-      "item": "itemcollectors:basic_collector"
+      "item": "itemcollectors:advanced_collector"
     },
     "title": {
-      "translate": "itemcollectors.advancement.recipes/decorations/basic_collector.title"
+      "translate": "itemcollectors.advancement.recipes/misc/advanced_collector.title"
     },
     "description": {
-      "translate": "itemcollectors.advancement.recipes/decorations/basic_collector.description"
+      "translate": "itemcollectors.advancement.recipes/misc/advanced_collector.description"
     },
     "frame": "task",
     "show_toast": false,
@@ -19,7 +19,7 @@
     "has_the_recipe": {
       "trigger": "minecraft:recipe_unlocked",
       "conditions": {
-        "recipe": "itemcollectors:basic_collector"
+        "recipe": "itemcollectors:advanced_collector"
       }
     },
     "recipe_condition": {
@@ -27,7 +27,9 @@
       "conditions": {
         "items": [
           {
-            "tag": "forge:ender_pearls"
+            "items": [
+              "itemcollectors:basic_collector"
+            ]
           }
         ]
       }
@@ -41,7 +43,7 @@
   ],
   "rewards": {
     "recipes": [
-      "itemcollectors:basic_collector"
+      "itemcollectors:advanced_collector"
     ]
   }
 }

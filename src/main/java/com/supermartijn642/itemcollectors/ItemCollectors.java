@@ -64,8 +64,8 @@ public class ItemCollectors {
         handler.registerBlockEntityType("basic_collector_tile", () -> BaseBlockEntityType.create(CollectorBlockEntity::basicCollectorEntity, basic_collector));
         handler.registerBlockEntityType("advanced_collector_tile", () -> BaseBlockEntityType.create(CollectorBlockEntity::advancedCollectorEntity, advanced_collector));
         // Items
-        handler.registerItem("basic_collector", () -> new BaseBlockItem(basic_collector, ItemProperties.create().group(CreativeItemGroup.getDecoration())));
-        handler.registerItem("advanced_collector", () -> new BaseBlockItem(advanced_collector, ItemProperties.create().group(CreativeItemGroup.getDecoration())));
+        handler.registerItem("basic_collector", () -> new BaseBlockItem(basic_collector, ItemProperties.create().group(CreativeItemGroup.getFunctionalBlocks())));
+        handler.registerItem("advanced_collector", () -> new BaseBlockItem(advanced_collector, ItemProperties.create().group(CreativeItemGroup.getFunctionalBlocks())));
         // Container type
         handler.registerMenuType("filter_collector_container", () -> BaseContainerType.create(
             (container, data) -> data.writeBlockPos(container.getCollectorPosition()),
