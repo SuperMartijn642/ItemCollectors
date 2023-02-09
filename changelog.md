@@ -1,2 +1,5 @@
+### Item Collectors 1.1.7
+- Added Simplified Chinese translations (thanks to EnterFor!)
+
 ### Item Collectors 1.1.6
 - Initial release of Item Collectors for Minecraft 1.19.3
