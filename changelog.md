@@ -1,3 +1,6 @@
+### Item Collectors 1.1.7
+- Added Simplified Chinese translations (thanks to EnterFor!)
+
 ### Item Collectors 1.1.6
 - Updated to core library 1.1
 - Added the collectors to the 'Decorations' creative tab
