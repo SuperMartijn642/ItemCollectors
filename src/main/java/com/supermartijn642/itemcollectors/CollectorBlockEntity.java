@@ -3,18 +3,18 @@ package com.supermartijn642.itemcollectors;
 import com.supermartijn642.core.block.BaseBlockEntity;
 import com.supermartijn642.core.block.BaseBlockEntityType;
 import com.supermartijn642.core.block.TickableBlockEntity;
+import net.fabricmc.fabric.api.transfer.v1.item.ItemStorage;
+import net.fabricmc.fabric.api.transfer.v1.item.ItemVariant;
+import net.fabricmc.fabric.api.transfer.v1.storage.Storage;
+import net.fabricmc.fabric.api.transfer.v1.transaction.Transaction;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.AABB;
-import net.minecraftforge.common.util.LazyOptional;
-import net.minecraftforge.items.CapabilityItemHandler;
-import net.minecraftforge.items.IItemHandler;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -53,16 +53,18 @@ public class CollectorBlockEntity extends BaseBlockEntity implements TickableBlo
             this.filter.add(ItemStack.EMPTY);
     }
 
+    @SuppressWarnings("UnstableApiUsage")
     @Override
     public void update(){
-        this.getOutputItemHandler().ifPresent(itemHandler -> {
-            if(itemHandler.getSlots() <= 0)
+        Storage<ItemVariant> itemHandler = this.getOutputItemHandler();
+        if(itemHandler != null){
+            if(!itemHandler.supportsInsertion())
                 return;
 
             AABB area = this.getAffectedArea();
 
             List<ItemEntity> items = this.level.getEntitiesOfClass(ItemEntity.class, area, item -> {
-                if(!item.isAlive() || (item.getPersistentData().contains("PreventRemoteMovement") && !item.getPersistentData().contains("AllowMachineRemoteMovement")))
+                if(!item.isAlive())
                     return false;
                 if(!this.hasFilter.get())
                     return true;
@@ -78,36 +80,36 @@ public class CollectorBlockEntity extends BaseBlockEntity implements TickableBlo
                 return !this.filterWhitelist;
             });
 
-            loop:
             for(ItemEntity entity : items){
                 ItemStack stack = entity.getItem().copy();
-                for(int slot = 0; slot < itemHandler.getSlots(); slot++)
-                    if(itemHandler.isItemValid(slot, stack)){
-                        stack = itemHandler.insertItem(slot, stack, false);
-                        if(stack.isEmpty()){
-                            entity.setItem(ItemStack.EMPTY);
+                ItemVariant variant = ItemVariant.of(stack);
+                try(Transaction transaction = Transaction.openOuter()){
+                    long inserted = itemHandler.insert(variant, stack.getCount(), transaction);
+                    if(inserted > 0 && inserted <= stack.getCount()){
+                        transaction.commit();
+                        stack.shrink((int)inserted);
+                        entity.setItem(stack);
+                        if(stack.isEmpty())
                             entity.remove(Entity.RemovalReason.DISCARDED);
-                            continue loop;
-                        }
                     }
-                entity.setItem(stack);
+                }
             }
-        });
+        }
     }
 
     public AABB getAffectedArea(){
         return new AABB(this.worldPosition.offset(-this.rangeX, -this.rangeY, -this.rangeZ), this.worldPosition.offset(this.rangeX + 1, this.rangeY + 1, this.rangeZ + 1));
     }
 
-    private LazyOptional<IItemHandler> getOutputItemHandler(){
+    @SuppressWarnings("UnstableApiUsage")
+    private Storage<ItemVariant> getOutputItemHandler(){
+        if(this.level.isClientSide)
+            return null;
         BlockState state = this.getBlockState();
         if(!state.hasProperty(CollectorBlock.DIRECTION))
-            return LazyOptional.empty();
+            return null;
         Direction direction = state.getValue(CollectorBlock.DIRECTION);
-        BlockEntity entity = this.level.getBlockEntity(this.worldPosition.relative(direction));
-        if(entity == null)
-            return LazyOptional.empty();
-        return entity.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, direction.getOpposite());
+        return ItemStorage.SIDED.find(this.level, this.worldPosition.relative(direction), direction.getOpposite());
     }
 
     public void setRangeX(int range){
@@ -167,10 +169,5 @@ public class CollectorBlockEntity extends BaseBlockEntity implements TickableBlo
         this.filterWhitelist = tag.contains("filterWhitelist") && tag.getBoolean("filterWhitelist");
         this.filterDurability = tag.contains("filterDurability") && tag.getBoolean("filterDurability");
         this.showArea = tag.contains("showArea") && tag.getBoolean("showArea");
-    }
-
-    @Override
-    public AABB getRenderBoundingBox(){
-        return this.getAffectedArea();
     }
 }

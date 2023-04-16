@@ -14,15 +14,12 @@ import com.supermartijn642.core.registry.RegistryEntryAcceptor;
 import com.supermartijn642.itemcollectors.generators.*;
 import com.supermartijn642.itemcollectors.packet.*;
 import com.supermartijn642.itemcollectors.screen.AdvancedCollectorContainer;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.fml.DistExecutor;
-import net.minecraftforge.fml.common.Mod;
+import net.fabricmc.api.ModInitializer;
 
 /**
  * Created 7/15/2020 by SuperMartijn642
  */
-@Mod("itemcollectors")
-public class ItemCollectors {
+public class ItemCollectors implements ModInitializer {
 
     public static final PacketChannel CHANNEL = PacketChannel.create("itemcollectors");
 
@@ -39,7 +36,8 @@ public class ItemCollectors {
     @RegistryEntryAcceptor(namespace = "itemcollectors", identifier = "filter_collector_container", registry = RegistryEntryAcceptor.Registry.MENU_TYPES)
     public static BaseContainerType<AdvancedCollectorContainer> filter_collector_container;
 
-    public ItemCollectors(){
+    @Override
+    public void onInitialize(){
         CHANNEL.registerMessage(PacketIncreaseXRange.class, PacketIncreaseXRange::new, true);
         CHANNEL.registerMessage(PacketDecreaseXRange.class, PacketDecreaseXRange::new, true);
         CHANNEL.registerMessage(PacketIncreaseYRange.class, PacketIncreaseYRange::new, true);
@@ -51,7 +49,6 @@ public class ItemCollectors {
         CHANNEL.registerMessage(PacketToggleShowArea.class, PacketToggleShowArea::new, true);
 
         register();
-        DistExecutor.safeRunWhenOn(Dist.CLIENT, () -> ItemCollectorsClient::register);
         registerGenerators();
     }
 

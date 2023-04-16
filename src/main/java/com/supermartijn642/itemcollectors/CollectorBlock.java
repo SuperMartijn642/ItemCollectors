@@ -25,8 +25,8 @@ import net.minecraft.world.level.material.MaterialColor;
 import net.minecraft.world.phys.Vec3;
 import net.minecraft.world.phys.shapes.CollisionContext;
 import net.minecraft.world.phys.shapes.VoxelShape;
+import org.jetbrains.annotations.Nullable;
 
-import javax.annotation.Nullable;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
 
@@ -79,7 +79,7 @@ public class CollectorBlock extends BaseBlock implements EntityHoldingBlock {
             ItemCollectorsClient.openBasicCollectorScreen(level, pos);
         else if(!level.isClientSide && this.hasFilter.get())
             CommonUtils.openContainer(new AdvancedCollectorContainer(ItemCollectors.filter_collector_container, player, level, pos));
-        return super.interact(state, level, pos, player, hand, hitSide, hitLocation);
+        return InteractionFeedback.SUCCESS;
     }
 
     @Override
