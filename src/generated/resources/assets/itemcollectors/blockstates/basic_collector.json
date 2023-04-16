@@ -17,14 +17,14 @@
       "model": "itemcollectors:block/basic_collector",
       "x": 180
     },
+    "facing=south": {
+      "model": "itemcollectors:block/basic_collector",
+      "x": 90
+    },
     "facing=east": {
       "model": "itemcollectors:block/basic_collector",
       "x": 90,
       "y": 270
-    },
-    "facing=south": {
-      "model": "itemcollectors:block/basic_collector",
-      "x": 90
     }
   }
 }
