@@ -1,21 +1,9 @@
 {
   "variants": {
-    "facing=west": {
-      "model": "itemcollectors:block/basic_collector",
-      "x": 90,
-      "y": 90
-    },
-    "facing=down": {
-      "model": "itemcollectors:block/basic_collector"
-    },
     "facing=north": {
       "model": "itemcollectors:block/basic_collector",
       "x": 90,
       "y": 180
-    },
-    "facing=up": {
-      "model": "itemcollectors:block/basic_collector",
-      "x": 180
     },
     "facing=east": {
       "model": "itemcollectors:block/basic_collector",
@@ -25,6 +13,18 @@
     "facing=south": {
       "model": "itemcollectors:block/basic_collector",
       "x": 90
+    },
+    "facing=west": {
+      "model": "itemcollectors:block/basic_collector",
+      "x": 90,
+      "y": 90
+    },
+    "facing=up": {
+      "model": "itemcollectors:block/basic_collector",
+      "x": 180
+    },
+    "facing=down": {
+      "model": "itemcollectors:block/basic_collector"
     }
   }
 }
