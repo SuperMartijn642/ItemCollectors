@@ -66,7 +66,7 @@ public class AdvancedCollectorContainer extends BlockEntityBaseContainer<Collect
             int firstEmpty = -1;
             for(int i = 0; i < 9; i++){
                 ItemStack stack = this.object.filter.get(i);
-                if(ItemStack.isSame(stack, this.getSlot(index).getItem()) && ItemStack.tagMatches(stack, this.getSlot(index).getItem())){
+                if(ItemStack.isSameItemSameTags(stack, this.getSlot(index).getItem())){
                     contains = true;
                     break;
                 }

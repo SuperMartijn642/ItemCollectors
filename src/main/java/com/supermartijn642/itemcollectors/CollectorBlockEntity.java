@@ -73,8 +73,8 @@ public class CollectorBlockEntity extends BaseBlockEntity implements TickableBlo
                     return false;
                 for(int i = 0; i < 9; i++){
                     ItemStack filter = this.filter.get(i);
-                    if(ItemStack.isSame(filter, stack) &&
-                        (!this.filterDurability || ItemStack.tagMatches(filter, stack)))
+                    if(ItemStack.isSameItem(filter, stack) &&
+                        (!this.filterDurability || ItemStack.isSameItemSameTags(filter, stack)))
                         return this.filterWhitelist;
                 }
                 return !this.filterWhitelist;

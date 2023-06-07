@@ -1,10 +1,10 @@
 package com.supermartijn642.itemcollectors.screen;
 
-import com.mojang.blaze3d.vertex.PoseStack;
 import com.supermartijn642.core.ClientUtils;
 import com.supermartijn642.core.TextComponents;
 import com.supermartijn642.core.gui.ScreenUtils;
 import com.supermartijn642.core.gui.widget.BlockEntityBaseContainerWidget;
+import com.supermartijn642.core.gui.widget.WidgetRenderContext;
 import com.supermartijn642.itemcollectors.CollectorBlockEntity;
 import com.supermartijn642.itemcollectors.ItemCollectors;
 import com.supermartijn642.itemcollectors.packet.*;
@@ -59,26 +59,26 @@ public class AdvancedCollectorScreen extends BlockEntityBaseContainerWidget<Coll
     }
 
     @Override
-    protected void renderBackground(PoseStack poseStack, int mouseX, int mouseY, CollectorBlockEntity entity){
+    protected void renderBackground(WidgetRenderContext context, int mouseX, int mouseY, CollectorBlockEntity entity){
         ScreenUtils.bindTexture(BACKGROUND);
-        ScreenUtils.drawTexture(poseStack, 0, 0, this.width(), this.height());
-        super.renderBackground(poseStack, mouseX, mouseY, entity);
+        ScreenUtils.drawTexture(context.poseStack(), 0, 0, this.width(), this.height());
+        super.renderBackground(context, mouseX, mouseY, entity);
     }
 
     @Override
-    protected void renderForeground(PoseStack poseStack, int mouseX, int mouseY, CollectorBlockEntity entity){
-        ScreenUtils.drawCenteredString(poseStack, entity.getBlockState().getBlock().getName(), this.width() / 2f, 6);
-        ScreenUtils.drawString(poseStack, ClientUtils.getPlayer().getInventory().getName(), 32, 112);
+    protected void renderForeground(WidgetRenderContext context, int mouseX, int mouseY, CollectorBlockEntity entity){
+        ScreenUtils.drawCenteredString(context.poseStack(), entity.getBlockState().getBlock().getName(), this.width() / 2f, 6);
+        ScreenUtils.drawString(context.poseStack(), ClientUtils.getPlayer().getInventory().getName(), 32, 112);
 
-        ScreenUtils.drawString(poseStack, TextComponents.translation("gui.itemcollectors.basic_collector.range",
+        ScreenUtils.drawString(context.poseStack(), TextComponents.translation("gui.itemcollectors.basic_collector.range",
             (entity.rangeX * 2 + 1), (entity.rangeY * 2 + 1), (entity.rangeZ * 2 + 1)).get(), 8, 26);
-        ScreenUtils.drawCenteredString(poseStack, TextComponents.string("x:").get(), 25, 51);
-        ScreenUtils.drawCenteredString(poseStack, TextComponents.number(entity.rangeX).get(), 39, 52);
-        ScreenUtils.drawCenteredString(poseStack, TextComponents.string("y:").get(), 68, 51);
-        ScreenUtils.drawCenteredString(poseStack, TextComponents.number(entity.rangeY).get(), 82, 52);
-        ScreenUtils.drawCenteredString(poseStack, TextComponents.string("z:").get(), 111, 51);
-        ScreenUtils.drawCenteredString(poseStack, TextComponents.number(entity.rangeZ).get(), 125, 52);
-        ScreenUtils.drawString(poseStack, TextComponents.translation("gui.itemcollectors.advanced_collector.filter").get(), 8, 78);
-        super.renderForeground(poseStack, mouseX, mouseY, entity);
+        ScreenUtils.drawCenteredString(context.poseStack(), TextComponents.string("x:").get(), 25, 51);
+        ScreenUtils.drawCenteredString(context.poseStack(), TextComponents.number(entity.rangeX).get(), 39, 52);
+        ScreenUtils.drawCenteredString(context.poseStack(), TextComponents.string("y:").get(), 68, 51);
+        ScreenUtils.drawCenteredString(context.poseStack(), TextComponents.number(entity.rangeY).get(), 82, 52);
+        ScreenUtils.drawCenteredString(context.poseStack(), TextComponents.string("z:").get(), 111, 51);
+        ScreenUtils.drawCenteredString(context.poseStack(), TextComponents.number(entity.rangeZ).get(), 125, 52);
+        ScreenUtils.drawString(context.poseStack(), TextComponents.translation("gui.itemcollectors.advanced_collector.filter").get(), 8, 78);
+        super.renderForeground(context, mouseX, mouseY, entity);
     }
 }
