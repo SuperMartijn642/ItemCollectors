@@ -15,18 +15,18 @@ import net.minecraft.world.item.context.BlockPlaceContext;
 import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.SoundType;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.StateDefinition;
 import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 import net.minecraft.world.level.block.state.properties.EnumProperty;
-import net.minecraft.world.level.material.Material;
-import net.minecraft.world.level.material.MaterialColor;
+import net.minecraft.world.level.material.MapColor;
 import net.minecraft.world.phys.Vec3;
 import net.minecraft.world.phys.shapes.CollisionContext;
 import net.minecraft.world.phys.shapes.VoxelShape;
+import org.jetbrains.annotations.Nullable;
 
-import javax.annotation.Nullable;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
 
@@ -66,7 +66,7 @@ public class CollectorBlock extends BaseBlock implements EntityHoldingBlock {
     private final Supplier<Boolean> hasFilter;
 
     public CollectorBlock(Supplier<BaseBlockEntityType<?>> entityType, Supplier<Integer> maxRange, Supplier<Boolean> hasFilter){
-        super(false, BlockProperties.create(Material.STONE, MaterialColor.COLOR_BLACK).requiresCorrectTool().destroyTime(5).explosionResistance(1200));
+        super(false, BlockProperties.create().mapColor(MapColor.COLOR_BLACK).sound(SoundType.STONE).requiresCorrectTool().destroyTime(5).explosionResistance(1200));
         this.entityType = entityType;
         this.maxRange = maxRange;
         this.hasFilter = hasFilter;
@@ -79,7 +79,7 @@ public class CollectorBlock extends BaseBlock implements EntityHoldingBlock {
             ItemCollectorsClient.openBasicCollectorScreen(level, pos);
         else if(!level.isClientSide && this.hasFilter.get())
             CommonUtils.openContainer(new AdvancedCollectorContainer(ItemCollectors.filter_collector_container, player, level, pos));
-        return super.interact(state, level, pos, player, hand, hitSide, hitLocation);
+        return InteractionFeedback.SUCCESS;
     }
 
     @Override

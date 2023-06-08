@@ -12,8 +12,8 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.AABB;
+import net.minecraftforge.common.capabilities.ForgeCapabilities;
 import net.minecraftforge.common.util.LazyOptional;
-import net.minecraftforge.items.CapabilityItemHandler;
 import net.minecraftforge.items.IItemHandler;
 
 import java.util.ArrayList;
@@ -71,8 +71,8 @@ public class CollectorBlockEntity extends BaseBlockEntity implements TickableBlo
                     return false;
                 for(int i = 0; i < 9; i++){
                     ItemStack filter = this.filter.get(i);
-                    if(ItemStack.isSame(filter, stack) &&
-                        (!this.filterDurability || ItemStack.tagMatches(filter, stack)))
+                    if(ItemStack.isSameItem(filter, stack) &&
+                        (!this.filterDurability || ItemStack.isSameItemSameTags(filter, stack)))
                         return this.filterWhitelist;
                 }
                 return !this.filterWhitelist;
@@ -107,7 +107,7 @@ public class CollectorBlockEntity extends BaseBlockEntity implements TickableBlo
         BlockEntity entity = this.level.getBlockEntity(this.worldPosition.relative(direction));
         if(entity == null)
             return LazyOptional.empty();
-        return entity.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, direction.getOpposite());
+        return entity.getCapability(ForgeCapabilities.ITEM_HANDLER, direction.getOpposite());
     }
 
     public void setRangeX(int range){
