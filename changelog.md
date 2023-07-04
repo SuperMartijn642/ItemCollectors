@@ -1,3 +1,6 @@
+### Item Collectors 1.1.8
+- Fixed crash with certain mods when transferring items
+
 ### Item Collectors 1.1.7a
 - Fixed missing dependency for config library
 
