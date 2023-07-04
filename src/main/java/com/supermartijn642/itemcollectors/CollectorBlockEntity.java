@@ -56,41 +56,43 @@ public class CollectorBlockEntity extends BaseBlockEntity implements TickableBlo
     @SuppressWarnings("UnstableApiUsage")
     @Override
     public void update(){
-        Storage<ItemVariant> itemHandler = this.getOutputItemHandler();
-        if(itemHandler != null){
-            if(!itemHandler.supportsInsertion())
-                return;
+        if(!this.level.isClientSide){
+            Storage<ItemVariant> itemHandler = this.getOutputItemHandler();
+            if(itemHandler != null){
+                if(!itemHandler.supportsInsertion())
+                    return;
 
-            AABB area = this.getAffectedArea();
+                AABB area = this.getAffectedArea();
 
-            List<ItemEntity> items = this.level.getEntitiesOfClass(ItemEntity.class, area, item -> {
-                if(!item.isAlive())
-                    return false;
-                if(!this.hasFilter.get())
-                    return true;
-                ItemStack stack = item.getItem();
-                if(stack.isEmpty())
-                    return false;
-                for(int i = 0; i < 9; i++){
-                    ItemStack filter = this.filter.get(i);
-                    if(ItemStack.isSameItem(filter, stack) &&
-                        (!this.filterDurability || ItemStack.isSameItemSameTags(filter, stack)))
-                        return this.filterWhitelist;
-                }
-                return !this.filterWhitelist;
-            });
+                List<ItemEntity> items = this.level.getEntitiesOfClass(ItemEntity.class, area, item -> {
+                    if(!item.isAlive())
+                        return false;
+                    if(!this.hasFilter.get())
+                        return true;
+                    ItemStack stack = item.getItem();
+                    if(stack.isEmpty())
+                        return false;
+                    for(int i = 0; i < 9; i++){
+                        ItemStack filter = this.filter.get(i);
+                        if(ItemStack.isSameItem(filter, stack) &&
+                            (!this.filterDurability || ItemStack.isSameItemSameTags(filter, stack)))
+                            return this.filterWhitelist;
+                    }
+                    return !this.filterWhitelist;
+                });
 
-            for(ItemEntity entity : items){
-                ItemStack stack = entity.getItem().copy();
-                ItemVariant variant = ItemVariant.of(stack);
-                try(Transaction transaction = Transaction.openOuter()){
-                    long inserted = itemHandler.insert(variant, stack.getCount(), transaction);
-                    if(inserted > 0 && inserted <= stack.getCount()){
-                        transaction.commit();
-                        stack.shrink((int)inserted);
-                        entity.setItem(stack);
-                        if(stack.isEmpty())
-                            entity.remove(Entity.RemovalReason.DISCARDED);
+                for(ItemEntity entity : items){
+                    ItemStack stack = entity.getItem().copy();
+                    ItemVariant variant = ItemVariant.of(stack);
+                    try(Transaction transaction = Transaction.openOuter()){
+                        long inserted = itemHandler.insert(variant, stack.getCount(), transaction);
+                        if(inserted > 0 && inserted <= stack.getCount()){
+                            transaction.commit();
+                            stack.shrink((int)inserted);
+                            entity.setItem(stack);
+                            if(stack.isEmpty())
+                                entity.remove(Entity.RemovalReason.DISCARDED);
+                        }
                     }
                 }
             }
