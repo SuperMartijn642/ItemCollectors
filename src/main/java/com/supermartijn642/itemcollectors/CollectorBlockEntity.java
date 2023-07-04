@@ -53,44 +53,46 @@ public class CollectorBlockEntity extends BaseBlockEntity implements TickableBlo
 
     @Override
     public void update(){
-        this.getOutputItemHandler().ifPresent(itemHandler -> {
-            if(itemHandler.getSlots() <= 0)
-                return;
+        if(!this.world.isRemote){
+            this.getOutputItemHandler().ifPresent(itemHandler -> {
+                if(itemHandler.getSlots() <= 0)
+                    return;
 
-            AxisAlignedBB area = this.getAffectedArea();
+                AxisAlignedBB area = this.getAffectedArea();
 
-            List<EntityItem> items = this.world.getEntitiesWithinAABB(EntityItem.class, area, item -> {
-                if(!item.isEntityAlive() || (item.getEntityData().hasKey("PreventRemoteMovement") && !item.getEntityData().hasKey("AllowMachineRemoteMovement")))
-                    return false;
-                if(!this.hasFilter.get())
-                    return true;
-                ItemStack stack = item.getItem();
-                if(stack.isEmpty())
-                    return false;
-                for(int i = 0; i < 9; i++){
-                    ItemStack filter = this.filter.get(i);
-                    if((this.filterDurability ? ItemStack.areItemsEqual(filter, stack) : ItemStack.areItemsEqualIgnoreDurability(filter, stack)) &&
-                        ItemStack.areItemStackTagsEqual(filter, stack))
-                        return this.filterWhitelist;
-                }
-                return !this.filterWhitelist;
-            });
-
-            loop:
-            for(EntityItem entity : items){
-                ItemStack stack = entity.getItem().copy();
-                for(int slot = 0; slot < itemHandler.getSlots(); slot++)
-                    if(itemHandler.isItemValid(slot, stack)){
-                        stack = itemHandler.insertItem(slot, stack, false);
-                        if(stack.isEmpty()){
-                            entity.setItem(ItemStack.EMPTY);
-                            entity.setDead();
-                            continue loop;
-                        }
+                List<EntityItem> items = this.world.getEntitiesWithinAABB(EntityItem.class, area, item -> {
+                    if(!item.isEntityAlive() || (item.getEntityData().hasKey("PreventRemoteMovement") && !item.getEntityData().hasKey("AllowMachineRemoteMovement")))
+                        return false;
+                    if(!this.hasFilter.get())
+                        return true;
+                    ItemStack stack = item.getItem();
+                    if(stack.isEmpty())
+                        return false;
+                    for(int i = 0; i < 9; i++){
+                        ItemStack filter = this.filter.get(i);
+                        if((this.filterDurability ? ItemStack.areItemsEqual(filter, stack) : ItemStack.areItemsEqualIgnoreDurability(filter, stack)) &&
+                            ItemStack.areItemStackTagsEqual(filter, stack))
+                            return this.filterWhitelist;
                     }
-                entity.setItem(stack);
-            }
-        });
+                    return !this.filterWhitelist;
+                });
+
+                loop:
+                for(EntityItem entity : items){
+                    ItemStack stack = entity.getItem().copy();
+                    for(int slot = 0; slot < itemHandler.getSlots(); slot++)
+                        if(itemHandler.isItemValid(slot, stack)){
+                            stack = itemHandler.insertItem(slot, stack, false);
+                            if(stack.isEmpty()){
+                                entity.setItem(ItemStack.EMPTY);
+                                entity.setDead();
+                                continue loop;
+                            }
+                        }
+                    entity.setItem(stack);
+                }
+            });
+        }
     }
 
     public AxisAlignedBB getAffectedArea(){
