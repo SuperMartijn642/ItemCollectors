@@ -9,12 +9,10 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.AABB;
-import net.minecraftforge.common.capabilities.ForgeCapabilities;
-import net.minecraftforge.common.util.LazyOptional;
-import net.minecraftforge.items.IItemHandler;
+import net.neoforged.neoforge.capabilities.Capabilities;
+import net.neoforged.neoforge.items.IItemHandler;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -56,7 +54,8 @@ public class CollectorBlockEntity extends BaseBlockEntity implements TickableBlo
     @Override
     public void update(){
         if(!this.level.isClientSide){
-            this.getOutputItemHandler().ifPresent(itemHandler -> {
+            IItemHandler itemHandler = this.getOutputItemHandler();
+            if(itemHandler != null){
                 if(itemHandler.getSlots() <= 0)
                     return;
 
@@ -93,23 +92,20 @@ public class CollectorBlockEntity extends BaseBlockEntity implements TickableBlo
                         }
                     entity.setItem(stack);
                 }
-            });
+            }
         }
     }
 
     public AABB getAffectedArea(){
-        return new AABB(this.worldPosition.offset(-this.rangeX, -this.rangeY, -this.rangeZ), this.worldPosition.offset(this.rangeX + 1, this.rangeY + 1, this.rangeZ + 1));
+        return AABB.encapsulatingFullBlocks(this.worldPosition.offset(-this.rangeX, -this.rangeY, -this.rangeZ), this.worldPosition.offset(this.rangeX, this.rangeY, this.rangeZ));
     }
 
-    private LazyOptional<IItemHandler> getOutputItemHandler(){
+    private IItemHandler getOutputItemHandler(){
         BlockState state = this.getBlockState();
         if(!state.hasProperty(CollectorBlock.DIRECTION))
-            return LazyOptional.empty();
+            return null;
         Direction direction = state.getValue(CollectorBlock.DIRECTION);
-        BlockEntity entity = this.level.getBlockEntity(this.worldPosition.relative(direction));
-        if(entity == null)
-            return LazyOptional.empty();
-        return entity.getCapability(ForgeCapabilities.ITEM_HANDLER, direction.getOpposite());
+        return this.level.getCapability(Capabilities.ItemHandler.BLOCK, this.worldPosition.relative(direction), null);
     }
 
     public void setRangeX(int range){
@@ -169,10 +165,5 @@ public class CollectorBlockEntity extends BaseBlockEntity implements TickableBlo
         this.filterWhitelist = tag.contains("filterWhitelist") && tag.getBoolean("filterWhitelist");
         this.filterDurability = tag.contains("filterDurability") && tag.getBoolean("filterDurability");
         this.showArea = tag.contains("showArea") && tag.getBoolean("showArea");
-    }
-
-    @Override
-    public AABB getRenderBoundingBox(){
-        return this.getAffectedArea();
     }
 }

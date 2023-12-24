@@ -12,10 +12,8 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.client.event.RenderHighlightEvent;
-import net.minecraftforge.eventbus.api.SubscribeEvent;
-import net.minecraftforge.fml.common.Mod;
+import net.neoforged.neoforge.client.event.RenderHighlightEvent;
+import net.neoforged.neoforge.common.NeoForge;
 
 import java.util.Random;
 
@@ -25,6 +23,8 @@ import java.util.Random;
 public class ItemCollectorsClient {
 
     public static void register(){
+        NeoForge.EVENT_BUS.addListener(ItemCollectorsClient::onBlockHighlight);
+
         ClientRegistrationHandler handler = ClientRegistrationHandler.get("itemcollectors");
         handler.registerContainerScreen(() -> ItemCollectors.filter_collector_container, container -> WidgetContainerScreen.of(new AdvancedCollectorScreen(container.level, container.getCollectorPosition()), container, false));
         handler.registerCustomBlockEntityRenderer(() -> ItemCollectors.basic_collector_tile, CollectorBlockEntityRenderer::new);
@@ -35,31 +35,26 @@ public class ItemCollectorsClient {
         ClientUtils.displayScreen(WidgetScreen.of(new BasicCollectorScreen(level, pos)));
     }
 
-    @Mod.EventBusSubscriber(value = Dist.CLIENT, bus = Mod.EventBusSubscriber.Bus.FORGE)
-    public static class Events {
+    public static void onBlockHighlight(RenderHighlightEvent.Block e){
+        Level level = ClientUtils.getWorld();
+        BlockEntity entity = level.getBlockEntity(e.getTarget().getBlockPos());
+        if(entity instanceof CollectorBlockEntity){
+            e.getPoseStack().pushPose();
+            Vec3 camera = RenderUtils.getCameraPosition();
+            e.getPoseStack().translate(-camera.x, -camera.y, -camera.z);
 
-        @SubscribeEvent
-        public static void onBlockHighlight(RenderHighlightEvent.Block e){
-            Level level = ClientUtils.getWorld();
-            BlockEntity entity = level.getBlockEntity(e.getTarget().getBlockPos());
-            if(entity instanceof CollectorBlockEntity){
-                e.getPoseStack().pushPose();
-                Vec3 camera = RenderUtils.getCameraPosition();
-                e.getPoseStack().translate(-camera.x, -camera.y, -camera.z);
+            AABB area = ((CollectorBlockEntity)entity).getAffectedArea().inflate(0.05f);
 
-                AABB area = ((CollectorBlockEntity)entity).getAffectedArea().inflate(0.05f);
+            Random random = new Random(entity.getBlockPos().hashCode());
+            float red = random.nextFloat();
+            float green = random.nextFloat();
+            float blue = random.nextFloat();
+            float alpha = 0.3f;
 
-                Random random = new Random(entity.getBlockPos().hashCode());
-                float red = random.nextFloat();
-                float green = random.nextFloat();
-                float blue = random.nextFloat();
-                float alpha = 0.3f;
+            RenderUtils.renderBox(e.getPoseStack(), area, red, green, blue, true);
+            RenderUtils.renderBoxSides(e.getPoseStack(), area, red, green, blue, alpha, true);
 
-                RenderUtils.renderBox(e.getPoseStack(), area, red, green, blue, true);
-                RenderUtils.renderBoxSides(e.getPoseStack(), area, red, green, blue, alpha, true);
-
-                e.getPoseStack().popPose();
-            }
+            e.getPoseStack().popPose();
         }
     }
 }
