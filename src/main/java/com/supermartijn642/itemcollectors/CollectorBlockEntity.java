@@ -67,11 +67,11 @@ public class CollectorBlockEntity extends BaseBlockEntity implements TickableBlo
                 List<ItemEntity> items = this.level.getEntitiesOfClass(ItemEntity.class, area, item -> {
                     if(!item.isAlive())
                         return false;
-                    if(!this.hasFilter.get())
-                        return true;
                     ItemStack stack = item.getItem();
                     if(stack.isEmpty())
                         return false;
+                    if(!this.hasFilter.get())
+                        return true;
                     for(int i = 0; i < 9; i++){
                         ItemStack filter = this.filter.get(i);
                         if(ItemStack.isSame(filter, stack) &&
