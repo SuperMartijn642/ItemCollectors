@@ -1,2 +1,5 @@
+### Item Collectors 1.1.9
+- Fixed collectors trying to collect empty item entities
+
 ### Item Collectors 1.1.8
 - Initial release of Item Collectors for NeoForge
