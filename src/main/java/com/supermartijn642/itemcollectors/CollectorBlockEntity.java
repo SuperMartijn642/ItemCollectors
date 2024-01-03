@@ -100,7 +100,7 @@ public class CollectorBlockEntity extends BaseBlockEntity implements TickableBlo
     }
 
     public AABB getAffectedArea(){
-        return new AABB(this.worldPosition.offset(-this.rangeX, -this.rangeY, -this.rangeZ), this.worldPosition.offset(this.rangeX + 1, this.rangeY + 1, this.rangeZ + 1));
+        return AABB.encapsulatingFullBlocks(this.worldPosition.offset(-this.rangeX, -this.rangeY, -this.rangeZ), this.worldPosition.offset(this.rangeX, this.rangeY, this.rangeZ));
     }
 
     @SuppressWarnings("UnstableApiUsage")
