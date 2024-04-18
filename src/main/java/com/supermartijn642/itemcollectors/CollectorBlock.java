@@ -83,7 +83,7 @@ public class CollectorBlock extends BaseBlock implements EntityHoldingBlock {
             ItemCollectorsClient.openBasicCollectorScreen(level, pos);
         else if(!level.isRemote && this.hasFilter.get())
             CommonUtils.openContainer(new AdvancedCollectorContainer(ItemCollectors.filter_collector_container, player, level, pos));
-        return super.interact(state, level, pos, player, hand, hitSide, hitLocation);
+        return InteractionFeedback.SUCCESS;
     }
 
     @Override
