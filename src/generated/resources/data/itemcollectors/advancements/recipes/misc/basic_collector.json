@@ -2,7 +2,7 @@
   "parent": "minecraft:recipes/root",
   "display": {
     "icon": {
-      "item": "itemcollectors:basic_collector"
+      "id": "itemcollectors:basic_collector"
     },
     "title": {
       "translate": "itemcollectors.advancement.recipes/misc/basic_collector.title"
@@ -27,7 +27,7 @@
       "conditions": {
         "items": [
           {
-            "tag": "forge:ender_pearls"
+            "items": "#c:ender_pearls"
           }
         ]
       }

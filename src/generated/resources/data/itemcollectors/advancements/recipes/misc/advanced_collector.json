@@ -2,7 +2,7 @@
   "parent": "minecraft:recipes/root",
   "display": {
     "icon": {
-      "item": "itemcollectors:advanced_collector"
+      "id": "itemcollectors:advanced_collector"
     },
     "title": {
       "translate": "itemcollectors.advancement.recipes/misc/advanced_collector.title"
@@ -27,9 +27,7 @@
       "conditions": {
         "items": [
           {
-            "items": [
-              "itemcollectors:basic_collector"
-            ]
+            "items": "itemcollectors:basic_collector"
           }
         ]
       }

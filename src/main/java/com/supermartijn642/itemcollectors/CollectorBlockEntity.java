@@ -1,5 +1,6 @@
 package com.supermartijn642.itemcollectors;
 
+import com.supermartijn642.core.CommonUtils;
 import com.supermartijn642.core.block.BaseBlockEntity;
 import com.supermartijn642.core.block.BaseBlockEntityType;
 import com.supermartijn642.core.block.TickableBlockEntity;
@@ -72,7 +73,7 @@ public class CollectorBlockEntity extends BaseBlockEntity implements TickableBlo
                     for(int i = 0; i < 9; i++){
                         ItemStack filter = this.filter.get(i);
                         if(ItemStack.isSameItem(filter, stack) &&
-                            (!this.filterDurability || ItemStack.isSameItemSameTags(filter, stack)))
+                            (!this.filterDurability || ItemStack.isSameItemSameComponents(filter, stack)))
                             return this.filterWhitelist;
                     }
                     return !this.filterWhitelist;
@@ -144,7 +145,7 @@ public class CollectorBlockEntity extends BaseBlockEntity implements TickableBlo
         tag.putInt("rangeZ", this.rangeZ);
         for(int i = 0; i < 9; i++){
             if(!this.filter.get(i).isEmpty())
-                tag.put("filter" + i, this.filter.get(i).save(new CompoundTag()));
+                tag.put("filter" + i, this.filter.get(i).save(this.level.registryAccess()));
         }
         tag.putBoolean("filterWhitelist", this.filterWhitelist);
         tag.putBoolean("filterDurability", this.filterDurability);
@@ -161,7 +162,7 @@ public class CollectorBlockEntity extends BaseBlockEntity implements TickableBlo
         if(tag.contains("rangeZ"))
             this.rangeZ = tag.getInt("rangeZ");
         for(int i = 0; i < 9; i++)
-            this.filter.set(i, tag.contains("filter" + i) ? ItemStack.of(tag.getCompound("filter" + i)) : ItemStack.EMPTY);
+            this.filter.set(i, tag.contains("filter" + i) ? ItemStack.parseOptional(CommonUtils.getRegistryAccess(), tag.getCompound("filter" + i)) : ItemStack.EMPTY);
         this.filterWhitelist = tag.contains("filterWhitelist") && tag.getBoolean("filterWhitelist");
         this.filterDurability = tag.contains("filterDurability") && tag.getBoolean("filterDurability");
         this.showArea = tag.contains("showArea") && tag.getBoolean("showArea");

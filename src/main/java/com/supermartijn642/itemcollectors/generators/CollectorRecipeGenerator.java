@@ -23,7 +23,7 @@ public class CollectorRecipeGenerator extends RecipeGenerator {
             .pattern(" B ")
             .pattern("BBB")
             .input('A', Tags.Items.ENDER_PEARLS)
-            .input('B', Tags.Items.OBSIDIAN)
+            .input('B', Tags.Items.OBSIDIANS)
             .unlockedBy(Tags.Items.ENDER_PEARLS);
         // Advanced item collector
         this.shaped(ItemCollectors.advanced_collector)
@@ -32,7 +32,7 @@ public class CollectorRecipeGenerator extends RecipeGenerator {
             .pattern("CCC")
             .input('A', Items.ENDER_EYE)
             .input('B', ItemCollectors.basic_collector)
-            .input('C', Tags.Items.OBSIDIAN)
+            .input('C', Tags.Items.OBSIDIANS)
             .unlockedBy(ItemCollectors.basic_collector);
     }
 }

@@ -1,8 +1,2 @@
 ### Item Collectors 1.1.10
-- Updated Simplified Chinese translations (thanks to nageih!)
-
-### Item Collectors 1.1.9
-- Fixed collectors trying to collect empty item entities
-
-### Item Collectors 1.1.8
-- Initial release of Item Collectors for NeoForge
+- Initial release of Item Collectors for Minecraft 1.20.5 & 1.20.6

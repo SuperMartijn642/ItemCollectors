@@ -7,13 +7,13 @@
   ],
   "key": {
     "A": {
-      "tag": "forge:ender_pearls"
+      "tag": "c:ender_pearls"
     },
     "B": {
-      "tag": "forge:obsidian"
+      "tag": "c:obsidians"
     }
   },
   "result": {
-    "item": "itemcollectors:basic_collector"
+    "id": "itemcollectors:basic_collector"
   }
 }

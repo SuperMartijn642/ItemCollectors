@@ -13,10 +13,10 @@
       "item": "itemcollectors:basic_collector"
     },
     "C": {
-      "tag": "forge:obsidian"
+      "tag": "c:obsidians"
     }
   },
   "result": {
-    "item": "itemcollectors:advanced_collector"
+    "id": "itemcollectors:advanced_collector"
   }
 }
