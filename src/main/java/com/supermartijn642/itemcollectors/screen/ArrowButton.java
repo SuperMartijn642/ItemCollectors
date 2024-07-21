@@ -14,7 +14,7 @@ import java.util.function.Consumer;
  */
 public class ArrowButton extends AbstractButtonWidget {
 
-    private static final ResourceLocation BUTTONS = new ResourceLocation("itemcollectors", "textures/arrow_buttons.png");
+    private static final ResourceLocation BUTTONS = ResourceLocation.fromNamespaceAndPath("itemcollectors", "textures/arrow_buttons.png");
 
     private final boolean down;
     public boolean active = true;

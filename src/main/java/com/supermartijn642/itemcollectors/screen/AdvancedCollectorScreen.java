@@ -18,7 +18,7 @@ import net.minecraft.world.level.Level;
  */
 public class AdvancedCollectorScreen extends BlockEntityBaseContainerWidget<CollectorBlockEntity,AdvancedCollectorContainer> {
 
-    private static final ResourceLocation BACKGROUND = new ResourceLocation("itemcollectors", "textures/filter_screen.png");
+    private static final ResourceLocation BACKGROUND = ResourceLocation.fromNamespaceAndPath("itemcollectors", "textures/filter_screen.png");
 
     private WhitelistButton whitelistButton;
     private DurabilityButton durabilityButton;
