@@ -14,7 +14,7 @@ import java.util.function.Consumer;
  */
 public class ShowAreaButton extends AbstractButtonWidget {
 
-    private static final ResourceLocation BUTTONS = new ResourceLocation("itemcollectors", "textures/visualize_button.png");
+    private static final ResourceLocation BUTTONS = ResourceLocation.fromNamespaceAndPath("itemcollectors", "textures/visualize_button.png");
 
     public boolean on = true;
     public boolean active = true;

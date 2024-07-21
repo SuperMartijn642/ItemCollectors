@@ -25,7 +25,7 @@ public class CollectorBlockStateGenerator extends BlockStateGenerator {
     }
 
     private void createCollectorBlockState(Block block){
-        ResourceLocation model = new ResourceLocation("itemcollectors", "block/" + Registries.BLOCKS.getIdentifier(block).getPath());
+        ResourceLocation model = ResourceLocation.fromNamespaceAndPath("itemcollectors", "block/" + Registries.BLOCKS.getIdentifier(block).getPath());
         this.blockState(block).variantsForProperty(CollectorBlock.DIRECTION,
             (state, variant) -> {
                 Direction direction = state.get(CollectorBlock.DIRECTION);
