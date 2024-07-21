@@ -14,6 +14,6 @@
     }
   },
   "result": {
-    "item": "itemcollectors:basic_collector"
+    "id": "itemcollectors:basic_collector"
   }
 }
