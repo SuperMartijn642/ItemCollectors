@@ -15,7 +15,7 @@ public class CollectorModelGenerator extends ModelGenerator {
 
     @Override
     public void generate(){
-        ResourceLocation template = new ResourceLocation("itemcollectors", "collector");
+        ResourceLocation template = ResourceLocation.fromNamespaceAndPath("itemcollectors", "collector");
         // Block models
         this.model("block/basic_collector").parent(template).texture("all", "basic_collector");
         this.model("block/advanced_collector").parent(template).texture("all", "advanced_collector");

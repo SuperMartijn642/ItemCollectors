@@ -10,8 +10,8 @@
       ],
       "entries": [
         {
-          "type": "minecraft:item",
-          "name": "itemcollectors:advanced_collector"
+          "name": "itemcollectors:basic_collector",
+          "type": "minecraft:item"
         }
       ]
     }

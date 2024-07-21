@@ -3,17 +3,20 @@
   "pattern": [
     " A ",
     " B ",
-    "BBB"
+    "CCC"
   ],
   "key": {
     "A": {
-      "tag": "forge:ender_pearls"
+      "item": "minecraft:ender_eye"
     },
     "B": {
+      "item": "itemcollectors:basic_collector"
+    },
+    "C": {
       "tag": "forge:obsidian"
     }
   },
   "result": {
-    "item": "itemcollectors:basic_collector"
+    "id": "itemcollectors:advanced_collector"
   }
 }
