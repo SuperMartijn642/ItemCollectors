@@ -8,10 +8,6 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.ClickType;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
-import net.minecraftforge.items.ItemStackHandler;
-import net.minecraftforge.items.SlotItemHandler;
-
-import javax.annotation.Nonnull;
 
 /**
  * Created 7/15/2020 by SuperMartijn642
@@ -26,9 +22,14 @@ public class AdvancedCollectorContainer extends BlockEntityBaseContainer<Collect
     @Override
     protected void addSlots(Player player, CollectorBlockEntity entity){
         for(int i = 0; i < 9; i++)
-            this.addSlot(new SlotItemHandler(this.itemHandler(), i, 8 + i * 18, 90) {
+            this.addSlot(new DummySlot(i, 8 + i * 18, 90) {
                 @Override
-                public boolean mayPickup(Player playerIn){
+                public ItemStack getItem(){
+                    return AdvancedCollectorContainer.this.object.filter.get(this.index);
+                }
+
+                @Override
+                public boolean mayPickup(Player player){
                     return false;
                 }
             });
@@ -64,8 +65,8 @@ public class AdvancedCollectorContainer extends BlockEntityBaseContainer<Collect
             boolean contains = false;
             int firstEmpty = -1;
             for(int i = 0; i < 9; i++){
-                ItemStack stack = this.itemHandler().getStackInSlot(i);
-                if(ItemStack.isSameItemSameTags(stack, this.getSlot(index).getItem())){
+                ItemStack stack = this.object.filter.get(i);
+                if(ItemStack.isSameItemSameComponents(stack, this.getSlot(index).getItem())){
                     contains = true;
                     break;
                 }
@@ -79,18 +80,6 @@ public class AdvancedCollectorContainer extends BlockEntityBaseContainer<Collect
             }
         }
         return ItemStack.EMPTY;
-    }
-
-    private ItemStackHandler itemHandler(){
-        return new ItemStackHandler(9) {
-            @Nonnull
-            @Override
-            public ItemStack getStackInSlot(int slot){
-                return AdvancedCollectorContainer.this.validateObjectOrClose() ?
-                    AdvancedCollectorContainer.this.object.filter.get(slot) :
-                    ItemStack.EMPTY;
-            }
-        };
     }
 
     public BlockPos getCollectorPosition(){

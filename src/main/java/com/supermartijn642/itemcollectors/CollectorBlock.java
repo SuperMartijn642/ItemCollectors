@@ -93,10 +93,10 @@ public class CollectorBlock extends BaseBlock implements EntityHoldingBlock {
     }
 
     @Override
-    protected void appendItemInformation(ItemStack stack, @org.jetbrains.annotations.Nullable BlockGetter level, Consumer<Component> info, boolean advanced){
+    protected void appendItemInformation(ItemStack stack, Consumer<Component> info, boolean advanced){
         info.accept(TextComponents.translation("itemcollectors." + (this.hasFilter.get() ? "advanced" : "basic") + "_collector.info").color(ChatFormatting.AQUA).get());
         info.accept(TextComponents.translation("itemcollectors.basic_collector.info.range", TextComponents.number(this.maxRange.get()).color(ChatFormatting.GOLD).get()).get());
-        super.appendItemInformation(stack, level, info, advanced);
+        super.appendItemInformation(stack, info, advanced);
     }
 
     @Override
