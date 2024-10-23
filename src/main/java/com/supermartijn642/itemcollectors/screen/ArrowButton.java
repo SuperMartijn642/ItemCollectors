@@ -31,8 +31,7 @@ public class ArrowButton extends AbstractButtonWidget {
 
     @Override
     public void render(WidgetRenderContext context, int mouseX, int mouseY){
-        ScreenUtils.bindTexture(BUTTONS);
-        ScreenUtils.drawTexture(context.poseStack(), this.x, this.y, this.width, this.height, this.down ? 0.5f : 0, this.active ? this.isFocused() ? 1 / 3f : 0 : 2 / 3f, 0.5f, 1 / 3f);
+        ScreenUtils.drawTexture(BUTTONS, context.poseStack(), this.x, this.y, this.width, this.height, this.down ? 0.5f : 0, this.active ? this.isFocused() ? 1 / 3f : 0 : 2 / 3f, 0.5f, 1 / 3f);
     }
 
     @Override

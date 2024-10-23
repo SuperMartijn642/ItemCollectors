@@ -1,7 +1,7 @@
 {
   "replace": false,
   "values": [
-    "itemcollectors:advanced_collector",
-    "itemcollectors:basic_collector"
+    "itemcollectors:basic_collector",
+    "itemcollectors:advanced_collector"
   ]
 }

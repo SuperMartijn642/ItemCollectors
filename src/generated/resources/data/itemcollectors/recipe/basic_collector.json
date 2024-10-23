@@ -6,12 +6,8 @@
     "BBB"
   ],
   "key": {
-    "A": {
-      "item": "minecraft:ender_pearl"
-    },
-    "B": {
-      "item": "minecraft:obsidian"
-    }
+    "A": "minecraft:ender_pearl",
+    "B": "minecraft:obsidian"
   },
   "result": {
     "id": "itemcollectors:basic_collector"

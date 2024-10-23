@@ -6,15 +6,9 @@
     "CCC"
   ],
   "key": {
-    "A": {
-      "item": "minecraft:ender_eye"
-    },
-    "B": {
-      "item": "itemcollectors:basic_collector"
-    },
-    "C": {
-      "item": "minecraft:obsidian"
-    }
+    "A": "minecraft:ender_eye",
+    "B": "itemcollectors:basic_collector",
+    "C": "minecraft:obsidian"
   },
   "result": {
     "id": "itemcollectors:advanced_collector"
