@@ -60,8 +60,7 @@ public class AdvancedCollectorScreen extends BlockEntityBaseContainerWidget<Coll
 
     @Override
     protected void renderBackground(WidgetRenderContext context, int mouseX, int mouseY, CollectorBlockEntity entity){
-        ScreenUtils.bindTexture(BACKGROUND);
-        ScreenUtils.drawTexture(context.poseStack(), 0, 0, this.width(), this.height());
+        ScreenUtils.drawTexture(BACKGROUND, context.poseStack(), 0, 0, this.width(), this.height());
         super.renderBackground(context, mouseX, mouseY, entity);
     }
 

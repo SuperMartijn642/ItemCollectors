@@ -21,6 +21,6 @@ public class CollectorModelGenerator extends ModelGenerator {
         this.model("block/advanced_collector").parent(template).texture("all", "advanced_collector");
         // Item models
         this.model("item/basic_collector").parent("block/basic_collector");
-        this.model("item/advanced_collector").parent("block/basic_collector");
+        this.model("item/advanced_collector").parent("block/advanced_collector");
     }
 }

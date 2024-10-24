@@ -6,12 +6,8 @@
     "BBB"
   ],
   "key": {
-    "A": {
-      "tag": "c:ender_pearls"
-    },
-    "B": {
-      "tag": "c:obsidians"
-    }
+    "A": "#c:ender_pearls",
+    "B": "#c:obsidians"
   },
   "result": {
     "id": "itemcollectors:basic_collector"
