@@ -1,6 +1,5 @@
 package com.supermartijn642.itemcollectors;
 
-import com.supermartijn642.core.CommonUtils;
 import com.supermartijn642.core.block.BaseBlockEntity;
 import com.supermartijn642.core.block.BaseBlockEntityType;
 import com.supermartijn642.core.block.TickableBlockEntity;
@@ -10,11 +9,12 @@ import net.fabricmc.fabric.api.transfer.v1.storage.Storage;
 import net.fabricmc.fabric.api.transfer.v1.transaction.Transaction;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
-import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.storage.ValueInput;
+import net.minecraft.world.level.storage.ValueOutput;
 import net.minecraft.world.phys.AABB;
 
 import java.util.ArrayList;
@@ -144,30 +144,28 @@ public class CollectorBlockEntity extends BaseBlockEntity implements TickableBlo
     }
 
     @Override
-    protected CompoundTag writeData(){
-        CompoundTag tag = new CompoundTag();
-        tag.putInt("rangeX", this.rangeX);
-        tag.putInt("rangeY", this.rangeY);
-        tag.putInt("rangeZ", this.rangeZ);
+    protected void writeData(ValueOutput output){
+        output.putInt("rangeX", this.rangeX);
+        output.putInt("rangeY", this.rangeY);
+        output.putInt("rangeZ", this.rangeZ);
         for(int i = 0; i < 9; i++){
             if(!this.filter.get(i).isEmpty())
-                tag.put("filter" + i, this.filter.get(i).save(this.level.registryAccess()));
+                output.store("filter" + i, ItemStack.CODEC, this.filter.get(i));
         }
-        tag.putBoolean("filterWhitelist", this.filterWhitelist);
-        tag.putBoolean("filterDurability", this.filterDurability);
-        tag.putBoolean("showArea", this.showArea);
-        return tag;
+        output.putBoolean("filterWhitelist", this.filterWhitelist);
+        output.putBoolean("filterDurability", this.filterDurability);
+        output.putBoolean("showArea", this.showArea);
     }
 
     @Override
-    protected void readData(CompoundTag tag){
-        this.rangeX = tag.getIntOr("rangeX", 0);
-        this.rangeY = tag.getIntOr("rangeY", 0);
-        this.rangeZ = tag.getIntOr("rangeZ", 0);
+    protected void readData(ValueInput input){
+        this.rangeX = input.getIntOr("rangeX", 0);
+        this.rangeY = input.getIntOr("rangeY", 0);
+        this.rangeZ = input.getIntOr("rangeZ", 0);
         for(int i = 0; i < 9; i++)
-            this.filter.set(i, tag.getCompound("filter" + i).flatMap(t -> ItemStack.parse(CommonUtils.getRegistryAccess(), t)).orElse(ItemStack.EMPTY));
-        this.filterWhitelist = tag.getBooleanOr("filterWhitelist", false);
-        this.filterDurability = tag.getBooleanOr("filterDurability", false);
-        this.showArea = tag.getBooleanOr("showArea", false);
+            this.filter.set(i, input.read("filter" + i, ItemStack.CODEC).orElse(ItemStack.EMPTY));
+        this.filterWhitelist = input.getBooleanOr("filterWhitelist", false);
+        this.filterDurability = input.getBooleanOr("filterDurability", false);
+        this.showArea = input.getBooleanOr("showArea", false);
     }
 }
