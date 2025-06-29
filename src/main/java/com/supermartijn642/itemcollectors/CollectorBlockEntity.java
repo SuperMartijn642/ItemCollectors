@@ -161,16 +161,13 @@ public class CollectorBlockEntity extends BaseBlockEntity implements TickableBlo
 
     @Override
     protected void readData(CompoundTag tag){
-        if(tag.contains("rangeX"))
-            this.rangeX = tag.getInt("rangeX");
-        if(tag.contains("rangeY"))
-            this.rangeY = tag.getInt("rangeY");
-        if(tag.contains("rangeZ"))
-            this.rangeZ = tag.getInt("rangeZ");
+        this.rangeX = tag.getIntOr("rangeX", 0);
+        this.rangeY = tag.getIntOr("rangeY", 0);
+        this.rangeZ = tag.getIntOr("rangeZ", 0);
         for(int i = 0; i < 9; i++)
-            this.filter.set(i, tag.contains("filter" + i) ? ItemStack.parseOptional(CommonUtils.getRegistryAccess(), tag.getCompound("filter" + i)) : ItemStack.EMPTY);
-        this.filterWhitelist = tag.contains("filterWhitelist") && tag.getBoolean("filterWhitelist");
-        this.filterDurability = tag.contains("filterDurability") && tag.getBoolean("filterDurability");
-        this.showArea = tag.contains("showArea") && tag.getBoolean("showArea");
+            this.filter.set(i, tag.getCompound("filter" + i).flatMap(t -> ItemStack.parse(CommonUtils.getRegistryAccess(), t)).orElse(ItemStack.EMPTY));
+        this.filterWhitelist = tag.getBooleanOr("filterWhitelist", false);
+        this.filterDurability = tag.getBooleanOr("filterDurability", false);
+        this.showArea = tag.getBooleanOr("showArea", false);
     }
 }
