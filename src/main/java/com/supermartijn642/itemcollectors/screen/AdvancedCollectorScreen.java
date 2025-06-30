@@ -2,7 +2,7 @@ package com.supermartijn642.itemcollectors.screen;
 
 import com.supermartijn642.core.ClientUtils;
 import com.supermartijn642.core.TextComponents;
-import com.supermartijn642.core.gui.ScreenUtils;
+import com.supermartijn642.core.gui.GuiGraphicsHelper;
 import com.supermartijn642.core.gui.widget.BlockEntityBaseContainerWidget;
 import com.supermartijn642.core.gui.widget.WidgetRenderContext;
 import com.supermartijn642.itemcollectors.CollectorBlockEntity;
@@ -18,7 +18,7 @@ import net.minecraft.world.level.Level;
  */
 public class AdvancedCollectorScreen extends BlockEntityBaseContainerWidget<CollectorBlockEntity,AdvancedCollectorContainer> {
 
-    private static final ResourceLocation BACKGROUND = ResourceLocation.fromNamespaceAndPath("itemcollectors", "textures/filter_screen.png");
+    public static final ResourceLocation BACKGROUND = ResourceLocation.fromNamespaceAndPath("itemcollectors", "filter_screen");
 
     private WhitelistButton whitelistButton;
     private DurabilityButton durabilityButton;
@@ -59,25 +59,26 @@ public class AdvancedCollectorScreen extends BlockEntityBaseContainerWidget<Coll
     }
 
     @Override
-    protected void renderBackground(WidgetRenderContext context, int mouseX, int mouseY, CollectorBlockEntity entity){
-        ScreenUtils.drawTexture(BACKGROUND, context.poseStack(), 0, 0, this.width(), this.height());
-        super.renderBackground(context, mouseX, mouseY, entity);
+    protected void renderBackground(WidgetRenderContext context, GuiGraphicsHelper graphics, int mouseX, int mouseY, CollectorBlockEntity entity){
+        graphics.submitSprite(BACKGROUND, 0, 0, this.width(), this.height());
+        super.renderBackground(context, graphics, mouseX, mouseY, entity);
     }
 
+    @SuppressWarnings("Convert2MethodRef")
     @Override
-    protected void renderForeground(WidgetRenderContext context, int mouseX, int mouseY, CollectorBlockEntity entity){
-        ScreenUtils.drawCenteredString(context.poseStack(), entity.getBlockState().getBlock().getName(), this.width() / 2f, 6);
-        ScreenUtils.drawString(context.poseStack(), ClientUtils.getPlayer().getInventory().getName(), 32, 112);
+    protected void renderForeground(WidgetRenderContext context, GuiGraphicsHelper graphics, int mouseX, int mouseY, CollectorBlockEntity entity){
+        graphics.submitText(entity.getBlockState().getBlock().getName(), this.width() / 2f, 6, p -> p.centerHorizontally());
+        graphics.submitText(ClientUtils.getPlayer().getInventory().getName(), 32, 112);
 
-        ScreenUtils.drawString(context.poseStack(), TextComponents.translation("gui.itemcollectors.basic_collector.range",
+        graphics.submitText(TextComponents.translation("gui.itemcollectors.basic_collector.range",
             (entity.rangeX * 2 + 1), (entity.rangeY * 2 + 1), (entity.rangeZ * 2 + 1)).get(), 8, 26);
-        ScreenUtils.drawCenteredString(context.poseStack(), TextComponents.string("x:").get(), 25, 51);
-        ScreenUtils.drawCenteredString(context.poseStack(), TextComponents.number(entity.rangeX).get(), 39, 52);
-        ScreenUtils.drawCenteredString(context.poseStack(), TextComponents.string("y:").get(), 68, 51);
-        ScreenUtils.drawCenteredString(context.poseStack(), TextComponents.number(entity.rangeY).get(), 82, 52);
-        ScreenUtils.drawCenteredString(context.poseStack(), TextComponents.string("z:").get(), 111, 51);
-        ScreenUtils.drawCenteredString(context.poseStack(), TextComponents.number(entity.rangeZ).get(), 125, 52);
-        ScreenUtils.drawString(context.poseStack(), TextComponents.translation("gui.itemcollectors.advanced_collector.filter").get(), 8, 78);
-        super.renderForeground(context, mouseX, mouseY, entity);
+        graphics.submitText(TextComponents.string("x:").get(), 25, 51, p -> p.centerHorizontally());
+        graphics.submitText(TextComponents.number(entity.rangeX).get(), 39, 52, p -> p.centerHorizontally());
+        graphics.submitText(TextComponents.string("y:").get(), 68, 51, p -> p.centerHorizontally());
+        graphics.submitText(TextComponents.number(entity.rangeY).get(), 82, 52, p -> p.centerHorizontally());
+        graphics.submitText(TextComponents.string("z:").get(), 111, 51, p -> p.centerHorizontally());
+        graphics.submitText(TextComponents.number(entity.rangeZ).get(), 125, 52, p -> p.centerHorizontally());
+        graphics.submitText(TextComponents.translation("gui.itemcollectors.advanced_collector.filter").get(), 8, 78);
+        super.renderForeground(context, graphics, mouseX, mouseY, entity);
     }
 }

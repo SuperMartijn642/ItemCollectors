@@ -1,0 +1,24 @@
+{
+  "sources": [
+    {
+      "type": "minecraft:single",
+      "resource": "itemcollectors:visualize_button"
+    },
+    {
+      "type": "minecraft:single",
+      "resource": "itemcollectors:durability_button"
+    },
+    {
+      "type": "minecraft:single",
+      "resource": "itemcollectors:arrow_buttons"
+    },
+    {
+      "type": "minecraft:single",
+      "resource": "itemcollectors:blacklist_button"
+    },
+    {
+      "type": "minecraft:single",
+      "resource": "itemcollectors:filter_screen"
+    }
+  ]
+}
