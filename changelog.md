@@ -1,2 +1,2 @@
 ### Item Collectors 1.1.10
-- Initial release of Item Collectors for Minecraft 1.21.6
+- Initial release of Item Collectors for Minecraft 1.21.6 & 1.21.7
