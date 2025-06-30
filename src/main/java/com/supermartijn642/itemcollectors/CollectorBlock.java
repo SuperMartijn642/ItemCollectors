@@ -93,7 +93,7 @@ public class CollectorBlock extends BaseBlock implements EntityHoldingBlock {
     }
 
     @Override
-    protected void appendItemInformation(ItemStack stack, Consumer<Component> info, boolean advanced){
+    public void appendItemInformation(ItemStack stack, Consumer<Component> info, boolean advanced){
         info.accept(TextComponents.translation("itemcollectors." + (this.hasFilter.get() ? "advanced" : "basic") + "_collector.info").color(ChatFormatting.AQUA).get());
         info.accept(TextComponents.translation("itemcollectors.basic_collector.info.range", TextComponents.number(this.maxRange.get()).color(ChatFormatting.GOLD).get()).get());
         super.appendItemInformation(stack, info, advanced);
