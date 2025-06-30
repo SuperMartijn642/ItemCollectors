@@ -13,7 +13,6 @@ import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.client.event.RenderHighlightEvent;
-import net.minecraftforge.common.MinecraftForge;
 
 import java.util.Random;
 
@@ -23,7 +22,7 @@ import java.util.Random;
 public class ItemCollectorsClient {
 
     public static void register(){
-        MinecraftForge.EVENT_BUS.addListener(ItemCollectorsClient::onBlockHighlight);
+        RenderHighlightEvent.Block.BUS.addListener(ItemCollectorsClient::onBlockHighlight);
 
         ClientRegistrationHandler handler = ClientRegistrationHandler.get("itemcollectors");
         handler.registerContainerScreen(() -> ItemCollectors.filter_collector_container, container -> WidgetContainerScreen.of(new AdvancedCollectorScreen(container.level, container.getCollectorPosition()), container, false));

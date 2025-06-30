@@ -1,4 +1,4 @@
-// 1.21.5	2025-06-30T21:26:06.9438228	Core Lib Generators
+// 1.21.6	2025-06-30T23:33:27.6914593	Core Lib Generators
 579b56cb996ce27ec7ffea93bdfd280488fffffc assets/itemcollectors/blockstates/advanced_collector.json
 6b7e143229b4caa57418566ad37c4a75767f3320 assets/itemcollectors/blockstates/basic_collector.json
 5256835c6bfbd6cadf86d357946c74ada194bf18 assets/itemcollectors/items/advanced_collector.json
@@ -7,6 +7,7 @@ fec3bc3cd449c465232405fabd1fef096ab77c22 assets/itemcollectors/items/basic_colle
 c5f7358020c0b1de6e12bc13f22bf5af5fa9a49c assets/itemcollectors/models/block/advanced_collector.json
 a7287bf291790b5e61fbd9adf85ebbfacc5aa84f assets/itemcollectors/models/block/basic_collector.json
 c6bf6ab4547b2530900dbbfa74c51c96c1dd22bd assets/minecraft/atlases/blocks.json
+00bf5aba04d17c213c2687aa63dbc38d64600a7a assets/minecraft/atlases/gui.json
 3097e4c5c0662f1e0c5a34e781974f05d30e4859 data/itemcollectors/advancement/recipes/misc/advanced_collector.json
 212b7084ecf851eb1835162b8d01d91ed69fd076 data/itemcollectors/advancement/recipes/misc/basic_collector.json
 fc09de6c0332f36f777070fe0f589314c0f909ec data/itemcollectors/loot_table/blocks/advanced_collector.json

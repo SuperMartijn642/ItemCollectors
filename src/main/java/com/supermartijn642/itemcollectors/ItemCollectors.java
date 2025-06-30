@@ -1,6 +1,7 @@
 package com.supermartijn642.itemcollectors;
 
 import com.supermartijn642.core.ClientUtils;
+import com.supermartijn642.core.CommonUtils;
 import com.supermartijn642.core.block.BaseBlock;
 import com.supermartijn642.core.block.BaseBlockEntityType;
 import com.supermartijn642.core.gui.BaseContainerType;
@@ -14,8 +15,6 @@ import com.supermartijn642.core.registry.RegistryEntryAcceptor;
 import com.supermartijn642.itemcollectors.generators.*;
 import com.supermartijn642.itemcollectors.packet.*;
 import com.supermartijn642.itemcollectors.screen.AdvancedCollectorContainer;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.fml.DistExecutor;
 import net.minecraftforge.fml.common.Mod;
 
 /**
@@ -51,7 +50,8 @@ public class ItemCollectors {
         CHANNEL.registerMessage(PacketToggleShowArea.class, PacketToggleShowArea::new, true);
 
         register();
-        DistExecutor.safeRunWhenOn(Dist.CLIENT, () -> ItemCollectorsClient::register);
+        if(CommonUtils.getEnvironmentSide().isClient())
+            ItemCollectorsClient.register();
         registerGenerators();
     }
 
@@ -76,6 +76,7 @@ public class ItemCollectors {
     private static void registerGenerators(){
         GeneratorRegistrationHandler handler = GeneratorRegistrationHandler.get("itemcollectors");
         handler.addGenerator(CollectorModelGenerator::new);
+        handler.addGenerator(CollectorAtlasSourceGenerator::new);
         handler.addGenerator(CollectorBlockStateGenerator::new);
         handler.addGenerator(CollectorItemInfoGenerator::new);
         handler.addGenerator(CollectorLanguageGenerator::new);
