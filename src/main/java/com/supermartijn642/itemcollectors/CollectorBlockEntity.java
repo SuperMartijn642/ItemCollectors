@@ -59,37 +59,53 @@ public class CollectorBlockEntity extends BaseBlockEntity implements TickableBlo
                 if(itemHandler.getSlots() <= 0)
                     return;
 
+                // Get a list of all items within range
                 AABB area = this.getAffectedArea();
+                List<ItemEntity> items = this.level.getEntitiesOfClass(ItemEntity.class, area);
+                if(items.isEmpty())
+                    return;
 
-                List<ItemEntity> items = this.level.getEntitiesOfClass(ItemEntity.class, area, item -> {
-                    if(!item.isAlive() || (item.getPersistentData().contains("PreventRemoteMovement") && !item.getPersistentData().contains("AllowMachineRemoteMovement")))
-                        return false;
-                    ItemStack stack = item.getItem();
-                    if(stack.isEmpty())
-                        return false;
-                    if(!this.hasFilter.get())
-                        return true;
-                    for(int i = 0; i < 9; i++){
-                        ItemStack filter = this.filter.get(i);
-                        if(ItemStack.isSameItem(filter, stack) &&
-                            (!this.filterDurability || ItemStack.isSameItemSameTags(filter, stack)))
-                            return this.filterWhitelist;
-                    }
-                    return !this.filterWhitelist;
-                });
-
-                loop:
-                for(ItemEntity entity : items){
+                // Try to insert up to the number of items defined in the config
+                int maxInsertions = ItemCollectorsConfig.maxInsertions.get();
+                if(maxInsertions <= 0)
+                    maxInsertions = items.size();
+                int remainingInsertions = maxInsertions;
+                entityLoop:
+                for(int i = 0; i < items.size() && remainingInsertions > 0 && i < maxInsertions * 10; i++){
+                    ItemEntity entity = items.get(i);
+                    // Filter dead item entities or entities which have the 'PreventRemoteMovement' tag
+                    if(!entity.isAlive() || (entity.getPersistentData().contains("PreventRemoteMovement") && !entity.getPersistentData().contains("AllowMachineRemoteMovement")))
+                        continue;
+                    // Ignore entities with empty item stack
                     ItemStack stack = entity.getItem().copy();
-                    for(int slot = 0; slot < itemHandler.getSlots(); slot++)
+                    if(stack.isEmpty())
+                        continue;
+                    // Compare item stack against filter
+                    if(this.hasFilter.get()){
+                        boolean matchesFilter = false;
+                        for(int slot = 0; slot < 9; slot++){
+                            ItemStack filter = this.filter.get(slot);
+                            if(!filter.isEmpty() && ItemStack.isSameItem(filter, stack) &&
+                                (!this.filterDurability || ItemStack.isSameItemSameTags(filter, stack))){
+                                matchesFilter = true;
+                                break;
+                            }
+                        }
+                        if(matchesFilter != this.filterWhitelist)
+                            continue;
+                    }
+                    // Try to insert the stack into storage
+                    remainingInsertions--;
+                    for(int slot = 0; slot < itemHandler.getSlots(); slot++){
                         if(itemHandler.isItemValid(slot, stack)){
                             stack = itemHandler.insertItem(slot, stack, false);
                             if(stack.isEmpty()){
                                 entity.setItem(ItemStack.EMPTY);
                                 entity.remove(Entity.RemovalReason.DISCARDED);
-                                continue loop;
+                                continue entityLoop;
                             }
                         }
+                    }
                     entity.setItem(stack);
                 }
             }
