@@ -62,27 +62,42 @@ public class CollectorBlockEntity extends BaseBlockEntity implements TickableBlo
                 if(!itemHandler.supportsInsertion())
                     return;
 
+                // Get a list of all items within range
                 AABB area = this.getAffectedArea();
+                List<ItemEntity> items = this.level.getEntitiesOfClass(ItemEntity.class, area);
+                if(items.isEmpty())
+                    return;
 
-                List<ItemEntity> items = this.level.getEntitiesOfClass(ItemEntity.class, area, item -> {
-                    if(!item.isAlive())
-                        return false;
-                    ItemStack stack = item.getItem();
-                    if(stack.isEmpty())
-                        return false;
-                    if(!this.hasFilter.get())
-                        return true;
-                    for(int i = 0; i < 9; i++){
-                        ItemStack filter = this.filter.get(i);
-                        if(ItemStack.isSame(filter, stack) &&
-                            (!this.filterDurability || ItemStack.tagMatches(filter, stack)))
-                            return this.filterWhitelist;
-                    }
-                    return !this.filterWhitelist;
-                });
-
-                for(ItemEntity entity : items){
+                // Try to insert up to the number of items defined in the config
+                int maxInsertions = ItemCollectorsConfig.maxInsertions.get();
+                if(maxInsertions <= 0)
+                    maxInsertions = items.size();
+                int remainingInsertions = maxInsertions;
+                for(int i = 0; i < items.size() && remainingInsertions > 0 && i < maxInsertions * 10; i++){
+                    ItemEntity entity = items.get(i);
+                    // Filter dead item entities
+                    if(!entity.isAlive())
+                        continue;
+                    // Ignore entities with empty item stack
                     ItemStack stack = entity.getItem().copy();
+                    if(stack.isEmpty())
+                        continue;
+                    // Compare item stack against filter
+                    if(this.hasFilter.get()){
+                        boolean matchesFilter = false;
+                        for(int slot = 0; slot < 9; slot++){
+                            ItemStack filter = this.filter.get(slot);
+                            if(!filter.isEmpty() && ItemStack.isSame(filter, stack) &&
+                                (!this.filterDurability || ItemStack.tagMatches(filter, stack))){
+                                matchesFilter = true;
+                                break;
+                            }
+                        }
+                        if(matchesFilter != this.filterWhitelist)
+                            continue;
+                    }
+                    // Try to insert the stack into storage
+                    remainingInsertions--;
                     ItemVariant variant = ItemVariant.of(stack);
                     try(Transaction transaction = Transaction.openOuter()){
                         long inserted = itemHandler.insert(variant, stack.getCount(), transaction);
