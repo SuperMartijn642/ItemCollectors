@@ -54,10 +54,9 @@ public class CollectorBlockEntity extends BaseBlockEntity implements TickableBlo
             this.filter.add(ItemStack.EMPTY);
     }
 
-    @SuppressWarnings("UnstableApiUsage")
     @Override
     public void update(){
-        if(!this.level.isClientSide){
+        if(!this.level.isClientSide()){
             Storage<ItemVariant> itemHandler = this.getOutputItemHandler();
             if(itemHandler != null){
                 if(!itemHandler.supportsInsertion())
@@ -119,9 +118,8 @@ public class CollectorBlockEntity extends BaseBlockEntity implements TickableBlo
         return AABB.encapsulatingFullBlocks(this.worldPosition.offset(-this.rangeX, -this.rangeY, -this.rangeZ), this.worldPosition.offset(this.rangeX, this.rangeY, this.rangeZ));
     }
 
-    @SuppressWarnings("UnstableApiUsage")
     private Storage<ItemVariant> getOutputItemHandler(){
-        if(this.level.isClientSide)
+        if(this.level.isClientSide())
             return null;
         BlockState state = this.getBlockState();
         if(!state.hasProperty(CollectorBlock.DIRECTION))

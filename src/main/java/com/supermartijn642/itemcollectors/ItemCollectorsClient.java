@@ -1,5 +1,6 @@
 package com.supermartijn642.itemcollectors;
 
+import com.mojang.blaze3d.vertex.PoseStack;
 import com.supermartijn642.core.ClientUtils;
 import com.supermartijn642.core.gui.WidgetContainerScreen;
 import com.supermartijn642.core.gui.WidgetScreen;
@@ -8,12 +9,17 @@ import com.supermartijn642.core.render.RenderUtils;
 import com.supermartijn642.itemcollectors.screen.AdvancedCollectorScreen;
 import com.supermartijn642.itemcollectors.screen.BasicCollectorScreen;
 import net.fabricmc.api.ClientModInitializer;
-import net.fabricmc.fabric.api.client.rendering.v1.WorldRenderContext;
-import net.fabricmc.fabric.api.client.rendering.v1.WorldRenderEvents;
+import net.fabricmc.fabric.api.client.rendering.v1.RenderStateDataKey;
+import net.fabricmc.fabric.api.client.rendering.v1.world.WorldExtractionContext;
+import net.fabricmc.fabric.api.client.rendering.v1.world.WorldRenderContext;
+import net.fabricmc.fabric.api.client.rendering.v1.world.WorldRenderEvents;
+import net.minecraft.client.renderer.state.BlockOutlineRenderState;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.phys.AABB;
+import net.minecraft.world.phys.BlockHitResult;
+import net.minecraft.world.phys.HitResult;
 import net.minecraft.world.phys.Vec3;
 
 import java.util.Random;
@@ -23,9 +29,13 @@ import java.util.Random;
  */
 public class ItemCollectorsClient implements ClientModInitializer {
 
+    private static final RenderStateDataKey<AreaHighlightState> HIGHLIGHT_DATA = RenderStateDataKey.create(() -> "itemcollectors:demagnetization_coil_area_highlight");
+    private static final PoseStack POSE_STACK = new PoseStack();
+
     @Override
     public void onInitializeClient(){
-        WorldRenderEvents.BLOCK_OUTLINE.register(ItemCollectorsClient::onBlockHighlight);
+        WorldRenderEvents.AFTER_BLOCK_OUTLINE_EXTRACTION.register(ItemCollectorsClient::onBlockHighlightExtract);
+        WorldRenderEvents.BEFORE_BLOCK_OUTLINE.register(ItemCollectorsClient::onBlockHighlightDraw);
 
         register();
     }
@@ -41,27 +51,50 @@ public class ItemCollectorsClient implements ClientModInitializer {
         ClientUtils.displayScreen(WidgetScreen.of(new BasicCollectorScreen(level, pos)));
     }
 
-    public static boolean onBlockHighlight(WorldRenderContext renderContext, WorldRenderContext.BlockOutlineContext blockOutlineContext){
-        Level level = ClientUtils.getWorld();
-        BlockEntity entity = level.getBlockEntity(blockOutlineContext.blockPos());
-        if(entity instanceof CollectorBlockEntity){
-            renderContext.matrixStack().pushPose();
-            Vec3 camera = RenderUtils.getCameraPosition();
-            renderContext.matrixStack().translate(-camera.x, -camera.y, -camera.z);
-
-            AABB area = ((CollectorBlockEntity)entity).getAffectedArea().inflate(0.05f);
-
-            Random random = new Random(entity.getBlockPos().hashCode());
-            float red = random.nextFloat();
-            float green = random.nextFloat();
-            float blue = random.nextFloat();
-            float alpha = 0.3f;
-
-            RenderUtils.renderBox(renderContext.matrixStack(), area, red, green, blue, true);
-            RenderUtils.renderBoxSides(renderContext.matrixStack(), area, red, green, blue, alpha, true);
-
-            renderContext.matrixStack().popPose();
+    private static void onBlockHighlightExtract(WorldExtractionContext context, HitResult result){
+        AreaHighlightState state = context.worldState().getData(HIGHLIGHT_DATA);
+        if(state == null){
+            state = new AreaHighlightState();
+            context.worldState().setData(HIGHLIGHT_DATA, state);
         }
+        state.shouldRender = false;
+
+        if(result instanceof BlockHitResult){
+            BlockPos pos = ((BlockHitResult)result).getBlockPos();
+            BlockEntity entity = context.world().getBlockEntity(pos);
+            if(entity instanceof CollectorBlockEntity){
+                state.shouldRender = true;
+                state.pos = pos;
+                state.area = ((CollectorBlockEntity)entity).getAffectedArea();
+            }
+        }
+    }
+
+    private static boolean onBlockHighlightDraw(WorldRenderContext context, BlockOutlineRenderState outlineRenderState){
+        AreaHighlightState state = context.worldState().getData(HIGHLIGHT_DATA);
+        if(state == null || !state.shouldRender)
+            return true;
+
+        POSE_STACK.pushPose();
+        Vec3 playerPos = context.worldState().cameraRenderState.pos;
+        POSE_STACK.translate(-playerPos.x, -playerPos.y, -playerPos.z);
+
+        Random random = new Random(state.pos.hashCode());
+        float red = random.nextFloat();
+        float green = random.nextFloat();
+        float blue = random.nextFloat();
+        float alpha = 0.3f;
+
+        RenderUtils.renderBox(POSE_STACK, state.area, red, green, blue, alpha, true);
+        RenderUtils.renderBoxSides(POSE_STACK, state.area, red, green, blue, alpha, true);
+
+        POSE_STACK.popPose();
         return true;
+    }
+
+    private static class AreaHighlightState {
+        boolean shouldRender;
+        BlockPos pos;
+        AABB area;
     }
 }
