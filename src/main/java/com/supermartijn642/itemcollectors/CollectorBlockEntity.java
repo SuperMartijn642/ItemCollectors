@@ -13,7 +13,9 @@ import net.minecraft.world.level.storage.ValueInput;
 import net.minecraft.world.level.storage.ValueOutput;
 import net.minecraft.world.phys.AABB;
 import net.neoforged.neoforge.capabilities.Capabilities;
-import net.neoforged.neoforge.items.IItemHandler;
+import net.neoforged.neoforge.transfer.ResourceHandler;
+import net.neoforged.neoforge.transfer.item.ItemResource;
+import net.neoforged.neoforge.transfer.transaction.Transaction;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -54,12 +56,9 @@ public class CollectorBlockEntity extends BaseBlockEntity implements TickableBlo
 
     @Override
     public void update(){
-        if(!this.level.isClientSide){
-            IItemHandler itemHandler = this.getOutputItemHandler();
-            if(itemHandler != null){
-                if(itemHandler.getSlots() <= 0)
-                    return;
-
+        if(!this.level.isClientSide()){
+            ResourceHandler<ItemResource> itemHandler = this.getOutputItemHandler();
+            if(itemHandler != null && itemHandler.size() > 0){
                 // Get a list of all items within range
                 AABB area = this.getAffectedArea();
                 List<ItemEntity> items = this.level.getEntitiesOfClass(ItemEntity.class, area);
@@ -97,17 +96,16 @@ public class CollectorBlockEntity extends BaseBlockEntity implements TickableBlo
                     }
                     // Try to insert the stack into storage
                     remainingInsertions--;
-                    for(int slot = 0; slot < itemHandler.getSlots(); slot++){
-                        if(itemHandler.isItemValid(slot, stack)){
-                            stack = itemHandler.insertItem(slot, stack, false);
-                            if(stack.isEmpty()){
-                                entity.setItem(ItemStack.EMPTY);
+                    try(Transaction transaction = Transaction.openRoot()){
+                        int inserted = itemHandler.insert(ItemResource.of(stack), stack.getCount(), transaction);
+                        if(inserted > 0){
+                            stack.shrink(inserted);
+                            entity.setItem(stack);
+                            if(stack.isEmpty())
                                 entity.remove(Entity.RemovalReason.DISCARDED);
-                                continue entityLoop;
-                            }
                         }
+                        transaction.commit();
                     }
-                    entity.setItem(stack);
                 }
             }
         }
@@ -117,12 +115,12 @@ public class CollectorBlockEntity extends BaseBlockEntity implements TickableBlo
         return AABB.encapsulatingFullBlocks(this.worldPosition.offset(-this.rangeX, -this.rangeY, -this.rangeZ), this.worldPosition.offset(this.rangeX, this.rangeY, this.rangeZ));
     }
 
-    private IItemHandler getOutputItemHandler(){
+    private ResourceHandler<ItemResource> getOutputItemHandler(){
         BlockState state = this.getBlockState();
         if(!state.hasProperty(CollectorBlock.DIRECTION))
             return null;
         Direction direction = state.getValue(CollectorBlock.DIRECTION);
-        return this.level.getCapability(Capabilities.ItemHandler.BLOCK, this.worldPosition.relative(direction), null);
+        return this.level.getCapability(Capabilities.Item.BLOCK, this.worldPosition.relative(direction), direction.getOpposite());
     }
 
     public void setRangeX(int range){

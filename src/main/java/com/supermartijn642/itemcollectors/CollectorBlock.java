@@ -75,9 +75,9 @@ public class CollectorBlock extends BaseBlock implements EntityHoldingBlock {
 
     @Override
     protected InteractionFeedback interact(BlockState state, Level level, BlockPos pos, Player player, InteractionHand hand, Direction hitSide, Vec3 hitLocation){
-        if(level.isClientSide && !this.hasFilter.get())
+        if(level.isClientSide() && !this.hasFilter.get())
             ItemCollectorsClient.openBasicCollectorScreen(level, pos);
-        else if(!level.isClientSide && this.hasFilter.get())
+        else if(!level.isClientSide() && this.hasFilter.get())
             CommonUtils.openContainer(new AdvancedCollectorContainer(ItemCollectors.filter_collector_container, player, level, pos));
         return InteractionFeedback.SUCCESS;
     }
