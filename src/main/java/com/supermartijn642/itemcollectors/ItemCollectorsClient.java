@@ -1,5 +1,6 @@
 package com.supermartijn642.itemcollectors;
 
+import com.mojang.blaze3d.vertex.PoseStack;
 import com.supermartijn642.core.ClientUtils;
 import com.supermartijn642.core.gui.WidgetContainerScreen;
 import com.supermartijn642.core.gui.WidgetScreen;
@@ -7,11 +8,18 @@ import com.supermartijn642.core.registry.ClientRegistrationHandler;
 import com.supermartijn642.core.render.RenderUtils;
 import com.supermartijn642.itemcollectors.screen.AdvancedCollectorScreen;
 import com.supermartijn642.itemcollectors.screen.BasicCollectorScreen;
+import net.minecraft.client.renderer.ItemBlockRenderTypes;
+import net.minecraft.client.renderer.LevelRenderer;
+import net.minecraft.client.renderer.MultiBufferSource;
+import net.minecraft.client.renderer.state.BlockOutlineRenderState;
+import net.minecraft.client.renderer.state.LevelRenderState;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
+import net.minecraft.world.phys.shapes.CollisionContext;
 import net.minecraftforge.client.event.RenderHighlightEvent;
 
 import java.util.Random;
@@ -21,8 +29,10 @@ import java.util.Random;
  */
 public class ItemCollectorsClient {
 
+    private static final PoseStack POSE_STACK = new PoseStack();
+
     public static void register(){
-        RenderHighlightEvent.Block.BUS.addListener(ItemCollectorsClient::onBlockHighlight);
+        RenderHighlightEvent.Block.BUS.addListener(ItemCollectorsClient::onBlockHighlightExtract);
 
         ClientRegistrationHandler handler = ClientRegistrationHandler.get("itemcollectors");
         handler.registerContainerScreen(() -> ItemCollectors.filter_collector_container, container -> WidgetContainerScreen.of(new AdvancedCollectorScreen(container.level, container.getCollectorPosition()), container, false));
@@ -34,26 +44,58 @@ public class ItemCollectorsClient {
         ClientUtils.displayScreen(WidgetScreen.of(new BasicCollectorScreen(level, pos)));
     }
 
-    public static void onBlockHighlight(RenderHighlightEvent.Block e){
+    private static void onBlockHighlightExtract(RenderHighlightEvent.Block event){
+        BlockPos pos = event.getTarget().getBlockPos();
         Level level = ClientUtils.getWorld();
-        BlockEntity entity = level.getBlockEntity(e.getTarget().getBlockPos());
+        BlockEntity entity = level.getBlockEntity(pos);
         if(entity instanceof CollectorBlockEntity){
-            e.getPoseStack().pushPose();
-            Vec3 camera = RenderUtils.getCameraPosition();
-            e.getPoseStack().translate(-camera.x, -camera.y, -camera.z);
-
-            AABB area = ((CollectorBlockEntity)entity).getAffectedArea().inflate(0.05f);
-
-            Random random = new Random(entity.getBlockPos().hashCode());
-            float red = random.nextFloat();
-            float green = random.nextFloat();
-            float blue = random.nextFloat();
-            float alpha = 0.3f;
-
-            RenderUtils.renderBox(e.getPoseStack(), area, red, green, blue, true);
-            RenderUtils.renderBoxSides(e.getPoseStack(), area, red, green, blue, alpha, true);
-
-            e.getPoseStack().popPose();
+            AreaHighlightState state = new AreaHighlightState();
+            state.shouldRender = true;
+            state.pos = pos;
+            state.area = ((CollectorBlockEntity)entity).getAffectedArea();
+            BlockState blockState = level.getBlockState(pos);
+            //noinspection deprecation
+            BlockOutlineRenderState outlineRenderState = new BlockOutlineRenderState(
+                pos,
+                ItemBlockRenderTypes.getChunkRenderType(blockState).sortOnUpload(),
+                ClientUtils.getMinecraft().options.highContrastBlockOutline().get(),
+                blockState.getShape(level, pos, CollisionContext.of(event.getCamera().getEntity()))
+            );
+            LevelRenderer levelRenderer = event.getLevelRenderer();
+            event.setCustomRenderer((source, stack, translucent, levelRenderState) -> onRenderBlockOutline(outlineRenderState, source, stack, translucent, levelRenderState, levelRenderer, state));
         }
+    }
+
+    private static boolean onRenderBlockOutline(BlockOutlineRenderState outlineRenderState, MultiBufferSource.BufferSource bufferSource, PoseStack poseStack, boolean translucentPass, LevelRenderState levelRenderState, LevelRenderer levelRenderer, AreaHighlightState state){
+        if(state == null || !state.shouldRender)
+            return false;
+
+        POSE_STACK.pushPose();
+        Vec3 playerPos = levelRenderState.cameraRenderState.pos;
+        POSE_STACK.translate(-playerPos.x, -playerPos.y, -playerPos.z);
+
+        Random random = new Random(state.pos.hashCode());
+        float red = random.nextFloat();
+        float green = random.nextFloat();
+        float blue = random.nextFloat();
+        float alpha = 0.3f;
+
+        RenderUtils.renderBox(POSE_STACK, state.area, red, green, blue, alpha, true);
+        RenderUtils.renderBoxSides(POSE_STACK, state.area, red, green, blue, alpha, true);
+
+        POSE_STACK.popPose();
+
+        // Render original outline
+        BlockOutlineRenderState temp = levelRenderState.blockOutlineRenderState;
+        levelRenderState.blockOutlineRenderState = outlineRenderState;
+        levelRenderer.renderBlockOutline(bufferSource, poseStack, translucentPass, levelRenderState);
+        levelRenderState.blockOutlineRenderState = temp;
+        return false;
+    }
+
+    private static class AreaHighlightState {
+        boolean shouldRender;
+        BlockPos pos;
+        AABB area;
     }
 }

@@ -56,7 +56,7 @@ public class CollectorBlockEntity extends BaseBlockEntity implements TickableBlo
 
     @Override
     public void update(){
-        if(!this.level.isClientSide){
+        if(!this.level.isClientSide()){
             this.getOutputItemHandler().ifPresent(itemHandler -> {
                 if(itemHandler.getSlots() <= 0)
                     return;
