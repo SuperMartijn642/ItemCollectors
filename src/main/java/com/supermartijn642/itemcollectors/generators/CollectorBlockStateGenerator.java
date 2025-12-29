@@ -6,7 +6,7 @@ import com.supermartijn642.core.registry.Registries;
 import com.supermartijn642.itemcollectors.CollectorBlock;
 import com.supermartijn642.itemcollectors.ItemCollectors;
 import net.minecraft.core.Direction;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.level.block.Block;
 
 /**
@@ -25,7 +25,7 @@ public class CollectorBlockStateGenerator extends BlockStateGenerator {
     }
 
     private void createCollectorBlockState(Block block){
-        ResourceLocation model = ResourceLocation.fromNamespaceAndPath("itemcollectors", "block/" + Registries.BLOCKS.getIdentifier(block).getPath());
+        Identifier model = Identifier.fromNamespaceAndPath("itemcollectors", "block/" + Registries.BLOCKS.getIdentifier(block).getPath());
         this.blockState(block).variantsForProperty(CollectorBlock.DIRECTION,
             (state, variant) -> {
                 Direction direction = state.get(CollectorBlock.DIRECTION);
