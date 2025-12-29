@@ -10,7 +10,7 @@ import com.supermartijn642.itemcollectors.ItemCollectors;
 import com.supermartijn642.itemcollectors.packet.*;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.level.Level;
 
 /**
@@ -18,7 +18,7 @@ import net.minecraft.world.level.Level;
  */
 public class AdvancedCollectorScreen extends BlockEntityBaseContainerWidget<CollectorBlockEntity,AdvancedCollectorContainer> {
 
-    public static final ResourceLocation BACKGROUND = ResourceLocation.fromNamespaceAndPath("itemcollectors", "filter_screen");
+    public static final Identifier BACKGROUND = Identifier.fromNamespaceAndPath("itemcollectors", "filter_screen");
 
     private WhitelistButton whitelistButton;
     private DurabilityButton durabilityButton;
