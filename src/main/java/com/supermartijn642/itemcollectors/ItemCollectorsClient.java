@@ -12,7 +12,7 @@ import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.state.BlockOutlineRenderState;
 import net.minecraft.client.renderer.state.LevelRenderState;
 import net.minecraft.core.BlockPos;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.util.context.ContextKey;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
@@ -28,7 +28,7 @@ import java.util.Random;
  */
 public class ItemCollectorsClient {
 
-    private static final ContextKey<AreaHighlightState> HIGHLIGHT_DATA = new ContextKey<>(ResourceLocation.fromNamespaceAndPath("itemcollectors", "demagnetization_coil_area_highlight"));
+    private static final ContextKey<AreaHighlightState> HIGHLIGHT_DATA = new ContextKey<>(Identifier.fromNamespaceAndPath("itemcollectors", "demagnetization_coil_area_highlight"));
     private static final PoseStack POSE_STACK = new PoseStack();
 
     public static void register(){
