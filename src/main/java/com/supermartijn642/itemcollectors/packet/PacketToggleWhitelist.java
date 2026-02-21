@@ -19,7 +19,6 @@ public class PacketToggleWhitelist extends BlockEntityBasePacket<CollectorBlockE
 
     @Override
     protected void handle(CollectorBlockEntity entity, PacketContext context){
-        entity.filterWhitelist = !entity.filterWhitelist;
-        entity.dataChanged();
+        entity.toggleFilterWhitelist();
     }
 }
