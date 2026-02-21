@@ -22,7 +22,7 @@ public class CollectorBlockEntityRenderer implements CustomBlockEntityRenderer<C
 
     @Override
     public void updateState(State state, CollectorBlockEntity entity, UpdateContext context){
-        state.showArea = entity.showArea;
+        state.showArea = entity.shouldShowArea();
         if(state.showArea){
             state.pos = entity.getBlockPos();
             state.area = entity.getAffectedArea();

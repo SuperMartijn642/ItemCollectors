@@ -39,11 +39,11 @@ public class CollectorBlockEntity extends BaseBlockEntity implements TickableBlo
     private final Supplier<Integer> maxRange;
     private final Supplier<Boolean> hasFilter;
 
-    public int rangeX, rangeY, rangeZ;
-    public final List<ItemStack> filter = new ArrayList<>(9);
-    public boolean filterWhitelist;
-    public boolean filterDurability = true;
-    public boolean showArea = false;
+    private int rangeX, rangeY, rangeZ;
+    private final List<ItemStack> filter = new ArrayList<>(9);
+    private boolean filterWhitelist;
+    private boolean filterDurability = true;
+    private boolean showArea = false;
 
     public CollectorBlockEntity(BaseBlockEntityType<CollectorBlockEntity> blockEntityType, BlockPos pos, BlockState state, Supplier<Integer> maxRange, Supplier<Boolean> hasFilter){
         super(blockEntityType, pos, state);
@@ -128,32 +128,73 @@ public class CollectorBlockEntity extends BaseBlockEntity implements TickableBlo
         return ItemStorage.SIDED.find(this.level, this.worldPosition.relative(direction), direction.getOpposite());
     }
 
-    public void setRangeX(int range){
+    public int getRangeX(){
+        return this.rangeX;
+    }
+
+    public void increaseRangeX(int amount){
         int old = this.rangeX;
-        this.rangeX = Math.min(Math.max(range, MIN_RANGE), this.maxRange.get());
+        this.rangeX = Math.min(Math.max(this.rangeX + amount, MIN_RANGE), this.maxRange.get());
         if(this.rangeX != old)
             this.dataChanged();
     }
 
-    public void setRangeY(int range){
+    public int getRangeY(){
+        return this.rangeY;
+    }
+
+    public void increaseRangeY(int amount){
         int old = this.rangeY;
-        this.rangeY = Math.min(Math.max(range, MIN_RANGE), this.maxRange.get());
+        this.rangeY = Math.min(Math.max(this.rangeY + amount, MIN_RANGE), this.maxRange.get());
         if(this.rangeY != old)
             this.dataChanged();
     }
 
-    public void setRangeZ(int range){
+    public int getRangeZ(){
+        return this.rangeZ;
+    }
+
+    public void increaseRangeZ(int amount){
         int old = this.rangeZ;
-        this.rangeZ = Math.min(Math.max(range, MIN_RANGE), this.maxRange.get());
+        this.rangeZ = Math.min(Math.max(this.rangeZ + amount, MIN_RANGE), this.maxRange.get());
         if(this.rangeZ != old)
             this.dataChanged();
     }
 
-    public void setShowArea(boolean showArea){
-        if(this.showArea != showArea){
-            this.showArea = showArea;
-            this.dataChanged();
-        }
+    public ItemStack getFilterStack(int index){
+        return this.filter.get(index);
+    }
+
+    public void setFilterStack(int index, ItemStack stack){
+        this.filter.set(index, stack);
+        this.dataChanged();
+    }
+
+    public boolean getFilterWhitelist(){
+        return this.filterWhitelist;
+    }
+
+    public void toggleFilterWhitelist(){
+        this.filterWhitelist = !this.filterWhitelist;
+        this.dataChanged();
+    }
+
+    public boolean getFilterDurability(){
+        return this.filterDurability;
+    }
+
+    public void toggleFilterDurability(){
+        this.filterDurability = !this.filterDurability;
+        this.dataChanged();
+    }
+
+    public boolean shouldShowArea(){
+        return this.showArea;
+    }
+
+    public void toggleShowArea(){
+        this.showArea = !this.showArea;
+        this.dataChanged();
     }
 
     @Override
@@ -172,9 +213,9 @@ public class CollectorBlockEntity extends BaseBlockEntity implements TickableBlo
 
     @Override
     protected void readData(ValueInput input){
-        this.rangeX = input.getIntOr("rangeX", 0);
-        this.rangeY = input.getIntOr("rangeY", 0);
-        this.rangeZ = input.getIntOr("rangeZ", 0);
+        this.rangeX = input.getIntOr("rangeX", MIN_RANGE);
+        this.rangeY = input.getIntOr("rangeY", MIN_RANGE);
+        this.rangeZ = input.getIntOr("rangeZ", MIN_RANGE);
         for(int i = 0; i < 9; i++)
             this.filter.set(i, input.read("filter" + i, ItemStack.CODEC).orElse(ItemStack.EMPTY));
         this.filterWhitelist = input.getBooleanOr("filterWhitelist", false);
