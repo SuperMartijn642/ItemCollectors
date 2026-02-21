@@ -19,6 +19,6 @@ public class PacketIncreaseZRange extends BlockEntityBasePacket<CollectorBlockEn
 
     @Override
     protected void handle(CollectorBlockEntity entity, PacketContext context){
-        entity.setRangeZ(entity.rangeZ + 1);
+        entity.increaseRangeZ(1);
     }
 }

@@ -36,11 +36,11 @@ public class CollectorBlockEntity extends BaseBlockEntity implements TickableBlo
     private final Supplier<Integer> maxRange;
     private final Supplier<Boolean> hasFilter;
 
-    public int rangeX, rangeY, rangeZ;
-    public final List<ItemStack> filter = new ArrayList<>(9);
-    public boolean filterWhitelist;
-    public boolean filterDurability = true;
-    public boolean showArea = false;
+    private int rangeX, rangeY, rangeZ;
+    private final List<ItemStack> filter = new ArrayList<>(9);
+    private boolean filterWhitelist;
+    private boolean filterDurability = true;
+    private boolean showArea = false;
 
     public CollectorBlockEntity(BaseBlockEntityType<CollectorBlockEntity> blockEntityType, Supplier<Integer> maxRange, Supplier<Boolean> hasFilter){
         super(blockEntityType);
@@ -127,32 +127,73 @@ public class CollectorBlockEntity extends BaseBlockEntity implements TickableBlo
         return Optional.ofNullable(entity.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, direction.getOpposite()));
     }
 
-    public void setRangeX(int range){
+    public int getRangeX(){
+        return this.rangeX;
+    }
+
+    public void increaseRangeX(int amount){
         int old = this.rangeX;
-        this.rangeX = Math.min(Math.max(range, MIN_RANGE), this.maxRange.get());
+        this.rangeX = Math.min(Math.max(this.rangeX + amount, MIN_RANGE), this.maxRange.get());
         if(this.rangeX != old)
             this.dataChanged();
     }
 
-    public void setRangeY(int range){
+    public int getRangeY(){
+        return this.rangeY;
+    }
+
+    public void increaseRangeY(int amount){
         int old = this.rangeY;
-        this.rangeY = Math.min(Math.max(range, MIN_RANGE), this.maxRange.get());
+        this.rangeY = Math.min(Math.max(this.rangeY + amount, MIN_RANGE), this.maxRange.get());
         if(this.rangeY != old)
             this.dataChanged();
     }
 
-    public void setRangeZ(int range){
+    public int getRangeZ(){
+        return this.rangeZ;
+    }
+
+    public void increaseRangeZ(int amount){
         int old = this.rangeZ;
-        this.rangeZ = Math.min(Math.max(range, MIN_RANGE), this.maxRange.get());
+        this.rangeZ = Math.min(Math.max(this.rangeZ + amount, MIN_RANGE), this.maxRange.get());
         if(this.rangeZ != old)
             this.dataChanged();
     }
 
-    public void setShowArea(boolean showArea){
-        if(this.showArea != showArea){
-            this.showArea = showArea;
-            this.dataChanged();
-        }
+    public ItemStack getFilterStack(int index){
+        return this.filter.get(index);
+    }
+
+    public void setFilterStack(int index, ItemStack stack){
+        this.filter.set(index, stack);
+        this.dataChanged();
+    }
+
+    public boolean getFilterWhitelist(){
+        return this.filterWhitelist;
+    }
+
+    public void toggleFilterWhitelist(){
+        this.filterWhitelist = !this.filterWhitelist;
+        this.dataChanged();
+    }
+
+    public boolean getFilterDurability(){
+        return this.filterDurability;
+    }
+
+    public void toggleFilterDurability(){
+        this.filterDurability = !this.filterDurability;
+        this.dataChanged();
+    }
+
+    public boolean shouldShowArea(){
+        return this.showArea;
+    }
+
+    public void toggleShowArea(){
+        this.showArea = !this.showArea;
+        this.dataChanged();
     }
 
     @Override
@@ -173,12 +214,9 @@ public class CollectorBlockEntity extends BaseBlockEntity implements TickableBlo
 
     @Override
     protected void readData(NBTTagCompound tag){
-        if(tag.hasKey("rangeX"))
-            this.rangeX = tag.getInteger("rangeX");
-        if(tag.hasKey("rangeY"))
-            this.rangeY = tag.getInteger("rangeY");
-        if(tag.hasKey("rangeZ"))
-            this.rangeZ = tag.getInteger("rangeZ");
+        this.rangeX = tag.hasKey("rangeX") ? tag.getInteger("rangeX") : MIN_RANGE;
+        this.rangeY = tag.hasKey("rangeY") ? tag.getInteger("rangeY") : MIN_RANGE;
+        this.rangeZ = tag.hasKey("rangeZ") ? tag.getInteger("rangeZ") : MIN_RANGE;
         for(int i = 0; i < 9; i++)
             this.filter.set(i, tag.hasKey("filter" + i) ? new ItemStack(tag.getCompoundTag("filter" + i)) : ItemStack.EMPTY);
         this.filterWhitelist = tag.hasKey("filterWhitelist") && tag.getBoolean("filterWhitelist");

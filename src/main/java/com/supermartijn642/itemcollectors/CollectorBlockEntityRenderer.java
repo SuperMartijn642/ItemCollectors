@@ -14,7 +14,7 @@ public class CollectorBlockEntityRenderer implements CustomBlockEntityRenderer<C
 
     @Override
     public void render(CollectorBlockEntity entity, float partialTicks, int combinedOverlay, float alpha){
-        if(entity.showArea){
+        if(entity.shouldShowArea()){
             GlStateManager.pushMatrix();
             GlStateManager.translate(-entity.getPos().getX(), -entity.getPos().getY(), -entity.getPos().getZ());
 
