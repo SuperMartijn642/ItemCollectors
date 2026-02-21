@@ -41,19 +41,19 @@ public class AdvancedCollectorScreen extends BlockEntityBaseContainerWidget<Coll
         this.addWidget(new ArrowButton(116, 37, false, () -> ItemCollectors.CHANNEL.sendToServer(new PacketIncreaseZRange(this.object.getBlockPos()))));
         this.addWidget(new ArrowButton(116, 63, true, () -> ItemCollectors.CHANNEL.sendToServer(new PacketDecreaseZRange(this.object.getBlockPos()))));
         this.whitelistButton = this.addWidget(new WhitelistButton(175, 88, () -> ItemCollectors.CHANNEL.sendToServer(new PacketToggleWhitelist(this.object.getBlockPos()))));
-        this.whitelistButton.update(entity.filterWhitelist);
+        this.whitelistButton.update(entity.getFilterWhitelist());
         this.durabilityButton = this.addWidget(new DurabilityButton(197, 88, () -> ItemCollectors.CHANNEL.sendToServer(new PacketToggleDurability(this.object.getBlockPos()))));
-        this.durabilityButton.update(entity.filterDurability);
+        this.durabilityButton.update(entity.getFilterDurability());
         this.showAreaButton = this.addWidget(new ShowAreaButton(160, 45, () -> ItemCollectors.CHANNEL.sendToServer(new PacketToggleShowArea(this.object.getBlockPos()))));
-        this.showAreaButton.update(entity.showArea);
+        this.showAreaButton.update(entity.shouldShowArea());
         super.addWidgets(entity);
     }
 
     @Override
     protected void update(CollectorBlockEntity entity){
-        this.whitelistButton.update(entity.filterWhitelist);
-        this.durabilityButton.update(entity.filterDurability);
-        this.showAreaButton.update(entity.showArea);
+        this.whitelistButton.update(entity.getFilterWhitelist());
+        this.durabilityButton.update(entity.getFilterDurability());
+        this.showAreaButton.update(entity.shouldShowArea());
         super.update(entity);
     }
 
@@ -70,13 +70,13 @@ public class AdvancedCollectorScreen extends BlockEntityBaseContainerWidget<Coll
         ScreenUtils.drawString(ClientUtils.getPlayer().inventory.getName(), 32, 112);
 
         ScreenUtils.drawString(TextComponents.translation("gui.itemcollectors.basic_collector.range",
-            (entity.rangeX * 2 + 1), (entity.rangeY * 2 + 1), (entity.rangeZ * 2 + 1)).get(), 8, 26);
+            (entity.getRangeX() * 2 + 1), (entity.getRangeY() * 2 + 1), (entity.getRangeZ() * 2 + 1)).get(), 8, 26);
         ScreenUtils.drawCenteredString(TextComponents.string("x:").get(), 25, 51);
-        ScreenUtils.drawCenteredString(TextComponents.number(entity.rangeX).get(), 39, 52);
+        ScreenUtils.drawCenteredString(TextComponents.number(entity.getRangeX()).get(), 39, 52);
         ScreenUtils.drawCenteredString(TextComponents.string("y:").get(), 68, 51);
-        ScreenUtils.drawCenteredString(TextComponents.number(entity.rangeY).get(), 82, 52);
+        ScreenUtils.drawCenteredString(TextComponents.number(entity.getRangeY()).get(), 82, 52);
         ScreenUtils.drawCenteredString(TextComponents.string("z:").get(), 111, 51);
-        ScreenUtils.drawCenteredString(TextComponents.number(entity.rangeZ).get(), 125, 52);
+        ScreenUtils.drawCenteredString(TextComponents.number(entity.getRangeZ()).get(), 125, 52);
         ScreenUtils.drawString(TextComponents.translation("gui.itemcollectors.advanced_collector.filter").get(), 8, 78);
         super.renderForeground(mouseX, mouseY, entity);
     }
