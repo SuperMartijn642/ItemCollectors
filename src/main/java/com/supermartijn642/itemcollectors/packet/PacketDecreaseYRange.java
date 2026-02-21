@@ -19,6 +19,6 @@ public class PacketDecreaseYRange extends BlockEntityBasePacket<CollectorBlockEn
 
     @Override
     protected void handle(CollectorBlockEntity entity, PacketContext context){
-        entity.setRangeY(entity.rangeY - 1);
+        entity.increaseRangeY(-1);
     }
 }
