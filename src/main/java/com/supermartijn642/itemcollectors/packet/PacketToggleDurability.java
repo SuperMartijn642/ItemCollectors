@@ -19,7 +19,6 @@ public class PacketToggleDurability extends BlockEntityBasePacket<CollectorBlock
 
     @Override
     protected void handle(CollectorBlockEntity entity, PacketContext context){
-        entity.filterDurability = !entity.filterDurability;
-        entity.dataChanged();
+        entity.toggleFilterDurability();
     }
 }
