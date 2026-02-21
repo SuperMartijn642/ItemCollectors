@@ -2,16 +2,13 @@ package com.supermartijn642.itemcollectors.screen;
 
 import com.supermartijn642.core.gui.BaseContainerType;
 import com.supermartijn642.core.gui.BlockEntityBaseContainer;
+import com.supermartijn642.core.gui.CustomSlot;
 import com.supermartijn642.itemcollectors.CollectorBlockEntity;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.ClickType;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
-import net.neoforged.neoforge.items.ItemStackHandler;
-import net.neoforged.neoforge.items.SlotItemHandler;
-
-import javax.annotation.Nonnull;
 
 /**
  * Created 7/15/2020 by SuperMartijn642
@@ -25,13 +22,15 @@ public class AdvancedCollectorContainer extends BlockEntityBaseContainer<Collect
 
     @Override
     protected void addSlots(Player player, CollectorBlockEntity entity){
-        for(int i = 0; i < 9; i++)
-            this.addSlot(new SlotItemHandler(this.itemHandler(), i, 8 + i * 18, 90) {
-                @Override
-                public boolean mayPickup(Player playerIn){
-                    return false;
-                }
-            });
+        for(int i = 0; i < 9; i++){
+            int index = i;
+            this.addSlot(CustomSlot.builder()
+                .position(8 + i * 18, 90)
+                .canInsertExtract(false)
+                .getter(() -> this.object.getFilterStack(index))
+                .build().getVanillaSlot()
+            );
+        }
         this.addPlayerSlots(32, 124);
     }
 
@@ -39,11 +38,11 @@ public class AdvancedCollectorContainer extends BlockEntityBaseContainer<Collect
     public void clicked(int slot, int dragType, ClickType clickType, Player player){
         if(slot >= 0 && slot < 9){
             if(this.getCarried().isEmpty())
-                this.object.filter.set(slot, ItemStack.EMPTY);
+                this.object.setFilterStack(slot, ItemStack.EMPTY);
             else{
                 ItemStack stack = this.getCarried().copy();
                 stack.setCount(1);
-                this.object.filter.set(slot, stack);
+                this.object.setFilterStack(slot, stack);
             }
             return;
         }
@@ -54,17 +53,17 @@ public class AdvancedCollectorContainer extends BlockEntityBaseContainer<Collect
     public ItemStack quickMoveStack(Player player, int index){
         if(index >= 0 && index < 9){
             if(this.getCarried().isEmpty())
-                this.object.filter.set(index, ItemStack.EMPTY);
+                this.object.setFilterStack(index, ItemStack.EMPTY);
             else{
                 ItemStack stack = this.getCarried().copy();
                 stack.setCount(1);
-                this.object.filter.set(index, stack);
+                this.object.setFilterStack(index, stack);
             }
         }else if(!this.getSlot(index).getItem().isEmpty()){
             boolean contains = false;
             int firstEmpty = -1;
             for(int i = 0; i < 9; i++){
-                ItemStack stack = this.itemHandler().getStackInSlot(i);
+                ItemStack stack = this.object.getFilterStack(i);
                 if(ItemStack.isSameItemSameTags(stack, this.getSlot(index).getItem())){
                     contains = true;
                     break;
@@ -75,22 +74,10 @@ public class AdvancedCollectorContainer extends BlockEntityBaseContainer<Collect
             if(!contains && firstEmpty != -1){
                 ItemStack stack = this.getSlot(index).getItem().copy();
                 stack.setCount(1);
-                this.object.filter.set(firstEmpty, stack);
+                this.object.setFilterStack(firstEmpty, stack);
             }
         }
         return ItemStack.EMPTY;
-    }
-
-    private ItemStackHandler itemHandler(){
-        return new ItemStackHandler(9) {
-            @Nonnull
-            @Override
-            public ItemStack getStackInSlot(int slot){
-                return AdvancedCollectorContainer.this.validateObjectOrClose() ?
-                    AdvancedCollectorContainer.this.object.filter.get(slot) :
-                    ItemStack.EMPTY;
-            }
-        };
     }
 
     public BlockPos getCollectorPosition(){
