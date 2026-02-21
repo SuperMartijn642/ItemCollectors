@@ -15,7 +15,7 @@ public class CollectorBlockEntityRenderer implements CustomBlockEntityRenderer<C
 
     @Override
     public void render(CollectorBlockEntity entity, float partialTicks, MatrixStack poseStack, IRenderTypeBuffer bufferSource, int combinedLight, int combinedOverlay){
-        if(entity.showArea){
+        if(entity.shouldShowArea()){
             poseStack.pushPose();
             poseStack.translate(-entity.getBlockPos().getX(), -entity.getBlockPos().getY(), -entity.getBlockPos().getZ());
 
