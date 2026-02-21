@@ -8,6 +8,7 @@ import com.supermartijn642.core.item.BaseBlockItem;
 import com.supermartijn642.core.item.CreativeItemGroup;
 import com.supermartijn642.core.item.ItemProperties;
 import com.supermartijn642.core.network.PacketChannel;
+import com.supermartijn642.core.network.PacketDirection;
 import com.supermartijn642.core.registry.GeneratorRegistrationHandler;
 import com.supermartijn642.core.registry.RegistrationHandler;
 import com.supermartijn642.core.registry.RegistryEntryAcceptor;
@@ -38,15 +39,15 @@ public class ItemCollectors implements ModInitializer {
 
     @Override
     public void onInitialize(){
-        CHANNEL.registerMessage(PacketIncreaseXRange.class, PacketIncreaseXRange::new, true);
-        CHANNEL.registerMessage(PacketDecreaseXRange.class, PacketDecreaseXRange::new, true);
-        CHANNEL.registerMessage(PacketIncreaseYRange.class, PacketIncreaseYRange::new, true);
-        CHANNEL.registerMessage(PacketDecreaseYRange.class, PacketDecreaseYRange::new, true);
-        CHANNEL.registerMessage(PacketIncreaseZRange.class, PacketIncreaseZRange::new, true);
-        CHANNEL.registerMessage(PacketDecreaseZRange.class, PacketDecreaseZRange::new, true);
-        CHANNEL.registerMessage(PacketToggleWhitelist.class, PacketToggleWhitelist::new, true);
-        CHANNEL.registerMessage(PacketToggleDurability.class, PacketToggleDurability::new, true);
-        CHANNEL.registerMessage(PacketToggleShowArea.class, PacketToggleShowArea::new, true);
+        CHANNEL.registerMessage(PacketIncreaseXRange.class, PacketIncreaseXRange::new, PacketDirection.CLIENT_TO_SERVER, true);
+        CHANNEL.registerMessage(PacketDecreaseXRange.class, PacketDecreaseXRange::new, PacketDirection.CLIENT_TO_SERVER, true);
+        CHANNEL.registerMessage(PacketIncreaseYRange.class, PacketIncreaseYRange::new, PacketDirection.CLIENT_TO_SERVER, true);
+        CHANNEL.registerMessage(PacketDecreaseYRange.class, PacketDecreaseYRange::new, PacketDirection.CLIENT_TO_SERVER, true);
+        CHANNEL.registerMessage(PacketIncreaseZRange.class, PacketIncreaseZRange::new, PacketDirection.CLIENT_TO_SERVER, true);
+        CHANNEL.registerMessage(PacketDecreaseZRange.class, PacketDecreaseZRange::new, PacketDirection.CLIENT_TO_SERVER, true);
+        CHANNEL.registerMessage(PacketToggleWhitelist.class, PacketToggleWhitelist::new, PacketDirection.CLIENT_TO_SERVER, true);
+        CHANNEL.registerMessage(PacketToggleDurability.class, PacketToggleDurability::new, PacketDirection.CLIENT_TO_SERVER, true);
+        CHANNEL.registerMessage(PacketToggleShowArea.class, PacketToggleShowArea::new, PacketDirection.CLIENT_TO_SERVER, true);
 
         register();
         registerGenerators();
