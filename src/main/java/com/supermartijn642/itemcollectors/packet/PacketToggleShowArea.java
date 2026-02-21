@@ -10,7 +10,8 @@ import net.minecraft.util.math.BlockPos;
  */
 public class PacketToggleShowArea extends BlockEntityBasePacket<CollectorBlockEntity> {
 
-    public PacketToggleShowArea(){}
+    public PacketToggleShowArea(){
+    }
 
     public PacketToggleShowArea(BlockPos pos){
         super(pos);
@@ -18,6 +19,6 @@ public class PacketToggleShowArea extends BlockEntityBasePacket<CollectorBlockEn
 
     @Override
     protected void handle(CollectorBlockEntity entity, PacketContext context){
-        entity.setShowArea(!entity.showArea);
+        entity.toggleShowArea();
     }
 }
