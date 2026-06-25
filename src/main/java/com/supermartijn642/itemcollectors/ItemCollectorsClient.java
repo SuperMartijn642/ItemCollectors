@@ -10,10 +10,10 @@ import com.supermartijn642.itemcollectors.screen.AdvancedCollectorScreen;
 import com.supermartijn642.itemcollectors.screen.BasicCollectorScreen;
 import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.fabric.api.client.rendering.v1.RenderStateDataKey;
-import net.fabricmc.fabric.api.client.rendering.v1.world.WorldExtractionContext;
-import net.fabricmc.fabric.api.client.rendering.v1.world.WorldRenderContext;
-import net.fabricmc.fabric.api.client.rendering.v1.world.WorldRenderEvents;
-import net.minecraft.client.renderer.state.BlockOutlineRenderState;
+import net.fabricmc.fabric.api.client.rendering.v1.level.LevelExtractionContext;
+import net.fabricmc.fabric.api.client.rendering.v1.level.LevelRenderContext;
+import net.fabricmc.fabric.api.client.rendering.v1.level.LevelRenderEvents;
+import net.minecraft.client.renderer.state.level.BlockOutlineRenderState;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
@@ -34,8 +34,8 @@ public class ItemCollectorsClient implements ClientModInitializer {
 
     @Override
     public void onInitializeClient(){
-        WorldRenderEvents.AFTER_BLOCK_OUTLINE_EXTRACTION.register(ItemCollectorsClient::onBlockHighlightExtract);
-        WorldRenderEvents.BEFORE_BLOCK_OUTLINE.register(ItemCollectorsClient::onBlockHighlightDraw);
+        LevelRenderEvents.AFTER_BLOCK_OUTLINE_EXTRACTION.register(ItemCollectorsClient::onBlockHighlightExtract);
+        LevelRenderEvents.BEFORE_BLOCK_OUTLINE.register(ItemCollectorsClient::onBlockHighlightDraw);
 
         register();
     }
@@ -51,17 +51,17 @@ public class ItemCollectorsClient implements ClientModInitializer {
         ClientUtils.displayScreen(WidgetScreen.of(new BasicCollectorScreen(level, pos)));
     }
 
-    private static void onBlockHighlightExtract(WorldExtractionContext context, HitResult result){
-        AreaHighlightState state = context.worldState().getData(HIGHLIGHT_DATA);
+    private static void onBlockHighlightExtract(LevelExtractionContext context, HitResult result){
+        AreaHighlightState state = context.levelState().getData(HIGHLIGHT_DATA);
         if(state == null){
             state = new AreaHighlightState();
-            context.worldState().setData(HIGHLIGHT_DATA, state);
+            context.levelState().setData(HIGHLIGHT_DATA, state);
         }
         state.shouldRender = false;
 
         if(result instanceof BlockHitResult){
             BlockPos pos = ((BlockHitResult)result).getBlockPos();
-            BlockEntity entity = context.world().getBlockEntity(pos);
+            BlockEntity entity = context.level().getBlockEntity(pos);
             if(entity instanceof CollectorBlockEntity){
                 state.shouldRender = true;
                 state.pos = pos;
@@ -70,13 +70,13 @@ public class ItemCollectorsClient implements ClientModInitializer {
         }
     }
 
-    private static boolean onBlockHighlightDraw(WorldRenderContext context, BlockOutlineRenderState outlineRenderState){
-        AreaHighlightState state = context.worldState().getData(HIGHLIGHT_DATA);
+    private static boolean onBlockHighlightDraw(LevelRenderContext context, BlockOutlineRenderState outlineRenderState){
+        AreaHighlightState state = context.levelState().getData(HIGHLIGHT_DATA);
         if(state == null || !state.shouldRender)
             return true;
 
         POSE_STACK.pushPose();
-        Vec3 playerPos = context.worldState().cameraRenderState.pos;
+        Vec3 playerPos = context.levelState().cameraRenderState.pos;
         POSE_STACK.translate(-playerPos.x, -playerPos.y, -playerPos.z);
 
         Random random = new Random(state.pos.hashCode());
