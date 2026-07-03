@@ -1,3 +1,5 @@
+## Update to Minecraft 26.1
+
 ### Item Collectors 1.1.12
 - Updated Brazilian Portuguese translations (thanks to PrincessStellar!)
 - Fixed changes to item filters not always getting saved

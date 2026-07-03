@@ -6,7 +6,7 @@ import com.supermartijn642.core.gui.CustomSlot;
 import com.supermartijn642.itemcollectors.CollectorBlockEntity;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.inventory.ClickType;
+import net.minecraft.world.inventory.ContainerInput;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 
@@ -35,7 +35,7 @@ public class AdvancedCollectorContainer extends BlockEntityBaseContainer<Collect
     }
 
     @Override
-    public void clicked(int slot, int dragType, ClickType clickType, Player player){
+    public void clicked(int slot, int dragType, ContainerInput input, Player player){
         if(slot >= 0 && slot < 9){
             if(this.getCarried().isEmpty())
                 this.object.setFilterStack(slot, ItemStack.EMPTY);
@@ -46,7 +46,7 @@ public class AdvancedCollectorContainer extends BlockEntityBaseContainer<Collect
             }
             return;
         }
-        super.clicked(slot, dragType, clickType, player);
+        super.clicked(slot, dragType, input, player);
     }
 
     @Override
