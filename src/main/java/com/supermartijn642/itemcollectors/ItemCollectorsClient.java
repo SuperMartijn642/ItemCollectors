@@ -2,14 +2,14 @@ package com.supermartijn642.itemcollectors;
 
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.supermartijn642.core.ClientUtils;
+import com.supermartijn642.core.block.BlockShape;
 import com.supermartijn642.core.gui.WidgetContainerScreen;
 import com.supermartijn642.core.gui.WidgetScreen;
 import com.supermartijn642.core.registry.ClientRegistrationHandler;
 import com.supermartijn642.core.render.RenderUtils;
 import com.supermartijn642.itemcollectors.screen.AdvancedCollectorScreen;
 import com.supermartijn642.itemcollectors.screen.BasicCollectorScreen;
-import net.minecraft.client.renderer.LevelRenderer;
-import net.minecraft.client.renderer.MultiBufferSource;
+import net.minecraft.client.renderer.SubmitNodeCollector;
 import net.minecraft.client.renderer.state.level.BlockOutlineRenderState;
 import net.minecraft.client.renderer.state.level.LevelRenderState;
 import net.minecraft.client.resources.model.geometry.BakedQuad;
@@ -61,12 +61,11 @@ public class ItemCollectorsClient {
                 ClientUtils.getMinecraft().options.highContrastBlockOutline().get(),
                 blockState.getShape(level, pos, CollisionContext.of(event.getCamera().entity()))
             );
-            LevelRenderer levelRenderer = event.getLevelRenderer();
-            event.setCustomRenderer((source, stack, translucent, levelRenderState) -> onRenderBlockOutline(outlineRenderState, source, stack, translucent, levelRenderState, levelRenderer, state));
+            event.setCustomRenderer((source, stack, levelRenderState) -> onRenderBlockOutline(outlineRenderState, source, stack, levelRenderState, state));
         }
     }
 
-    private static boolean onRenderBlockOutline(BlockOutlineRenderState outlineRenderState, MultiBufferSource.BufferSource bufferSource, PoseStack poseStack, boolean translucentPass, LevelRenderState levelRenderState, LevelRenderer levelRenderer, AreaHighlightState state){
+    private static boolean onRenderBlockOutline(BlockOutlineRenderState outlineRenderState, SubmitNodeCollector output, PoseStack poseStack, LevelRenderState levelRenderState, AreaHighlightState state){
         if(state == null || !state.shouldRender)
             return false;
 
@@ -80,15 +79,15 @@ public class ItemCollectorsClient {
         float blue = random.nextFloat();
         float alpha = 0.3f;
 
-        RenderUtils.renderBox(POSE_STACK, state.area, red, green, blue, alpha, true);
-        RenderUtils.renderBoxSides(POSE_STACK, state.area, red, green, blue, alpha, true);
+        RenderUtils.submitShape(output, POSE_STACK, BlockShape.create(state.area), red, green, blue, alpha, true);
+        RenderUtils.submitShapeSides(output, POSE_STACK, BlockShape.create(state.area), red, green, blue, alpha, true);
 
         POSE_STACK.popPose();
 
         // Render original outline
         BlockOutlineRenderState temp = levelRenderState.blockOutlineRenderState;
         levelRenderState.blockOutlineRenderState = outlineRenderState;
-        levelRenderer.renderBlockOutline(bufferSource, poseStack, translucentPass, levelRenderState);
+        ClientUtils.getMinecraft().levelRenderer.submitBlockOutline(poseStack, output, levelRenderState);
         levelRenderState.blockOutlineRenderState = temp;
         return false;
     }
