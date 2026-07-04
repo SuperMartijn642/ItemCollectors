@@ -2,13 +2,14 @@ package com.supermartijn642.itemcollectors;
 
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.supermartijn642.core.ClientUtils;
+import com.supermartijn642.core.block.BlockShape;
 import com.supermartijn642.core.gui.WidgetContainerScreen;
 import com.supermartijn642.core.gui.WidgetScreen;
 import com.supermartijn642.core.registry.ClientRegistrationHandler;
 import com.supermartijn642.core.render.RenderUtils;
 import com.supermartijn642.itemcollectors.screen.AdvancedCollectorScreen;
 import com.supermartijn642.itemcollectors.screen.BasicCollectorScreen;
-import net.minecraft.client.renderer.MultiBufferSource;
+import net.minecraft.client.renderer.SubmitNodeCollector;
 import net.minecraft.client.renderer.state.level.BlockOutlineRenderState;
 import net.minecraft.client.renderer.state.level.LevelRenderState;
 import net.minecraft.core.BlockPos;
@@ -62,7 +63,7 @@ public class ItemCollectorsClient {
         }
     }
 
-    private static boolean onRenderBlockOutline(BlockOutlineRenderState outlineRenderState, MultiBufferSource.BufferSource bufferSource, PoseStack poseStack, boolean translucentPass, LevelRenderState levelRenderState){
+    private static boolean onRenderBlockOutline(BlockOutlineRenderState outlineRenderState, SubmitNodeCollector output, PoseStack poseStack, LevelRenderState levelRenderState){
         AreaHighlightState state = levelRenderState.getRenderData(HIGHLIGHT_DATA);
         if(state == null || !state.shouldRender)
             return false;
@@ -77,8 +78,8 @@ public class ItemCollectorsClient {
         float blue = random.nextFloat();
         float alpha = 0.3f;
 
-        RenderUtils.renderBox(POSE_STACK, state.area, red, green, blue, alpha, true);
-        RenderUtils.renderBoxSides(POSE_STACK, state.area, red, green, blue, alpha, true);
+        RenderUtils.submitShape(output, POSE_STACK, BlockShape.create(state.area), red, green, blue, alpha, true);
+        RenderUtils.submitShapeSides(output, POSE_STACK, BlockShape.create(state.area), red, green, blue, alpha, true);
 
         POSE_STACK.popPose();
         return false;
