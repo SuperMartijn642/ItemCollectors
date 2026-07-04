@@ -2,6 +2,7 @@ package com.supermartijn642.itemcollectors;
 
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.supermartijn642.core.ClientUtils;
+import com.supermartijn642.core.block.BlockShape;
 import com.supermartijn642.core.gui.WidgetContainerScreen;
 import com.supermartijn642.core.gui.WidgetScreen;
 import com.supermartijn642.core.registry.ClientRegistrationHandler;
@@ -11,8 +12,10 @@ import com.supermartijn642.itemcollectors.screen.BasicCollectorScreen;
 import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.fabric.api.client.rendering.v1.RenderStateDataKey;
 import net.fabricmc.fabric.api.client.rendering.v1.level.LevelExtractionContext;
+import net.fabricmc.fabric.api.client.rendering.v1.level.LevelExtractionEvents;
 import net.fabricmc.fabric.api.client.rendering.v1.level.LevelRenderContext;
 import net.fabricmc.fabric.api.client.rendering.v1.level.LevelRenderEvents;
+import net.minecraft.client.renderer.SubmitNodeCollector;
 import net.minecraft.client.renderer.state.level.BlockOutlineRenderState;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.level.Level;
@@ -34,7 +37,7 @@ public class ItemCollectorsClient implements ClientModInitializer {
 
     @Override
     public void onInitializeClient(){
-        LevelRenderEvents.AFTER_BLOCK_OUTLINE_EXTRACTION.register(ItemCollectorsClient::onBlockHighlightExtract);
+        LevelExtractionEvents.AFTER_BLOCK_OUTLINE_EXTRACTION.register(ItemCollectorsClient::onBlockHighlightExtract);
         LevelRenderEvents.BEFORE_BLOCK_OUTLINE.register(ItemCollectorsClient::onBlockHighlightDraw);
 
         register();
@@ -85,8 +88,9 @@ public class ItemCollectorsClient implements ClientModInitializer {
         float blue = random.nextFloat();
         float alpha = 0.3f;
 
-        RenderUtils.renderBox(POSE_STACK, state.area, red, green, blue, alpha, true);
-        RenderUtils.renderBoxSides(POSE_STACK, state.area, red, green, blue, alpha, true);
+        SubmitNodeCollector output = context.submitNodeCollector();
+        RenderUtils.submitShape(output, POSE_STACK, BlockShape.create(state.area), red, green, blue, alpha, true);
+        RenderUtils.submitShapeSides(output, POSE_STACK, BlockShape.create(state.area), red, green, blue, alpha, true);
 
         POSE_STACK.popPose();
         return true;
