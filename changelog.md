@@ -1,3 +1,6 @@
+### Item Collectors 1.1.12a
+- Fixed crash on dedicated server
+
 ## Update to Minecraft 26.2
 
 ## Update to Minecraft 26.1
