@@ -67,7 +67,7 @@ public class ItemCollectors implements ModInitializer {
         // Container type
         handler.registerMenuType("filter_collector_container", () -> BaseContainerType.create(
             (container, data) -> data.writeBlockPos(container.getCollectorPosition()),
-            (player, data) -> new AdvancedCollectorContainer(filter_collector_container, player, ClientUtils.getWorld(), data.readBlockPos())
+            (player, data) -> new AdvancedCollectorContainer(filter_collector_container, player, ClientUtils.getLevelNotAsClientLevel(), data.readBlockPos())
         ));
     }
 
