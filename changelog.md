@@ -1,3 +1,6 @@
+### Item Collectors 1.1.12b
+- Added icon and banner images for new NeoForge 26.2.0.50-beta mod list
+
 ### Item Collectors 1.1.12a
 - Fixed crash on dedicated server
 
